@@ -1074,7 +1074,7 @@ async function sendMessage() {
   state.chatHistory.push({role:'user',content:text});
   const tid=addTyping();
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
         system:`تو Uliki AI هستی، دستیار هوش مصنوعی فارسی‌زبان. حالت: ${state.aiMode}. پاسخ‌های دقیق و دوستانه به فارسی بده.`,
@@ -1142,7 +1142,7 @@ async function generateContent(type) {
     try {
       const styleEl = document.querySelector('#panel-image .style-chip.selected');
       const style = styleEl?.textContent?.trim() || 'رئالیستی';
-      const claudeRes=await fetch('https://api.anthropic.com/v1/messages',{
+      const claudeRes=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,
           messages:[{role:'user',content:`Convert to English image generation prompt (max 60 words, only prompt, style: ${style}): "${prompt}"`}]})
@@ -1197,7 +1197,7 @@ async function generateContent(type) {
     const durMap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120,'۳ دقیقه':180};
     const totalSec=durMap[duration]||60;
     try {
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,
           messages:[{role:'user',content:`تو آهنگساز حرفه‌ای هستی. آهنگ کامل بساز:
@@ -1274,7 +1274,7 @@ async function generateContent(type) {
 ۳. اگر باگ یا بهبود داری ذکر کن
 ۴. مثال استفاده هم بنویس`;
     try {
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:codePrompt}]})
       });
@@ -1308,7 +1308,7 @@ async function generateContent(type) {
 🎨 جلوه‌های بصری: [توضیف]
 📝 متن روی صفحه: [متن‌ها]`;
     try {
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:videoPrompt}]})
       });
@@ -1332,7 +1332,7 @@ async function generateContent(type) {
 
 یک ${contentType} حرفه‌ای، کامل و خواندنی به فارسی بنویس. از ساختار مناسب، تیترها و پاراگراف‌بندی درست استفاده کن.`;
     try {
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:textPrompt}]})
       });
