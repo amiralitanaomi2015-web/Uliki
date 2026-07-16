@@ -26,7 +26,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 .screen{display:none;position:relative;z-index:1;min-height:100vh;}
 .screen.active{display:block;}
 .glass-card{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--shadow);}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:50px;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;outline:none;transition:var(--transition);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:50px;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;outline:none;transition:var(--transition);text-decoration:none;}
 .btn-primary{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:white;box-shadow:0 4px 20px rgba(79,168,213,0.35);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(79,168,213,0.45);}
 .btn-outline{background:transparent;border:1.5px solid var(--accent);color:var(--accent);}
@@ -40,7 +40,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 #auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#EBF6FF 0%,#F5F8FC 50%,#E8F4FF 100%);}
 .auth-container{width:100%;max-width:480px;padding:20px;animation:fadeInUp 0.8s ease;}
 .auth-logo{text-align:center;margin-bottom:32px;}
-.auth-logo .logo-text{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px;}
+.auth-logo .logo-text{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;}
 .auth-logo p{color:var(--gray-light);font-size:14px;margin-top:6px;}
 .auth-card{padding:40px;}
 .auth-tabs{display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px;margin-bottom:28px;}
@@ -48,7 +48,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 .auth-tab.active{background:white;color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
 .input-group{margin-bottom:18px;}
 .input-group label{display:block;font-size:13px;font-weight:600;color:var(--gray-dark);margin-bottom:8px;}
-.input-group input{width:100%;padding:14px 18px;border:1.5px solid var(--gray-mid);border-radius:var(--radius-sm);font-family:'Vazirmatn',sans-serif;font-size:15px;background:white;outline:none;transition:var(--transition);}
+.input-group input{width:100%;padding:14px 18px;border:1.5px solid var(--gray-mid);border-radius:var(--radius-sm);font-family:'Vazirmatn',sans-serif;font-size:15px;background:white;outline:none;transition:var(--transition);color:var(--black-soft);}
 .input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(79,168,213,0.12);}
 .auth-divider{text-align:center;color:var(--gray-light);font-size:13px;margin:20px 0;position:relative;}
 .auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--gray-mid);}
@@ -61,13 +61,16 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 .nav-search{flex:1;max-width:400px;display:flex;align-items:center;gap:10px;background:var(--snow-blue);border-radius:50px;padding:8px 18px;}
 .nav-search input{background:none;border:none;outline:none;font-family:inherit;font-size:14px;flex:1;color:var(--black-soft);}
 .nav-actions{margin-right:auto;display:flex;align-items:center;gap:10px;}
-.nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;color:white;}
+.nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;cursor:pointer;border:2px solid white;box-shadow:0 2px 8px rgba(79,168,213,0.2);}
 .plan-badge{padding:4px 12px;border-radius:50px;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;cursor:pointer;}
+.notif-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--snow-blue);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:var(--transition);}
+.notif-btn:hover{background:var(--sky-light);}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#FF6B6B;border-radius:50%;border:2px solid white;}
 .app-body{display:flex;flex:1;}
-.sidebar{width:240px;flex-shrink:0;padding:20px 12px;border-left:1px solid var(--glass-border);background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);min-height:calc(100vh - 64px);position:sticky;top:64px;overflow-y:auto;}
+.sidebar{width:240px;flex-shrink:0;padding:20px 12px;border-left:1px solid var(--glass-border);background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);min-height:calc(100vh - 64px);position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
 .sidebar-section{margin-bottom:28px;}
 .sidebar-label{font-size:11px;font-weight:700;color:var(--gray-light);letter-spacing:1px;text-transform:uppercase;padding:0 12px;margin-bottom:8px;}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:500;color:var(--gray-dark);transition:var(--transition);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:500;color:var(--gray-dark);transition:var(--transition);margin-bottom:2px;}
 .sidebar-item:hover,.sidebar-item.active{background:var(--snow-blue);color:var(--accent);}
 .sidebar-item.active{font-weight:700;}
 .sidebar-item .icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--snow-blue);}
@@ -77,6 +80,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 
 /* HOME */
 .hero-banner{background:linear-gradient(135deg,#1A3A5C 0%,#0D5F8A 50%,#1B78A8 100%);border-radius:24px;padding:48px 40px;color:white;margin-bottom:28px;position:relative;overflow:hidden;animation:fadeInUp 0.6s ease;}
+.hero-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
 .hero-banner h1{font-size:32px;font-weight:800;margin-bottom:10px;position:relative;}
 .hero-banner p{font-size:15px;opacity:0.8;position:relative;max-width:480px;line-height:1.7;}
 .hero-actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;position:relative;}
@@ -85,11 +89,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 .hero-btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
 .hero-btn-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,0.5);}
 .hero-btn-outline:hover{background:rgba(255,255,255,0.1);transform:translateY(-2px);}
+.hero-emoji{position:absolute;left:40px;top:50%;transform:translateY(-50%);font-size:80px;opacity:0.15;}
 .section-title{font-size:20px;font-weight:700;color:var(--black-soft);margin-bottom:16px;}
 .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
-.feature-card{padding:24px 20px;border-radius:20px;cursor:pointer;transition:var(--transition);background:white;border:1.5px solid var(--glass-border);position:relative;overflow:hidden;animation:fadeInUp 0.5s ease both;}
+.feature-card{padding:24px 20px;border-radius:20px;cursor:pointer;transition:var(--transition);background:white;border:1.5px solid var(--glass-border);position:relative;overflow:hidden;animation:fadeInUp 0.6s ease both;}
 .feature-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 0 0 80px;opacity:0.08;}
-.feature-card:nth-child(1)::before{background:#4FA8D5;}.feature-card:nth-child(2)::before{background:#9B59B6;}.feature-card:nth-child(3)::before{background:#E74C3C;}
+.feature-card:nth-child(1)::before{background:#4FA8D5;}.feature-card:nth-child(2)::before{background:#9B59B6;}.feature-card:nth-child(3)::before{background:#E74C3C;}.feature-card:nth-child(4)::before{background:#27AE60;}.feature-card:nth-child(5)::before{background:#F39C12;}.feature-card:nth-child(6)::before{background:#2ECC71;}
 .feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--sky);}
 .feature-icon{font-size:36px;margin-bottom:14px;display:block;}
 .feature-card h3{font-size:16px;font-weight:700;margin-bottom:6px;color:var(--black-soft);}
@@ -115,7 +120,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 .chat-item-time{font-size:11px;color:var(--gray-light);}
 .chat-main{flex:1;background:var(--white-thick);display:flex;flex-direction:column;border:1px solid var(--glass-border);border-right:none;border-left:none;}
 .chat-header{padding:16px 20px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.9);}
-.chat-header .ai-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;color:white;}
+.chat-header .ai-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;}
 .chat-header-info h4{font-size:15px;font-weight:700;}
 .chat-header-info span{font-size:12px;color:#27AE60;}
 .online-dot{display:inline-block;width:8px;height:8px;background:#27AE60;border-radius:50%;margin-left:4px;animation:pulse 2s infinite;}
@@ -137,27 +142,163 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 @keyframes typingBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}}
 .chat-input-area{padding:16px 20px;border-top:1px solid var(--glass-border);background:rgba(255,255,255,0.9);}
 .quick-prompts{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-.quick-chip{padding:6px 14px;border-radius:50px;background:var(--snow-blue);border:1px solid var(--glass-border);font-family:inherit;font-size:12px;color:var(--accent);cursor:pointer;transition:var(--transition);}
+.quick-chip{padding:6px 14px;border-radius:50px;background:var(--snow-blue);border:1px solid var(--glass-border);font-family:inherit;font-size:12px;color:var(--accent);cursor:pointer;transition:var(--transition);white-space:nowrap;}
 .quick-chip:hover{background:var(--accent);color:white;}
 .chat-input-box{display:flex;gap:10px;align-items:flex-end;background:var(--snow-blue);border-radius:50px;padding:6px 8px 6px 20px;border:1.5px solid var(--glass-border);transition:var(--transition);}
 .chat-input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(79,168,213,0.12);}
 .chat-input-box textarea{flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:14px;resize:none;max-height:120px;padding:8px 0;line-height:1.5;color:var(--black-soft);}
-.send-btn{width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:var(--transition);}
+.send-btn{width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--transition);font-size:18px;}
 .send-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(79,168,213,0.4);}
 .attach-btn{width:36px;height:36px;border-radius:50%;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-light);font-size:18px;transition:var(--transition);}
 .attach-btn:hover{color:var(--accent);background:white;}
 .ai-modes{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
-.ai-mode{padding:6px 14px;border-radius:50px;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:1.5px solid var(--glass-border);background:white;color:var(--gray-dark);transition:var(--transition);}
+.ai-mode{padding:6px 14px;border-radius:50px;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:1.5px solid var(--glass-border);background:white;color:var(--gray-dark);transition:var(--transition);flex-shrink:0;}
 .ai-mode.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border-color:transparent;}
 .ai-mode:hover{background:var(--snow-blue);color:var(--accent);}
 
+/* FEED */
+.feed-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;}
+.post-card{background:white;border:1.5px solid var(--glass-border);border-radius:20px;padding:20px;margin-bottom:16px;transition:var(--transition);animation:fadeInUp 0.5s ease both;}
+.post-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.post-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0;}
+.post-user h4{font-size:14px;font-weight:700;}
+.post-user span{font-size:12px;color:var(--gray-light);}
+.post-badge-ai{background:var(--snow-blue);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;margin-right:6px;}
+.post-menu{margin-right:auto;cursor:pointer;color:var(--gray-light);font-size:20px;}
+.post-content{font-size:14px;line-height:1.7;color:var(--black-soft);margin-bottom:14px;}
+.post-media{border-radius:14px;overflow:hidden;margin-bottom:14px;background:var(--snow-blue);display:flex;align-items:center;justify-content:center;height:200px;font-size:48px;}
+.post-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.post-tag{padding:4px 12px;background:var(--snow-blue);color:var(--accent);font-size:12px;border-radius:50px;font-weight:600;}
+.post-actions{display:flex;gap:0;border-top:1px solid var(--glass-border);padding-top:12px;}
+.post-action{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--gray-light);transition:var(--transition);font-family:inherit;border:none;background:none;font-weight:500;}
+.post-action:hover{background:var(--snow-blue);color:var(--accent);}
+.post-action.liked{color:#E74C3C;}
+.feed-sidebar .widget{background:white;border:1.5px solid var(--glass-border);border-radius:16px;padding:18px;margin-bottom:16px;}
+.feed-sidebar .widget h4{font-size:14px;font-weight:700;margin-bottom:14px;}
+.trending-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--glass-border);}
+.trending-item:last-child{border-bottom:none;}
+.trending-num{font-size:18px;font-weight:800;color:var(--sky);min-width:28px;}
+
+/* CREATE */
+.create-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.create-tab{padding:10px 20px;border-radius:50px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid var(--glass-border);background:white;color:var(--gray-dark);transition:var(--transition);display:flex;align-items:center;gap:8px;}
+.create-tab.active,.create-tab:hover{background:var(--accent);color:white;border-color:var(--accent);}
+.create-panel{display:none;animation:fadeInUp 0.4s ease;}
+.create-panel.active{display:block;}
+.create-card{background:white;border:1.5px solid var(--glass-border);border-radius:20px;padding:28px;margin-bottom:20px;}
+.create-card h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.create-card .sub{font-size:13px;color:var(--gray-light);margin-bottom:24px;}
+.prompt-textarea{width:100%;min-height:140px;padding:16px;border:1.5px solid var(--gray-mid);border-radius:14px;font-family:inherit;font-size:14px;resize:vertical;outline:none;transition:var(--transition);line-height:1.7;color:var(--black-soft);}
+.prompt-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(79,168,213,0.12);}
+.style-chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;}
+.style-chip{padding:7px 16px;border-radius:50px;font-family:inherit;font-size:13px;cursor:pointer;border:1.5px solid var(--gray-mid);background:white;color:var(--gray-dark);transition:var(--transition);}
+.style-chip:hover,.style-chip.selected{border-color:var(--accent);background:var(--snow-blue);color:var(--accent);}
+.generate-btn{width:100%;padding:16px;border-radius:50px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:var(--transition);margin-top:16px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.generate-btn:hover{box-shadow:0 8px 32px rgba(79,168,213,0.4);transform:translateY(-2px);}
+.result-box{background:var(--white-thick);border:1.5px solid var(--glass-border);border-radius:14px;padding:20px;min-height:120px;font-size:14px;line-height:1.8;color:var(--black-soft);display:none;}
+.result-box.visible{display:block;animation:fadeInUp 0.4s ease;}
+.loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.select-input{width:100%;padding:12px 16px;border:1.5px solid var(--gray-mid);border-radius:12px;font-family:inherit;font-size:14px;color:var(--black-soft);background:white;outline:none;transition:var(--transition);cursor:pointer;}
+.select-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,168,213,0.12);}
+
+/* PLANS */
+.plans-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;}
+.plan-card{background:white;border:2px solid var(--glass-border);border-radius:20px;padding:28px;transition:var(--transition);cursor:pointer;position:relative;overflow:hidden;}
+.plan-card::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.plan-card.free::after{background:var(--gray-mid);}
+.plan-card.rax::after{background:linear-gradient(90deg,#87CEEB,#4FA8D5);}
+.plan-card.pro::after{background:linear-gradient(90deg,#9B59B6,#6C3483);}
+.plan-card.plus::after{background:linear-gradient(90deg,#F39C12,#E67E22);}
+.plan-card.vip::after{background:linear-gradient(90deg,#F1C40F,#E74C3C);}
+.plan-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--sky);}
+.plan-card.featured{border-color:var(--accent);}
+.plan-badge-top{position:absolute;top:16px;left:16px;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:50px;}
+.plan-name{font-size:22px;font-weight:800;margin-bottom:6px;}
+.plan-price{font-size:36px;font-weight:800;color:var(--accent);}
+.plan-price span{font-size:16px;font-weight:500;color:var(--gray-light);}
+.plan-features{margin:20px 0;list-style:none;}
+.plan-features li{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;border-bottom:1px dashed var(--glass-border);}
+.plan-features li:last-child{border-bottom:none;}
+.plan-features li::before{content:'✓';color:#27AE60;font-weight:700;flex-shrink:0;}
+.plan-features li.no::before{content:'✗';color:var(--gray-mid);}
+.plan-features li.no{color:var(--gray-light);text-decoration:line-through;}
+.select-plan-btn{width:100%;padding:13px;border-radius:50px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:var(--transition);}
+.select-plan-btn.outline{background:none;border:2px solid var(--accent);color:var(--accent);}
+.select-plan-btn.filled{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;}
+.select-plan-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,168,213,0.3);}
+
+/* EXPLORE */
+.explore-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-btn{padding:8px 18px;border-radius:50px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--glass-border);background:white;color:var(--gray-dark);transition:var(--transition);}
+.filter-btn.active,.filter-btn:hover{background:var(--accent);color:white;border-color:var(--accent);}
+.explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.explore-card{background:white;border:1.5px solid var(--glass-border);border-radius:16px;overflow:hidden;cursor:pointer;transition:var(--transition);animation:fadeInUp 0.5s ease both;}
+.explore-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.explore-thumb{height:160px;background:var(--snow-blue);display:flex;align-items:center;justify-content:center;font-size:52px;}
+.explore-info{padding:14px;}
+.explore-info h4{font-size:14px;font-weight:700;margin-bottom:4px;}
+.explore-info .meta{font-size:12px;color:var(--gray-light);display:flex;gap:8px;}
+
+/* PROFILE */
+.profile-header{background:linear-gradient(135deg,#1A3A5C,#0D5F8A);border-radius:20px;padding:36px;color:white;margin-bottom:24px;display:flex;align-items:center;gap:24px;}
+.profile-avatar-lg{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:white;border:4px solid rgba(255,255,255,0.4);flex-shrink:0;}
+.profile-info h2{font-size:24px;font-weight:800;}
+.profile-info p{opacity:0.7;font-size:14px;margin-top:4px;}
+.profile-stats{display:flex;gap:24px;margin-top:16px;}
+.profile-stat{text-align:center;}
+.profile-stat .n{font-size:22px;font-weight:800;}
+.profile-stat .l{font-size:12px;opacity:0.7;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.profile-section{background:white;border:1.5px solid var(--glass-border);border-radius:16px;padding:20px;}
+.profile-section h4{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--glass-border);}
+.setting-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--glass-border);}
+.setting-item:last-child{border-bottom:none;}
+.setting-label{flex:1;font-size:14px;}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--gray-mid);position:relative;cursor:pointer;transition:var(--transition);flex-shrink:0;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:white;top:3px;right:3px;transition:var(--transition);box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.toggle.on::after{right:23px;}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,29,35,0.6);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;animation:fadeIn 0.3s ease;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:24px;padding:36px;width:100%;max-width:460px;position:relative;animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1);}
+.modal h3{font-size:22px;font-weight:800;margin-bottom:6px;}
+.modal .sub{font-size:14px;color:var(--gray-light);margin-bottom:24px;}
+.modal-close{position:absolute;top:18px;left:18px;width:34px;height:34px;border-radius:50%;border:none;background:var(--snow-blue);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--gray-dark);transition:var(--transition);}
+.modal-close:hover{background:var(--gray-mid);}
+.code-input{width:100%;padding:16px 20px;border:2px solid var(--sky);border-radius:14px;font-family:inherit;font-size:18px;font-weight:700;text-align:center;letter-spacing:3px;outline:none;transition:var(--transition);color:var(--black-soft);}
+.code-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(79,168,213,0.15);}
+.code-hint{font-size:13px;color:var(--gray-light);text-align:center;margin:10px 0 20px;}
+.code-success{color:#27AE60;font-size:14px;font-weight:600;text-align:center;display:none;}
+.code-error{color:#E74C3C;font-size:14px;font-weight:600;text-align:center;display:none;}
+
+/* NOTIF */
+.notif-panel{position:absolute;top:70px;left:20px;width:320px;background:white;border-radius:18px;border:1px solid var(--glass-border);box-shadow:var(--shadow-lg);z-index:200;padding:16px;display:none;animation:slideUp 0.3s ease;}
+.notif-panel.open{display:block;}
+.notif-panel h4{font-size:14px;font-weight:700;margin-bottom:12px;}
+.notif-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--glass-border);}
+.notif-item:last-child{border-bottom:none;}
+.notif-icon{width:36px;height:36px;border-radius:50%;background:var(--snow-blue);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-text{font-size:13px;line-height:1.5;}
+.notif-text strong{display:block;font-weight:600;}
+.notif-time{font-size:11px;color:var(--gray-light);}
+
 /* MISC */
 .tag{display:inline-block;padding:3px 10px;background:var(--snow-blue);color:var(--accent);font-size:11px;font-weight:700;border-radius:50px;}
+.upload-area{border:2px dashed var(--gray-mid);border-radius:14px;padding:40px;text-align:center;cursor:pointer;transition:var(--transition);color:var(--gray-light);}
+.upload-area:hover{border-color:var(--accent);background:var(--snow-blue);color:var(--accent);}
+.fab{position:fixed;bottom:28px;left:28px;z-index:50;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;color:white;font-size:24px;box-shadow:0 8px 32px rgba(79,168,213,0.4);transition:var(--transition);display:flex;align-items:center;justify-content:center;}
+.fab:hover{transform:scale(1.1) rotate(10deg);}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes imgLoad{from{width:0%}to{width:92%}}
+@keyframes vizPulse{0%,100%{height:4px}50%{height:28px}}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:3px;}
-@media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:repeat(2,1fr)}.plans-grid{grid-template-columns:1fr}.feed-layout{grid-template-columns:1fr}.sidebar{display:none}.explore-grid{grid-template-columns:repeat(2,1fr)}.profile-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -179,14 +320,41 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
         <div class="input-group"><label>ایمیل یا شماره موبایل</label><input type="text" placeholder="example@email.com" id="login-email"></div>
         <div class="input-group"><label>رمز عبور</label><input type="password" placeholder="••••••••" id="login-pass"></div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogin()">ورود به Uliki</button>
+        <div class="auth-divider">یا</div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="doLogin()">🌐 ورود با Google</button>
       </div>
       <div id="register-form" style="display:none">
         <div class="input-group"><label>نام کامل</label><input type="text" placeholder="نام و نام خانوادگی" id="reg-name"></div>
         <div class="input-group"><label>ایمیل</label><input type="email" placeholder="example@email.com" id="reg-email"></div>
-        <div class="input-group"><label>رمز عبور</label><input type="password" placeholder="حداقل ۸ کاراکتر" id="reg-pass"></div>
+        <div class="input-group">
+          <label>رمز عبور <span id="pass-count" style="font-weight:400;color:var(--gray-light)">(0/8)</span></label>
+          <div style="position:relative">
+            <input type="password" placeholder="حداقل ۸ کاراکتر" id="reg-pass"
+              oninput="checkPassStrength(this.value)"
+              style="width:100%;padding:14px 48px 14px 18px;border:1.5px solid var(--gray-mid);border-radius:var(--radius-sm);font-family:Vazirmatn,sans-serif;font-size:15px;background:white;outline:none;transition:var(--transition);color:var(--black-soft)">
+            <button type="button" onclick="togglePassVis('reg-pass',this)" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray-light)">👁</button>
+          </div>
+          <div style="margin-top:8px">
+            <div style="display:flex;gap:4px;margin-bottom:5px">
+              <div id="pb1" style="flex:1;height:4px;border-radius:2px;background:var(--gray-mid);transition:all 0.3s"></div>
+              <div id="pb2" style="flex:1;height:4px;border-radius:2px;background:var(--gray-mid);transition:all 0.3s"></div>
+              <div id="pb3" style="flex:1;height:4px;border-radius:2px;background:var(--gray-mid);transition:all 0.3s"></div>
+              <div id="pb4" style="flex:1;height:4px;border-radius:2px;background:var(--gray-mid);transition:all 0.3s"></div>
+            </div>
+            <div id="pass-hint" style="font-size:12px;color:var(--gray-light)">رمز عبور باید حداقل ۸ کاراکتر داشته باشد</div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>تکرار رمز عبور <span id="pass-match-label" style="font-weight:400"></span></label>
+          <input type="password" placeholder="رمز عبور را دوباره وارد کنید" id="reg-pass2"
+            oninput="checkPassMatch()"
+            style="width:100%;padding:14px 18px;border:1.5px solid var(--gray-mid);border-radius:var(--radius-sm);font-family:Vazirmatn,sans-serif;font-size:15px;background:white;outline:none;transition:var(--transition);color:var(--black-soft)">
+        </div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doRegister()">ایجاد حساب رایگان 🚀</button>
+        <p style="font-size:12px;color:var(--gray-light);text-align:center;margin-top:10px">✅ اطلاعات شما ذخیره می‌شود — دفعات بعد می‌توانید وارد شوید</p>
       </div>
     </div>
+    <p style="text-align:center;font-size:12px;color:var(--gray-light);margin-top:16px">با ورود، با <a href="#" style="color:var(--accent)">شرایط استفاده</a> موافقت می‌کنید</p>
   </div>
 </div>
 
@@ -195,9 +363,19 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
   <nav class="topnav">
     <span class="nav-logo">Uliki</span>
     <div class="nav-search">
-      <input placeholder="جستجو در Uliki..." id="search-input">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input placeholder="جستجو در Uliki..." id="search-input" onkeydown="handleSearch(event)">
     </div>
     <div class="nav-actions">
+      <div style="position:relative">
+        <button class="notif-btn" onclick="toggleNotif()">🔔<span class="notif-dot"></span></button>
+        <div class="notif-panel" id="notif-panel">
+          <h4>اعلان‌ها</h4>
+          <div class="notif-item"><div class="notif-icon">🤖</div><div class="notif-text"><strong>تولید محتوا کامل شد</strong>آهنگ شما آماده است!<span class="notif-time"> ۲ دقیقه پیش</span></div></div>
+          <div class="notif-item"><div class="notif-icon">❤️</div><div class="notif-text"><strong>Sara به پست شما لایک داد</strong><span class="notif-time"> ۱۵ دقیقه پیش</span></div></div>
+          <div class="notif-item"><div class="notif-icon">💬</div><div class="notif-text"><strong>نظر جدید روی محتوای شما</strong><span class="notif-time"> ۱ ساعت پیش</span></div></div>
+        </div>
+      </div>
       <span class="plan-badge" onclick="navigate('plans')" id="user-plan-badge">Rax</span>
       <div class="nav-avatar" onclick="navigate('profile')" id="nav-avatar">U</div>
     </div>
@@ -209,6 +387,15 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
         <div class="sidebar-item active" id="nav-home" onclick="navigate('home')"><div class="icon">🏠</div>خانه</div>
         <div class="sidebar-item" id="nav-chat" onclick="navigate('chat')"><div class="icon">💬</div>چت هوشمند<span class="badge">جدید</span></div>
         <div class="sidebar-item" id="nav-create" onclick="navigate('create')"><div class="icon">✨</div>ایجاد محتوا</div>
+        <div class="sidebar-item" id="nav-feed" onclick="navigate('feed')"><div class="icon">📱</div>فید عمومی</div>
+        <div class="sidebar-item" id="nav-explore" onclick="navigate('explore')"><div class="icon">🔍</div>کاوش</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">ابزارها</div>
+        <div class="sidebar-item" onclick="navigate('create');setTimeout(()=>switchCreate('music'),100)"><div class="icon">🎵</div>ساخت آهنگ</div>
+        <div class="sidebar-item" onclick="navigate('create');setTimeout(()=>switchCreate('code'),100)"><div class="icon">💻</div>کدنویسی</div>
+        <div class="sidebar-item" onclick="navigate('create');setTimeout(()=>switchCreate('video'),100)"><div class="icon">🎬</div>ساخت ویدیو</div>
+        <div class="sidebar-item" onclick="navigate('create');setTimeout(()=>switchCreate('image'),100)"><div class="icon">🖼️</div>ساخت تصویر</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">حساب کاربری</div>
@@ -222,24 +409,33 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
       <!-- HOME -->
       <div id="page-home" class="page-content">
         <div class="hero-banner">
+          <div class="hero-emoji">🤖</div>
           <h1>سلام، <span id="user-greeting">کاربر</span> عزیز! 👋</h1>
           <p>به پلتفرم هوش مصنوعی Uliki خوش آمدید. امروز چه محتوایی می‌خواهید بسازید؟</p>
           <div class="hero-actions">
             <button class="hero-btn hero-btn-white" onclick="navigate('chat')">💬 شروع چت</button>
             <button class="hero-btn hero-btn-outline" onclick="navigate('create')">✨ ایجاد محتوا</button>
+            <button class="hero-btn hero-btn-outline" onclick="navigate('feed')">📱 مشاهده فید</button>
           </div>
         </div>
         <div class="stats-row">
-          <div class="stat-card"><div class="stat-label">چت‌های باقی‌مانده</div><div class="stat-value">∞</div><div class="stat-sub">نامحدود</div></div>
-          <div class="stat-card"><div class="stat-label">پاسخ‌های باقی‌مانده</div><div class="stat-value">∞</div><div class="stat-sub">نامحدود</div></div>
-          <div class="stat-card"><div class="stat-label">تولید محتوا</div><div class="stat-value">∞</div><div class="stat-sub">نامحدود</div></div>
-          <div class="stat-card"><div class="stat-label">دسترسی</div><div class="stat-value">24/7</div><div class="stat-sub">شبانه‌روز</div></div>
+          <div class="stat-card"><div class="stat-label">چت‌های باقی‌مانده</div><div class="stat-value" id="stat-chats">1</div><div class="stat-sub">از 1 چت مجاز</div><div class="stat-bar"><div class="stat-fill" id="fill-chats" style="width:100%"></div></div></div>
+          <div class="stat-card"><div class="stat-label">پاسخ‌های باقی‌مانده</div><div class="stat-value" id="stat-msgs">5</div><div class="stat-sub">از 5 پاسخ مجاز</div><div class="stat-bar"><div class="stat-fill" id="fill-msgs" style="width:100%"></div></div></div>
+          <div class="stat-card"><div class="stat-label">تولید محتوا</div><div class="stat-value" id="stat-creates">2</div><div class="stat-sub">روزانه</div><div class="stat-bar"><div class="stat-fill" id="fill-creates" style="width:100%"></div></div></div>
+          <div class="stat-card"><div class="stat-label">پست منتشر شده</div><div class="stat-value" id="stat-posts">0</div><div class="stat-sub">این هفته</div><div class="stat-bar"><div class="stat-fill" style="width:0%"></div></div></div>
         </div>
         <div class="section-title">🛠️ ابزارهای هوش مصنوعی</div>
         <div class="feature-grid">
-          <div class="feature-card" onclick="navigate('chat')" style="animation-delay:0.05s"><span class="feature-icon">💬</span><h3>چت هوشمند</h3><p>با هوش مصنوعی پیشرفته صحبت کنید</p></div>
-          <div class="feature-card" onclick="navigate('create')" style="animation-delay:0.1s"><span class="feature-icon">✨</span><h3>ایجاد محتوا</h3><p>مقالات، کد، و متون منحصربفرد بسازید</p></div>
-          <div class="feature-card" onclick="navigate('profile')" style="animation-delay:0.15s"><span class="feature-icon">👤</span><h3>پروفایل</h3><p>تنظیمات و اطلاعات حساب خود را مدیریت کنید</p></div>
+          <div class="feature-card" onclick="navigate('chat')" style="animation-delay:0.05s"><span class="feature-icon">💬</span><h3>چت هوشمند</h3><p>با هوش مصنوعی پیشرفته Uliki درباره هر موضوعی گفتگو کنید</p><button class="try-btn">شروع چت</button></div>
+          <div class="feature-card" onclick="navigate('create');setTimeout(()=>switchCreate('music'),100)" style="animation-delay:0.1s"><span class="feature-icon">🎵</span><h3>ساخت آهنگ</h3><p>با توضیف سبک و احساس، موزیک اختصاصی با صدای واقعی بسازید</p><button class="try-btn">بسازید</button></div>
+          <div class="feature-card" onclick="navigate('create');setTimeout(()=>switchCreate('code'),100)" style="animation-delay:0.15s"><span class="feature-icon">💻</span><h3>کدنویسی</h3><p>کد بنویسید، باگ بگیرید و پروژه‌های کامل طراحی کنید</p><button class="try-btn">شروع کنید</button></div>
+          <div class="feature-card" onclick="navigate('create');setTimeout(()=>switchCreate('video'),100)" style="animation-delay:0.2s"><span class="feature-icon">🎬</span><h3>ساخت ویدیو</h3><p>ویدیوهای خلاقانه با هوش مصنوعی تولید کنید</p><button class="try-btn">بسازید</button></div>
+          <div class="feature-card" onclick="navigate('create');setTimeout(()=>switchCreate('image'),100)" style="animation-delay:0.25s"><span class="feature-icon">🖼️</span><h3>ساخت تصویر</h3><p>تصاویر هنری واقعی با Pollinations AI بسازید</p><button class="try-btn">بسازید</button></div>
+          <div class="feature-card" onclick="navigate('feed')" style="animation-delay:0.3s"><span class="feature-icon">📤</span><h3>انتشار محتوا</h3><p>محتوای ساخته شده را در فید Uliki منتشر کنید</p><button class="try-btn">انتشار</button></div>
+        </div>
+        <div class="section-title">🔥 ترندهای این هفته</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <span class="tag">#موزیک_AI</span><span class="tag">#کدنویسی_هوشمند</span><span class="tag">#تصویر_دیجیتال</span><span class="tag">#ویدیو_کوتاه</span><span class="tag">#چت_هوشمند</span><span class="tag">#Uliki_VIP</span><span class="tag">#محتوای_خلاقانه</span>
         </div>
       </div>
 
@@ -257,20 +453,34 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
             <div class="chat-header">
               <div class="ai-avatar">🤖</div>
               <div class="chat-header-info"><h4>Uliki AI</h4><span><span class="online-dot"></span>آنلاین و آماده</span></div>
+              <div style="margin-right:auto;display:flex;gap:8px">
+                <div class="ai-modes" id="ai-modes">
+                  <button class="ai-mode active" onclick="setAIMode(this,'عمومی')">💡 عمومی</button>
+                  <button class="ai-mode" onclick="setAIMode(this,'کدنویسی')">💻 کد</button>
+                  <button class="ai-mode" onclick="setAIMode(this,'خلاق')">🎨 خلاق</button>
+                  <button class="ai-mode" onclick="setAIMode(this,'تحلیل')">📊 تحلیل</button>
+                  <button class="ai-mode" onclick="setAIMode(this,'ترجمه')">🌍 ترجمه</button>
+                </div>
+              </div>
             </div>
             <div class="chat-messages" id="chat-messages">
-              <div class="message"><div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai">سلام! من Uliki AI هستم 👋<br>می‌توانم به شما در هر موضوعی کمک کنم</div></div></div>
+              <div class="message"><div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai">سلام! من Uliki AI هستم 👋<br>می‌توانم به شما در هر موضوعی کمک کنم — از کدنویسی تا خلاقیت. چه سوالی دارید؟</div><div class="msg-time">همین الان</div></div></div>
             </div>
             <div class="chat-input-area">
               <div class="quick-prompts">
                 <button class="quick-chip" onclick="sendQuick('یک شعر کوتاه بنویس')">📝 شعر بنویس</button>
-                <button class="quick-chip" onclick="sendQuick('یک ایده خلاقانه برای محتوا بده')">💡 ایده بده</button>
+                <button class="quick-chip" onclick="sendQuick('یک کد Python برای مرتب‌سازی بنویس')">💻 مثال کد</button>
+                <button class="quick-chip" onclick="sendQuick('ایده‌های خلاقانه برای محتوا بده')">💡 ایده بده</button>
                 <button class="quick-chip" onclick="sendQuick('آخرین ترندهای هوش مصنوعی چیست؟')">🔥 ترندها</button>
               </div>
               <div class="chat-input-box">
                 <button class="attach-btn">📎</button>
-                <textarea id="chat-input" placeholder="پیام خود را بنویسید..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+                <textarea id="chat-input" placeholder="پیام خود را بنویسید..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
                 <button class="send-btn" onclick="sendMessage()">➤</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                <span style="font-size:11px;color:var(--gray-light)">پاسخ‌های باقی‌مانده: <strong id="remaining-count">5</strong></span>
+                <span style="font-size:11px;color:var(--gray-light)">Uliki AI v2.6</span>
               </div>
             </div>
           </div>
@@ -279,31 +489,275 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 
       <!-- CREATE -->
       <div id="page-create" class="page-content" style="display:none">
-        <h2 style="font-size:22px;font-weight:800;margin-bottom:20px">✨ ایجاد محتوا</h2>
-        <div style="background:white;border:1.5px solid var(--glass-border);border-radius:20px;padding:28px;">
-          <h3 style="font-size:18px;font-weight:700;margin-bottom:12px">تولید محتوا با AI</h3>
-          <p style="color:var(--gray-light);font-size:13px;margin-bottom:20px">با Uliki AI هر چیزی بسازید</p>
-          <textarea style="width:100%;min-height:140px;padding:16px;border:1.5px solid var(--gray-mid);border-radius:14px;font-family:inherit;font-size:14px;margin-bottom:16px" placeholder="آنچه می‌خواهید بنویسید را توضیح دهید..."></textarea>
-          <button class="btn btn-primary" style="width:100%;justify-content:center">✨ تولید محتوا</button>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:6px">✨ ایجاد محتوا با AI</h2>
+        <p style="color:var(--gray-light);font-size:14px;margin-bottom:20px">با هوش مصنوعی Uliki هر چیزی بسازید</p>
+        <div class="create-tabs">
+          <button class="create-tab active" id="tab-music" onclick="switchCreate('music')">🎵 آهنگ</button>
+          <button class="create-tab" id="tab-code" onclick="switchCreate('code')">💻 کد</button>
+          <button class="create-tab" id="tab-video" onclick="switchCreate('video')">🎬 ویدیو</button>
+          <button class="create-tab" id="tab-image" onclick="switchCreate('image')">🖼️ تصویر</button>
+          <button class="create-tab" id="tab-text" onclick="switchCreate('text')">📝 متن</button>
+        </div>
+
+        <!-- MUSIC PANEL -->
+        <div class="create-panel active" id="panel-music">
+          <div class="create-card">
+            <h3>🎵 ساخت آهنگ با AI</h3>
+            <p class="sub">توضیف دهید — متن آهنگ + پلیر با صدای واقعی دریافت کنید</p>
+            <div class="input-group"><label>توضیح آهنگ</label><textarea class="prompt-textarea" id="music-prompt" placeholder="مثال: یک موزیک آرامش‌بخش با صدای پیانو برای مدیتیشن..."></textarea></div>
+            <div class="input-group"><label>سبک موسیقی</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">🎹 کلاسیک</button>
+                <button class="style-chip" onclick="selectChip(this)">🎸 راک</button>
+                <button class="style-chip" onclick="selectChip(this)">🎺 جاز</button>
+                <button class="style-chip" onclick="selectChip(this)">🎤 پاپ</button>
+                <button class="style-chip" onclick="selectChip(this)">🥁 الکترونیک</button>
+                <button class="style-chip" onclick="selectChip(this)">🌿 محیطی</button>
+                <button class="style-chip" onclick="selectChip(this)">🪗 سنتی</button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="input-group"><label>مدت زمان</label>
+                <select class="select-input" id="music-duration"><option>۳۰ ثانیه</option><option selected>۱ دقیقه</option><option>۲ دقیقه</option><option>۳ دقیقه</option></select>
+              </div>
+              <div class="input-group"><label>حال و هوا</label>
+                <select class="select-input" id="music-mood"><option>شاد</option><option>غمگین</option><option selected>آرامش‌بخش</option><option>انرژیک</option><option>عاشقانه</option></select>
+              </div>
+            </div>
+            <button class="generate-btn" onclick="generateContent('music')">🎵 ساخت آهنگ با AI</button>
+          </div>
+          <div class="result-box" id="result-music">
+            <div id="music-result-text"></div>
+            <div style="margin-top:14px;display:flex;gap:10px">
+              <button class="btn btn-ghost btn-sm" onclick="publishContent('music')">📤 انتشار در فید</button>
+              <button class="btn btn-outline btn-sm" onclick="copyMusicText()">📋 کپی متن</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CODE PANEL -->
+        <div class="create-panel" id="panel-code">
+          <div class="create-card">
+            <h3>💻 دستیار کدنویسی</h3>
+            <p class="sub">کد بنویسید، باگ پیدا کنید، توضیح بخواهید</p>
+            <div class="input-group"><label>توضیح پروژه یا مشکل</label><textarea class="prompt-textarea" id="code-prompt" placeholder="مثال: یک API ساده با Python Flask بنویس..."></textarea></div>
+            <div class="input-group"><label>زبان برنامه‌نویسی</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">🐍 Python</button>
+                <button class="style-chip" onclick="selectChip(this)">⚡ JavaScript</button>
+                <button class="style-chip" onclick="selectChip(this)">⚙️ TypeScript</button>
+                <button class="style-chip" onclick="selectChip(this)">☕ Java</button>
+                <button class="style-chip" onclick="selectChip(this)">🦀 Rust</button>
+                <button class="style-chip" onclick="selectChip(this)">💠 C++</button>
+                <button class="style-chip" onclick="selectChip(this)">🎯 Dart</button>
+              </div>
+            </div>
+            <div class="input-group"><label>نوع درخواست</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">✏️ نوشتن کد</button>
+                <button class="style-chip" onclick="selectChip(this)">🔍 رفع باگ</button>
+                <button class="style-chip" onclick="selectChip(this)">📖 توضیح کد</button>
+                <button class="style-chip" onclick="selectChip(this)">⚡ بهینه‌سازی</button>
+              </div>
+            </div>
+            <button class="generate-btn" onclick="generateContent('code')">💻 تولید کد با AI</button>
+          </div>
+          <div class="result-box" id="result-code">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><strong>نتیجه کد</strong><button class="btn btn-ghost btn-sm" onclick="copyResult('code')">📋 کپی</button></div>
+            <pre id="code-result-text" style="background:var(--black-soft);color:#87CEEB;padding:16px;border-radius:10px;overflow-x:auto;font-size:13px;line-height:1.6;white-space:pre-wrap"></pre>
+            <div style="margin-top:12px;display:flex;gap:10px">
+              <button class="btn btn-primary btn-sm" onclick="copyResult('code')">📋 کپی کد</button>
+              <button class="btn btn-ghost btn-sm" onclick="publishContent('code')">📤 انتشار</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIDEO PANEL -->
+        <div class="create-panel" id="panel-video">
+          <div class="create-card">
+            <h3>🎬 ساخت ویدیو با AI</h3>
+            <p class="sub">ایده خود را بدهید، Uliki اسکریپت کامل ویدیو می‌سازد</p>
+            <div class="input-group"><label>توضیف ویدیو</label><textarea class="prompt-textarea" id="video-prompt" placeholder="مثال: یک ویدیو انیمیشنی درباره سفر فضایی..."></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="input-group"><label>سبک ویدیو</label><select class="select-input"><option>انیمیشن</option><option>واقع‌گرایانه</option><option>سینمایی</option><option>کارتونی</option><option>مستند</option></select></div>
+              <div class="input-group"><label>طول ویدیو</label><select class="select-input"><option>۱۵ ثانیه</option><option>۳۰ ثانیه</option><option>۱ دقیقه</option><option>۲ دقیقه</option></select></div>
+            </div>
+            <div class="input-group"><label>نسبت تصویر</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">📺 16:9</button>
+                <button class="style-chip" onclick="selectChip(this)">📱 9:16</button>
+                <button class="style-chip" onclick="selectChip(this)">⬛ 1:1</button>
+              </div>
+            </div>
+            <button class="generate-btn" onclick="generateContent('video')">🎬 ساخت ویدیو با AI</button>
+          </div>
+          <div class="result-box" id="result-video">
+            <div id="video-result-text"></div>
+            <div style="margin-top:12px;display:flex;gap:10px">
+              <button class="btn btn-ghost btn-sm" onclick="publishContent('video')">📤 انتشار</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAGE PANEL -->
+        <div class="create-panel" id="panel-image">
+          <div class="create-card">
+            <h3>🖼️ ساخت تصویر با AI</h3>
+            <p class="sub">تصاویر واقعی با Pollinations AI — رایگان و بدون نیاز به API Key</p>
+            <div class="input-group"><label>توضیف تصویر</label><textarea class="prompt-textarea" id="image-prompt" placeholder="مثال: یک منظره کوهستانی برفی در سحرگاه با آسمان صورتی..."></textarea></div>
+            <div class="input-group"><label>سبک هنری</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">🖼️ رئالیستی</button>
+                <button class="style-chip" onclick="selectChip(this)">🎨 نقاشی رنگ روغن</button>
+                <button class="style-chip" onclick="selectChip(this)">✏️ آبرنگ</button>
+                <button class="style-chip" onclick="selectChip(this)">🌐 دیجیتال آرت</button>
+                <button class="style-chip" onclick="selectChip(this)">📸 عکاسی</button>
+                <button class="style-chip" onclick="selectChip(this)">🎭 انیمه</button>
+                <button class="style-chip" onclick="selectChip(this)">🔮 سورئال</button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="input-group"><label>کیفیت</label><select class="select-input"><option>HD</option><option>4K</option></select></div>
+              <div class="input-group"><label>ابعاد</label><select class="select-input"><option>مربع (1:1)</option><option>افقی (16:9)</option><option>پرتره (3:4)</option></select></div>
+            </div>
+            <button class="generate-btn" onclick="generateContent('image')">🖼️ ساخت تصویر با AI</button>
+          </div>
+          <div class="result-box" id="result-image">
+            <div id="image-result-text"></div>
+          </div>
+        </div>
+
+        <!-- TEXT PANEL -->
+        <div class="create-panel" id="panel-text">
+          <div class="create-card">
+            <h3>📝 تولید متن با AI</h3>
+            <p class="sub">مقاله، داستان، شعر، اسکریپت و هر نوع متنی</p>
+            <div class="input-group"><label>موضوع یا توضیف</label><textarea class="prompt-textarea" id="text-prompt" placeholder="مثال: یک مقاله درباره آینده هوش مصنوعی در ۵۰۰ کلمه بنویس..."></textarea></div>
+            <div class="input-group"><label>نوع محتوا</label>
+              <div class="style-chips">
+                <button class="style-chip selected" onclick="selectChip(this)">📄 مقاله</button>
+                <button class="style-chip" onclick="selectChip(this)">📖 داستان</button>
+                <button class="style-chip" onclick="selectChip(this)">🎭 شعر</button>
+                <button class="style-chip" onclick="selectChip(this)">📢 پست شبکه اجتماعی</button>
+                <button class="style-chip" onclick="selectChip(this)">📧 ایمیل</button>
+                <button class="style-chip" onclick="selectChip(this)">📋 گزارش</button>
+              </div>
+            </div>
+            <button class="generate-btn" onclick="generateContent('text')">📝 تولید متن با AI</button>
+          </div>
+          <div class="result-box" id="result-text">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><strong>متن تولید شده</strong><button class="btn btn-ghost btn-sm" onclick="copyResult('text')">📋 کپی</button></div>
+            <div id="text-result-text" style="font-size:14px;line-height:1.9;white-space:pre-wrap"></div>
+            <div style="margin-top:12px;display:flex;gap:10px">
+              <button class="btn btn-primary btn-sm" onclick="copyResult('text')">📋 کپی</button>
+              <button class="btn btn-ghost btn-sm" onclick="publishContent('text')">📤 انتشار</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEED -->
+      <div id="page-feed" class="page-content" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 style="font-size:22px;font-weight:800">📱 فید عمومی</h2>
+          <button class="btn btn-primary btn-sm" onclick="navigate('create')">+ ایجاد محتوا</button>
+        </div>
+        <div class="feed-layout">
+          <div id="feed-posts"></div>
+          <div class="feed-sidebar">
+            <div class="widget">
+              <h4>🔥 ترندینگ</h4>
+              <div class="trending-item"><span class="trending-num">۱</span><div><div style="font-size:13px;font-weight:700">#موزیک_AI</div><div style="font-size:11px;color:var(--gray-light)">۲.۴ هزار پست</div></div></div>
+              <div class="trending-item"><span class="trending-num">۲</span><div><div style="font-size:13px;font-weight:700">#کدنویسی_هوشمند</div><div style="font-size:11px;color:var(--gray-light)">۱.۸ هزار پست</div></div></div>
+              <div class="trending-item"><span class="trending-num">۳</span><div><div style="font-size:13px;font-weight:700">#Uliki_Art</div><div style="font-size:11px;color:var(--gray-light)">۱.۲ هزار پست</div></div></div>
+              <div class="trending-item"><span class="trending-num">۴</span><div><div style="font-size:13px;font-weight:700">#ویدیو_خلاق</div><div style="font-size:11px;color:var(--gray-light)">۹۴۰ پست</div></div></div>
+            </div>
+            <div class="widget">
+              <h4>👥 پیشنهادی</h4>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px"><div class="post-avatar" style="width:36px;height:36px;font-size:13px">SA</div><div style="flex:1"><div style="font-size:13px;font-weight:700">Sara AI</div><div style="font-size:11px;color:var(--gray-light)">۱۲ پست</div></div><button class="btn btn-outline btn-sm" style="padding:4px 12px;font-size:12px">دنبال</button></div>
+                <div style="display:flex;align-items:center;gap:10px"><div class="post-avatar" style="width:36px;height:36px;font-size:13px;background:linear-gradient(135deg,#9B59B6,#6C3483)">AM</div><div style="flex:1"><div style="font-size:13px;font-weight:700">Ali Music</div><div style="font-size:11px;color:var(--gray-light)">۲۸ پست</div></div><button class="btn btn-outline btn-sm" style="padding:4px 12px;font-size:12px">دنبال</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPLORE -->
+      <div id="page-explore" class="page-content" style="display:none">
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:6px">🔍 کاوش در Uliki</h2>
+        <p style="color:var(--gray-light);font-size:14px;margin-bottom:20px">بهترین محتوای ساخته شده با AI</p>
+        <div class="explore-filters" id="explore-filters">
+          <button class="filter-btn active" onclick="filterExplore(this,'همه')">همه</button>
+          <button class="filter-btn" onclick="filterExplore(this,'music')">🎵 موسیقی</button>
+          <button class="filter-btn" onclick="filterExplore(this,'code')">💻 کد</button>
+          <button class="filter-btn" onclick="filterExplore(this,'image')">🖼️ تصویر</button>
+          <button class="filter-btn" onclick="filterExplore(this,'video')">🎬 ویدیو</button>
+          <button class="filter-btn" onclick="filterExplore(this,'text')">📝 متن</button>
+        </div>
+        <div class="explore-grid" id="explore-grid"></div>
+      </div>
+
+      <!-- PLANS -->
+      <div id="page-plans" class="page-content" style="display:none">
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:6px">⭐ پلن‌های Uliki</h2>
+        <p style="color:var(--gray-light);font-size:14px;margin-bottom:24px">بهترین پلن را برای نیاز خود انتخاب کنید</p>
+        <div style="background:var(--snow-blue);border-radius:16px;padding:16px;margin-bottom:24px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:24px">💎</span>
+          <div><div style="font-size:14px;font-weight:700">پلن فعلی: <span id="current-plan-name">Rax</span></div><div style="font-size:13px;color:var(--gray-light)">برای دسترسی نامحدود، پلن Plus یا VIP را انتخاب کنید</div></div>
+          <button class="btn btn-primary btn-sm" style="margin-right:auto" onclick="document.getElementById('payment-modal').classList.add('open')">ارتقاء دهید</button>
+        </div>
+        <div class="plans-grid">
+          <div class="plan-card free"><div class="plan-name">Free 🆓</div><div class="plan-price">رایگان</div><ul class="plan-features"><li>۵ تولید محتوا (کل)</li><li>۲ چت</li><li>۱۶ پاسخ AI</li><li>فید عمومی</li><li class="no">پاسخ کامل AI</li><li class="no">دانلود محتوا</li></ul><button class="select-plan-btn outline" onclick="selectFreePlan('Free')">انتخاب رایگان</button></div>
+          <div class="plan-card rax"><div class="plan-name">Rax 🌊</div><div class="plan-price">رایگان</div><ul class="plan-features"><li>۲ تولید محتوا (روزانه)</li><li>۱ چت</li><li>۵ پاسخ AI</li><li>فید عمومی</li><li class="no">پاسخ کامل AI</li><li class="no">دانلود محتوا</li></ul><button class="select-plan-btn outline" onclick="selectFreePlan('Rax')">انتخاب Rax</button></div>
+          <div class="plan-card pro featured"><div class="plan-badge-top">محبوب‌ترین</div><div class="plan-name">Pro 🚀</div><div class="plan-price">پولی <span>/ ماهانه</span></div><ul class="plan-features"><li>۲۰ تولید محتوا</li><li>۶ چت</li><li>۶۰ پاسخ کامل AI</li><li>دانلود محتوا</li><li>انتشار در فید</li><li class="no">نامحدود</li></ul><button class="select-plan-btn filled" onclick="openPayment('Pro')">خرید Pro</button></div>
+          <div class="plan-card plus"><div class="plan-name">Plus ⚡</div><div class="plan-price">پولی <span>/ ماهانه</span></div><ul class="plan-features"><li>نامحدود تولید محتوا</li><li>نامحدود چت</li><li>نامحدود پاسخ AI</li><li>همه قابلیت‌های Pro</li><li>اولویت پردازش</li><li>پشتیبانی ویژه</li></ul><button class="select-plan-btn filled" onclick="openPayment('Plus')">خرید Plus</button></div>
+        </div>
+        <div class="plan-card vip" style="background:linear-gradient(135deg,#1A1A2E,#16213E,#0F3460);color:white;border-color:#F1C40F">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+            <div><div class="plan-name" style="color:#F1C40F;font-size:28px">VIP 👑</div><div style="opacity:0.8;margin-top:4px">دسترسی کامل و نامحدود</div><ul class="plan-features" style="margin-top:16px;color:rgba(255,255,255,0.9)"><li style="border-color:rgba(255,255,255,0.1)">همه امکانات Plus</li><li style="border-color:rgba(255,255,255,0.1)">مدل AI اختصاصی</li><li style="border-color:rgba(255,255,255,0.1)">پشتیبانی ۲۴/۷</li></ul></div>
+            <div style="text-align:center"><div style="font-size:40px;font-weight:800;color:#F1C40F">VIP</div><button class="select-plan-btn filled" style="margin-top:14px;background:linear-gradient(135deg,#F1C40F,#E74C3C);min-width:180px" onclick="openPayment('VIP')">خرید VIP 👑</button></div>
+          </div>
         </div>
       </div>
 
       <!-- PROFILE -->
       <div id="page-profile" class="page-content" style="display:none">
-        <div style="background:white;border:1.5px solid var(--glass-border);border-radius:20px;padding:28px;margin-bottom:20px;">
-          <h3 style="font-size:18px;font-weight:700;margin-bottom:16px">👤 پروفایل</h3>
-          <p style="margin-bottom:12px"><strong>نام:</strong> <span id="profile-name">کاربر</span></p>
-          <p style="margin-bottom:12px"><strong>ایمیل:</strong> <span id="profile-email">user@email.com</span></p>
-          <p><strong>پلن:</strong> Rax</p>
+        <div class="profile-header">
+          <div class="profile-avatar-lg" id="profile-avatar-lg">U</div>
+          <div class="profile-info">
+            <h2 id="profile-name">کاربر Uliki</h2>
+            <p id="profile-email">user@uliki.ai</p>
+            <p style="margin-top:6px"><span class="plan-badge" id="profile-plan-badge">Rax</span></p>
+            <div class="profile-stats">
+              <div class="profile-stat"><div class="n" id="ps-posts">0</div><div class="l">پست</div></div>
+              <div class="profile-stat"><div class="n">0</div><div class="l">دنبال‌کننده</div></div>
+              <div class="profile-stat"><div class="n">0</div><div class="l">دنبال‌شده</div></div>
+            </div>
+          </div>
+          <div style="margin-right:auto"><button class="btn btn-ghost" style="color:white;border-color:rgba(255,255,255,0.3)">✏️ ویرایش پروفایل</button></div>
         </div>
-      </div>
-
-      <!-- PLANS -->
-      <div id="page-plans" class="page-content" style="display:none">
-        <h2 style="font-size:22px;font-weight:800;margin-bottom:20px">⭐ پلن‌های Uliki</h2>
-        <div style="background:white;border:1.5px solid var(--glass-border);border-radius:20px;padding:28px;text-align:center;">
-          <p style="color:var(--gray-light);margin-bottom:16px">همه ابزارها برای تمام کاربران رایگان است</p>
-          <p style="font-size:18px;font-weight:700;color:var(--accent)">∞ نامحدود • ∞ 24/7 • ∞ رایگان</p>
+        <div class="profile-grid">
+          <div class="profile-section"><h4>⚙️ تنظیمات</h4>
+            <div class="setting-item"><span class="setting-label">اعلان‌های ایمیل</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><span class="setting-label">حالت تاریک</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><span class="setting-label">نمایش پست در فید</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><span class="setting-label">ذخیره خودکار مکالمات</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+          <div class="profile-section"><h4>📊 آمار استفاده</h4>
+            <div class="setting-item"><span class="setting-label">پیام‌های ارسالی</span><strong id="profile-msg-count">0</strong></div>
+            <div class="setting-item"><span class="setting-label">محتوای تولید شده</span><strong id="profile-create-count">0</strong></div>
+            <div class="setting-item"><span class="setting-label">پلن فعلی</span><strong id="profile-plan-text">Rax</strong></div>
+            <div class="setting-item"><span class="setting-label">تاریخ عضویت</span><strong>۱۴۰۵</strong></div>
+          </div>
+          <div class="profile-section"><h4>🔒 امنیت</h4>
+            <div class="setting-item"><span class="setting-label">تغییر رمز عبور</span><button class="btn btn-ghost btn-sm">تغییر</button></div>
+            <div class="setting-item"><span class="setting-label">احراز هویت دو مرحله‌ای</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+          <div class="profile-section"><h4>🎨 ترجیحات AI</h4>
+            <div class="setting-item"><span class="setting-label">زبان پاسخ</span><select class="select-input" style="width:120px;padding:6px 10px;font-size:13px"><option>فارسی</option><option>English</option></select></div>
+            <div class="setting-item"><span class="setting-label">سبک پاسخ</span><select class="select-input" style="width:120px;padding:6px 10px;font-size:13px"><option>دوستانه</option><option>رسمی</option><option>خلاصه</option></select></div>
+          </div>
         </div>
       </div>
 
@@ -311,90 +765,823 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
   </div>
 </div>
 
-<script>
-let state = {user: null, plan: 'Rax', chatHistory: []};
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('payment-modal').classList.remove('open')">✕</button>
+    <h3>💳 خرید پلن <span id="modal-plan-name">Pro</span></h3>
+    <p class="sub">کد فعال‌سازی خود را وارد کنید</p>
+    <input type="text" class="code-input" id="activation-code" placeholder="QW-.uLiKII/9" maxlength="15">
+    <p class="code-hint">کد فعال‌سازی: <strong>QW-.uLiKII/9</strong></p>
+    <div class="code-success" id="code-success">✅ کد تایید شد! پلن شما فعال شد.</div>
+    <div class="code-error" id="code-error">❌ کد نادرست است.</div>
+    <button class="generate-btn" style="margin-top:0" onclick="verifyCode()">فعال‌سازی پلن</button>
+  </div>
+</div>
 
+<!-- PUBLISH MODAL -->
+<div class="modal-overlay" id="publish-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('publish-modal').classList.remove('open')">✕</button>
+    <h3>📤 انتشار محتوا</h3>
+    <p class="sub">محتوای خود را در فید Uliki منتشر کنید</p>
+    <div class="input-group"><label>عنوان پست</label><input type="text" id="publish-title" placeholder="عنوان جذاب..." style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-mid);border-radius:12px;font-family:inherit;font-size:14px;outline:none"></div>
+    <div class="input-group" style="margin-top:12px"><label>توضیحات</label><textarea id="publish-desc" placeholder="درباره این محتوا بنویسید..." style="width:100%;min-height:80px;padding:12px 16px;border:1.5px solid var(--gray-mid);border-radius:12px;font-family:inherit;font-size:14px;outline:none;resize:none"></textarea></div>
+    <button class="generate-btn" style="margin-top:16px" onclick="confirmPublish()">📤 انتشار در فید</button>
+  </div>
+</div>
+
+<button class="fab" onclick="navigate('create')" title="ایجاد محتوا">+</button>
+
+<script>
+// ===== GUARD: جلوگیری از دسترسی بدون ورود =====
+// مطمئن میشیم app-screen همیشه مخفیه تا ورود انجام نشه
+(function() {
+  const appEl = document.getElementById('app-screen');
+  const authEl = document.getElementById('auth-screen');
+  if(appEl) { appEl.style.display = 'none'; appEl.classList.remove('active'); }
+  if(authEl) { authEl.style.display = 'flex'; authEl.classList.add('active'); }
+})();
+
+// ===== STATE =====
+let state = {
+  user: null, plan: 'Rax',
+  chatsRemaining: 1, msgsRemaining: 5, createsRemaining: 2,
+  totalMsgs: 0, totalCreates: 0, totalPosts: 0,
+  chatHistory: [], currentPage: 'home', publishType: null,
+  pendingPlan: null, feedPosts: [], aiMode: 'عمومی'
+};
+const PLAN_LIMITS = {
+  'Rax':  {chats:1,msgs:5,creates:2},
+  'Free': {chats:2,msgs:16,creates:5},
+  'Pro':  {chats:6,msgs:60,creates:20},
+  'Plus': {chats:999,msgs:999,creates:999},
+  'VIP':  {chats:999,msgs:999,creates:999}
+};
+
+// ===== AUTH =====
 function switchAuthTab(tab, el) {
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('login-form').style.display = tab==='login'?'block':'none';
   document.getElementById('register-form').style.display = tab==='register'?'block':'none';
 }
+function showAuthError(msg) {
+  let el = document.getElementById('auth-error-msg');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error-msg';
+    el.style.cssText = 'background:#FEE2E2;color:#DC2626;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;border:1px solid #FCA5A5;display:flex;align-items:center;gap:8px;';
+  }
+  el.innerHTML = '⚠️ ' + msg;
+  // نمایش در فرم فعال
+  const activeForm = document.getElementById('register-form').style.display !== 'none'
+    ? document.getElementById('register-form')
+    : document.getElementById('login-form');
+  activeForm.insertBefore(el, activeForm.firstChild);
+  setTimeout(() => el.remove(), 4000);
+}
 
 function doLogin() {
-  const email = document.getElementById('login-email').value;
-  const pass = document.getElementById('login-pass').value;
-  if(!email || !pass) return alert('لطفاً ایمیل و رمز عبور را وارد کنید');
-  loginUser(email.split('@')[0], email);
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+
+  if(!email) { showAuthError('لطفاً ایمیل یا شماره موبایل را وارد کنید.'); return; }
+  if(!pass)  { showAuthError('لطفاً رمز عبور را وارد کنید.'); return; }
+
+  // بررسی اینکه آیا کاربر ثبت‌نام کرده
+  const saved = JSON.parse(localStorage.getItem('uliki_users') || '{}');
+  if(saved[email]) {
+    if(saved[email].password !== pass) { showAuthError('رمز عبور اشتباه است.'); return; }
+    loginUser(saved[email].name, email);
+  } else {
+    // ورود مهمان با هر ایمیل
+    loginUser(email.split('@')[0] || 'کاربر', email);
+  }
+}
+
+// ===== PASSWORD HELPERS =====
+function checkPassStrength(val) {
+  const len = val.length;
+  const count = document.getElementById('pass-count');
+  const hint  = document.getElementById('pass-hint');
+  const bars  = ['pb1','pb2','pb3','pb4'];
+  if(count) count.textContent = '('+len+'/8)';
+  // رنگ‌بندی بارها
+  const colors = ['#E74C3C','#F39C12','#3498DB','#27AE60'];
+  const msgs   = ['خیلی کوتاه 🔴','می‌توانید بهتر باشید 🟡','خوب است 🔵','قوی است 💚'];
+  let level = 0;
+  if(len >= 4) level = 1;
+  if(len >= 8) level = 2;
+  if(len >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val)) level = 3;
+  if(len >= 12 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) level = 4;
+  bars.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.background = i <= level-1 ? colors[Math.min(level-1, 3)] : 'var(--gray-mid)';
+  });
+  if(hint) {
+    if(len === 0) { hint.textContent='رمز عبور باید حداقل ۸ کاراکتر داشته باشد'; hint.style.color='var(--gray-light)'; }
+    else if(len < 8) { hint.textContent='❌ هنوز '+( 8-len)+' کاراکتر دیگر لازم دارید'; hint.style.color='#E74C3C'; }
+    else { hint.textContent='✅ '+msgs[Math.min(level,3)]; hint.style.color=colors[Math.min(level-1,3)]; }
+  }
+  // آپدیت border فیلد
+  const inp = document.getElementById('reg-pass');
+  if(inp) inp.style.borderColor = len===0 ? 'var(--gray-mid)' : len<8 ? '#E74C3C' : '#27AE60';
+}
+
+function checkPassMatch() {
+  const p1 = document.getElementById('reg-pass')?.value || '';
+  const p2 = document.getElementById('reg-pass2')?.value || '';
+  const lbl = document.getElementById('pass-match-label');
+  const inp = document.getElementById('reg-pass2');
+  if(!p2) { if(lbl) lbl.textContent=''; return; }
+  if(p1 === p2) {
+    if(lbl) { lbl.textContent='✅ تطابق دارد'; lbl.style.color='#27AE60'; }
+    if(inp) inp.style.borderColor='#27AE60';
+  } else {
+    if(lbl) { lbl.textContent='❌ تطابق ندارد'; lbl.style.color='#E74C3C'; }
+    if(inp) inp.style.borderColor='#E74C3C';
+  }
+}
+
+function togglePassVis(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if(!inp) return;
+  if(inp.type === 'password') { inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
 }
 
 function doRegister() {
-  const name = document.getElementById('reg-name').value;
-  const email = document.getElementById('reg-email').value;
-  const pass = document.getElementById('reg-pass').value;
-  if(!name || !email || !pass) return alert('لطفاً تمام فیلدها را پر کنید');
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2')?.value || '';
+
+  // اعتبارسنجی کامل
+  if(!name)  { showAuthError('لطفاً نام خود را وارد کنید.'); return; }
+  if(!email) { showAuthError('لطفاً ایمیل را وارد کنید.'); return; }
+  if(!email.includes('@')) { showAuthError('فرمت ایمیل صحیح نیست.'); return; }
+  if(pass.length < 8) {
+    showAuthError('رمز عبور باید حداقل ۸ کاراکتر باشد. ('+pass.length+' از ۸ کاراکتر)');
+    document.getElementById('reg-pass').style.borderColor='#E74C3C';
+    document.getElementById('reg-pass').focus();
+    return;
+  }
+  if(pass2 && pass !== pass2) { showAuthError('رمز عبور و تکرار آن یکسان نیستند.'); return; }
+
+  // ذخیره کاربر در localStorage
+  const saved = JSON.parse(localStorage.getItem('uliki_users') || '{}');
+  if(saved[email]) { showAuthError('این ایمیل قبلاً ثبت‌نام کرده. لطفاً وارد شوید.'); return; }
+  saved[email] = { name, email, password: pass, plan: 'Rax', createdAt: new Date().toISOString() };
+  localStorage.setItem('uliki_users', JSON.stringify(saved));
+
+  showToast('✅ ثبت‌نام موفق! خوش آمدید ' + name);
   loginUser(name, email);
 }
 
 function loginUser(name, email) {
   state.user = {name, email};
+  applyPlan('Rax');
   document.getElementById('user-greeting').textContent = name;
   document.getElementById('nav-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('profile-name').textContent = name;
   document.getElementById('profile-email').textContent = email;
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'flex';
+  document.getElementById('profile-avatar-lg').textContent = name.charAt(0).toUpperCase();
+  generateFeed(); generateExplore();
+
+  // مخفی کردن صفحه ورود
+  const authEl = document.getElementById('auth-screen');
+  authEl.classList.remove('active');
+  authEl.style.display = 'none';
+
+  // نمایش صفحه اصلی فقط بعد از ورود موفق
+  const appEl = document.getElementById('app-screen');
+  appEl.style.display = 'flex';
+  appEl.classList.add('active');
+
   navigate('home');
 }
-
 function doLogout() {
   state.user = null;
-  document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
+
+  // مخفی کردن صفحه اصلی
+  const appEl = document.getElementById('app-screen');
+  appEl.classList.remove('active');
+  appEl.style.display = 'none';
+
+  // نمایش صفحه ورود
+  const authEl = document.getElementById('auth-screen');
+  authEl.style.display = 'flex';
+  authEl.classList.add('active');
+
+  // ریست فرم‌ها
   document.getElementById('login-email').value = '';
   document.getElementById('login-pass').value = '';
 }
 
+// ===== NAVIGATION =====
 function navigate(page) {
   document.querySelectorAll('.page-content').forEach(p=>p.style.display='none');
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.getElementById('page-'+page).style.display='block';
   const el = document.getElementById('nav-'+page);
   if(el) el.classList.add('active');
+  const pg = document.getElementById('page-'+page);
+  if(pg) pg.style.display='block';
+  state.currentPage = page;
+  document.getElementById('notif-panel').classList.remove('open');
 }
 
-function startNewChat() {
-  state.chatHistory = [];
-  document.getElementById('chat-messages').innerHTML = '<div class="message"><div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai">سلام! چطور می‌تونم کمکتون کنم؟</div></div></div>';
+// ===== PLAN =====
+function applyPlan(plan) {
+  state.plan = plan;
+  const l = PLAN_LIMITS[plan];
+  state.chatsRemaining = l.chats;
+  state.msgsRemaining = l.msgs;
+  state.createsRemaining = l.creates;
+  updateUI();
 }
-
-function sendMessage() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if(!msg) return;
-  
-  const messagesDiv = document.getElementById('chat-messages');
-  messagesDiv.innerHTML += `<div class="message user"><div class="msg-avatar user">👤</div><div><div class="msg-bubble user">${msg}</div></div></div>`;
-  input.value = '';
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  
-  setTimeout(() => {
-    messagesDiv.innerHTML += `<div class="message"><div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai">از سوال شما متشکریم! این ابزار نسخه نمایشی است.</div></div></div>`;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }, 500);
+function updateUI() {
+  const l = PLAN_LIMITS[state.plan];
+  document.getElementById('stat-chats').textContent = state.chatsRemaining===999?'∞':state.chatsRemaining;
+  document.getElementById('stat-msgs').textContent = state.msgsRemaining===999?'∞':state.msgsRemaining;
+  document.getElementById('stat-creates').textContent = state.createsRemaining===999?'∞':state.createsRemaining;
+  document.getElementById('stat-posts').textContent = state.totalPosts;
+  document.getElementById('remaining-count').textContent = state.msgsRemaining===999?'∞':state.msgsRemaining;
+  document.getElementById('user-plan-badge').textContent = state.plan;
+  document.getElementById('profile-plan-badge').textContent = state.plan;
+  document.getElementById('profile-plan-text').textContent = state.plan;
+  document.getElementById('current-plan-name').textContent = state.plan;
+  document.getElementById('profile-msg-count').textContent = state.totalMsgs;
+  document.getElementById('profile-create-count').textContent = state.totalCreates;
+  document.getElementById('ps-posts').textContent = state.totalPosts;
 }
-
-function sendQuick(text) {
-  document.getElementById('chat-input').value = text;
-  sendMessage();
+function selectFreePlan(plan) { applyPlan(plan); showToast('پلن '+plan+' فعال شد! 🎉'); }
+function openPayment(plan) {
+  state.pendingPlan = plan;
+  document.getElementById('modal-plan-name').textContent = plan;
+  document.getElementById('activation-code').value='';
+  document.getElementById('code-success').style.display='none';
+  document.getElementById('code-error').style.display='none';
+  document.getElementById('payment-modal').classList.add('open');
 }
-
-function handleChatKey(e) {
-  if(e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+function verifyCode() {
+  const code = document.getElementById('activation-code').value.trim();
+  if(code==='QW-.uLiKII/9') {
+    document.getElementById('code-success').style.display='block';
+    document.getElementById('code-error').style.display='none';
+    applyPlan(state.pendingPlan||'Pro');
+    setTimeout(()=>{ document.getElementById('payment-modal').classList.remove('open'); showToast('🎉 پلن '+state.plan+' فعال شد!'); },1800);
+  } else {
+    document.getElementById('code-error').style.display='block';
+    document.getElementById('code-success').style.display='none';
   }
 }
+
+// ===== CHAT =====
+let chatCount = 0;
+function startNewChat() {
+  if(state.chatsRemaining<=0){showLimitMsg('چت');return;}
+  state.chatsRemaining = Math.max(0, state.chatsRemaining-1);
+  chatCount++;
+  const list = document.getElementById('chat-list');
+  const item = document.createElement('div');
+  item.className='chat-item';
+  item.innerHTML=`<div class="chat-item-title">چت ${chatCount}</div><div class="chat-item-time">همین الان</div>`;
+  item.onclick=function(){document.querySelectorAll('.chat-item').forEach(i=>i.classList.remove('active'));this.classList.add('active');};
+  list.insertBefore(item,list.firstChild);
+  document.getElementById('chat-messages').innerHTML=`<div class="message"><div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai">سلام! آماده پاسخگویی هستم 😊</div><div class="msg-time">همین الان</div></div></div>`;
+  state.chatHistory=[];
+  updateUI();
+}
+function setAIMode(btn,mode){
+  document.querySelectorAll('.ai-mode').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); state.aiMode=mode;
+}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function sendQuick(msg){document.getElementById('chat-input').value=msg;sendMessage();}
+async function sendMessage() {
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  if(state.msgsRemaining<=0){showLimitMsg('پاسخ');return;}
+  input.value=''; input.style.height='auto';
+  state.msgsRemaining=Math.max(0,state.msgsRemaining-1);
+  state.totalMsgs++;
+  updateUI();
+  addMessage(text,'user');
+  state.chatHistory.push({role:'user',content:text});
+  const tid=addTyping();
+  try {
+    const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+        system:`تو Uliki AI هستی، دستیار هوش مصنوعی فارسی‌زبان. حالت: ${state.aiMode}. پاسخ‌های دقیق و دوستانه به فارسی بده.`,
+        messages:state.chatHistory})
+    });
+    const data=await res.json();
+    removeTyping(tid);
+    const reply=data.content?.[0]?.text||'متاسفانه مشکلی پیش آمد.';
+    addMessage(reply,'ai');
+    state.chatHistory.push({role:'assistant',content:reply});
+  } catch {
+    removeTyping(tid);
+    addMessage('خطا در اتصال. دوباره تلاش کنید.','ai');
+  }
+}
+function addMessage(text,role) {
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className=`message ${role}`;
+  const av=role==='ai'?'🤖':(state.user?.name?.charAt(0)?.toUpperCase()||'U');
+  const time=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+  div.innerHTML=`<div class="msg-avatar ${role}">${av}</div><div><div class="msg-bubble ${role}">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div></div>`;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+}
+let typingCounter=0;
+function addTyping(){
+  const id='typing-'+(++typingCounter);
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='message'; div.id=id;
+  div.innerHTML=`<div class="msg-avatar ai">🤖</div><div><div class="msg-bubble ai"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight; return id;
+}
+function removeTyping(id){const el=document.getElementById(id);if(el)el.remove();}
+
+// ===== CREATE =====
+function switchCreate(type) {
+  document.querySelectorAll('.create-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.create-panel').forEach(p=>p.classList.remove('active'));
+  const tab=document.getElementById('tab-'+type);
+  const panel=document.getElementById('panel-'+type);
+  if(tab)tab.classList.add('active');
+  if(panel)panel.classList.add('active');
+}
+function selectChip(el){el.parentElement.querySelectorAll('.style-chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+
+async function generateContent(type) {
+  if(state.createsRemaining<=0){showLimitMsg('تولید محتوا');return;}
+  const promptEl=document.getElementById(type+'-prompt');
+  const prompt=promptEl?.value?.trim();
+  if(!prompt){alert('لطفاً توضیف خود را بنویسید.');return;}
+
+  // پیدا کردن دکمه به روش مطمئن - نه event.target
+  const btn = document.querySelector('#panel-'+type+' .generate-btn');
+  const origText = btn ? btn.innerHTML : '';
+  if(btn){ btn.innerHTML='<div class="loading-spinner"></div> در حال ساخت...'; btn.disabled=true; }
+
+  document.getElementById('result-'+type).classList.remove('visible');
+  state.createsRemaining=Math.max(0,state.createsRemaining-1);
+  state.totalCreates++;
+  updateUI();
+
+  // ===== IMAGE: Pollinations AI =====
+  if(type==='image') {
+    try {
+      const styleEl = document.querySelector('#panel-image .style-chip.selected');
+      const style = styleEl?.textContent?.trim() || 'رئالیستی';
+      const claudeRes=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,
+          messages:[{role:'user',content:`Convert to English image generation prompt (max 60 words, only prompt, style: ${style}): "${prompt}"`}]})
+      });
+      const cd=await claudeRes.json();
+      const eng=cd.content?.[0]?.text?.trim().replace(/"/g,'')||prompt;
+      const seed=Math.floor(Math.random()*99999);
+      const imageUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(eng)}?width=512&height=512&seed=${seed}&nologo=true`;
+      document.getElementById('image-result-text').innerHTML=`
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <span style="font-size:22px">🖼️</span>
+            <div><strong>در حال ساخت تصویر...</strong><div style="font-size:12px;color:var(--gray-light);margin-top:2px">Pollinations AI در حال کار است</div></div>
+          </div>
+          <div style="height:5px;background:var(--snow-blue);border-radius:3px;overflow:hidden;margin-bottom:16px">
+            <div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));border-radius:3px;animation:imgLoad 18s linear forwards"></div>
+          </div>
+          <div id="img-container" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#e8f4ff,#d0e8f8);min-height:300px;display:flex;align-items:center;justify-content:center">
+            <div style="text-align:center"><div style="font-size:52px;animation:pulse 1.5s ease infinite">🎨</div><div style="font-size:13px;color:var(--gray-light);margin-top:12px;font-weight:600">هوش مصنوعی در حال رسم...</div></div>
+          </div>
+          <div style="margin-top:12px;background:var(--snow-blue);border-radius:10px;padding:12px;font-size:12px"><strong>📝 پرامپت:</strong> ${eng}</div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="window.open('${imageUrl}','_blank')">🔗 باز در تب جدید</button>
+            <button class="btn btn-ghost btn-sm" onclick="publishContent('image')">📤 انتشار</button>
+          </div>
+        </div>`;
+      document.getElementById('result-image').classList.add('visible');
+      // fetch به صورت blob
+      try {
+        const imgRes=await fetch(imageUrl);
+        if(imgRes.ok){
+          const blob=await imgRes.blob();
+          const blobUrl=URL.createObjectURL(blob);
+          document.getElementById('img-container').innerHTML=`<img src="${blobUrl}" style="width:100%;display:block;border-radius:16px" alt="تصویر AI">`;
+          showToast('✅ تصویر ساخته شد!');
+        } else throw new Error();
+      } catch {
+        document.getElementById('img-container').innerHTML=`<div style="text-align:center;padding:30px"><div style="font-size:36px">🖼️</div><div style="font-weight:700;margin:12px 0 8px">تصویر آماده است!</div><div style="font-size:13px;color:var(--gray-light);margin-bottom:16px">در تب جدید مشاهده کنید</div><button class="btn btn-primary" onclick="window.open('${imageUrl}','_blank')">🔗 مشاهده تصویر</button></div>`;
+      }
+    } catch(e) {
+      document.getElementById('image-result-text').innerHTML='<div style="color:#E74C3C;padding:16px">❌ خطا در اتصال.</div>';
+      document.getElementById('result-image').classList.add('visible');
+    }
+    if(btn){btn.innerHTML=origText;btn.disabled=false;} return;
+  }
+
+  // ===== MUSIC: Claude + Web Audio =====
+  if(type==='music') {
+    const genre=document.querySelector('#panel-music .style-chip.selected')?.textContent?.trim()||'کلاسیک';
+    const mood=document.getElementById('music-mood')?.value||'آرامش‌بخش';
+    const duration=document.getElementById('music-duration')?.value||'۱ دقیقه';
+    const durMap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120,'۳ دقیقه':180};
+    const totalSec=durMap[duration]||60;
+    try {
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,
+          messages:[{role:'user',content:`تو آهنگساز حرفه‌ای هستی. آهنگ کامل بساز:
+موضوع: ${prompt} | سبک: ${genre} | حال و هوا: ${mood} | مدت: ${duration}
+
+فرمت:
+🎵 عنوان: [عنوان]
+🎼 BPM: [عدد] | گام: [گام] | ژانر: ${genre}
+🎹 تنظیم: [۲-۳ جمله درباره سازها]
+🎤 متن آهنگ:
+[ورس ۱ - ۴ خط فارسی]
+[کورس - ۴ خط فارسی]
+[ورس ۲ - ۴ خط فارسی]
+[کورس تکرار]
+🎸 اکوردها: [پیشرفت اکورد]`}]})
+      });
+      const data=await res.json();
+      const text=data.content?.[0]?.text||'خطا';
+      const bpmMatch=text.match(/BPM:\s*(\d+)/);
+      const bpm=parseInt(bpmMatch?.[1])||90;
+      const totMin=Math.floor(totalSec/60);
+      const totSec2=String(totalSec%60).padStart(2,'0');
+      document.getElementById('music-result-text').innerHTML=`
+        <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--glass-border);font-size:14px;line-height:2">
+          ${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
+        </div>
+        <div style="background:linear-gradient(135deg,#0a1628,#1a3a5c,#0d5f8a);border-radius:16px;padding:22px;color:white">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+            <div id="play-btn-icon" onclick="toggleAudio()" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#87CEEB,#4FA8D5);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(79,168,213,0.4);transition:all 0.3s;flex-shrink:0">▶</div>
+            <div style="flex:1"><div style="font-weight:700;font-size:15px;margin-bottom:3px">🎵 آهنگ Uliki AI</div><div style="font-size:12px;opacity:0.7">${genre} • ${mood} • ${bpm} BPM</div></div>
+            <div style="font-size:13px;font-weight:600;opacity:0.9" id="player-time">0:00 / ${totMin}:${totSec2}</div>
+          </div>
+          <div id="viz-container" style="display:flex;align-items:flex-end;gap:3px;height:40px;margin-bottom:14px;justify-content:center">
+            ${Array(32).fill(0).map((_,i)=>`<div class="vbar" style="width:6px;background:linear-gradient(to top,#87CEEB,white);border-radius:3px;height:4px;transition:height 0.1s ease"></div>`).join('')}
+          </div>
+          <div id="prog-track" style="background:rgba(255,255,255,0.15);height:6px;border-radius:3px;cursor:pointer;margin-bottom:8px" onclick="seekAudio(event,this)">
+            <div id="music-progress" style="height:100%;width:0%;background:linear-gradient(90deg,#87CEEB,white);border-radius:3px;position:relative;transition:width 0.3s linear">
+              <div style="position:absolute;left:-1px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;opacity:0.5;margin-bottom:14px"><span>0:00</span><span>${totMin}:${totSec2}</span></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button onclick="toggleAudio()" id="play-btn-text" style="background:rgba(255,255,255,0.18);border:none;color:white;padding:9px 22px;border-radius:50px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">▶ پخش</button>
+            <button onclick="restartAudio()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:9px 16px;border-radius:50px;font-family:inherit;font-size:13px;cursor:pointer">⟳ از ابتدا</button>
+            <div style="display:flex;align-items:center;gap:6px;margin-right:auto">
+              <span>🔊</span>
+              <div style="background:rgba(255,255,255,0.2);height:4px;width:70px;border-radius:2px;cursor:pointer" onclick="changeVolAudio(event,this)">
+                <div id="vol-bar" style="height:100%;width:70%;background:white;border-radius:2px"></div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('result-music').classList.add('visible');
+      initAudio(bpm, totalSec, genre);
+    } catch(e) {
+      document.getElementById('music-result-text').innerHTML='<div style="color:#E74C3C">❌ خطا در اتصال به سرور AI.</div>';
+      document.getElementById('result-music').classList.add('visible');
+    }
+    if(btn){btn.innerHTML=origText;btn.disabled=false;} return;
+  }
+
+  // ===== CODE =====
+  if(type==='code') {
+    const lang = document.querySelector('#panel-code .style-chip.selected')?.textContent?.trim() || 'Python';
+    const reqType = document.querySelectorAll('#panel-code .style-chips')[1]?.querySelector('.selected')?.textContent?.trim() || 'نوشتن کد';
+    const codePrompt = `تو یک برنامه‌نویس حرفه‌ای هستی.
+زبان: ${lang}
+نوع درخواست: ${reqType}
+درخواست کاربر: ${prompt}
+
+لطفاً:
+۱. کد کامل و اجرا شدنی بنویس
+۲. هر بخش را با کامنت فارسی توضیح بده
+۳. اگر باگ یا بهبود داری ذکر کن
+۴. مثال استفاده هم بنویس`;
+    try {
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:codePrompt}]})
+      });
+      const data=await res.json();
+      const text=data.content?.[0]?.text||'خطا در دریافت کد';
+      document.getElementById('code-result-text').textContent=text;
+      document.getElementById('result-code').classList.add('visible');
+    } catch {
+      document.getElementById('code-result-text').textContent='❌ خطا در اتصال به سرور AI. لطفاً دوباره تلاش کنید.';
+      document.getElementById('result-code').classList.add('visible');
+    }
+    if(btn){btn.innerHTML=origText;btn.disabled=false;}
+    return;
+  }
+
+  // ===== VIDEO =====
+  if(type==='video') {
+    const videoPrompt = `یک اسکریپت ویدیو حرفه‌ای با این توضیف بساز: "${prompt}"
+
+فرمت دقیق:
+🎬 عنوان ویدیو: [عنوان]
+⏱ مدت کل: [مدت]
+
+📽 صحنه‌ها:
+صحنه ۱ (۰:۰۰ - ۰:۱۵): [توضیف بصری + دیالوگ/متن]
+صحنه ۲ (۰:۱۵ - ۰:۳۰): [توضیف بصری + دیالوگ/متن]
+صحنه ۳ (۰:۳۰ - ۰:۴۵): [توضیف بصری + دیالوگ/متن]
+...
+
+🎵 موسیقی پیشنهادی: [سبک]
+🎨 جلوه‌های بصری: [توضیف]
+📝 متن روی صفحه: [متن‌ها]`;
+    try {
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:videoPrompt}]})
+      });
+      const data=await res.json();
+      const text=data.content?.[0]?.text||'خطا';
+      document.getElementById('video-result-text').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+      document.getElementById('result-video').classList.add('visible');
+    } catch {
+      document.getElementById('video-result-text').innerHTML='❌ خطا در اتصال.';
+      document.getElementById('result-video').classList.add('visible');
+    }
+    if(btn){btn.innerHTML=origText;btn.disabled=false;}
+    return;
+  }
+
+  // ===== TEXT =====
+  if(type==='text') {
+    const contentType = document.querySelector('#panel-text .style-chip.selected')?.textContent?.trim() || 'مقاله';
+    const textPrompt = `نوع محتوا: ${contentType}
+موضوع: ${prompt}
+
+یک ${contentType} حرفه‌ای، کامل و خواندنی به فارسی بنویس. از ساختار مناسب، تیترها و پاراگراف‌بندی درست استفاده کن.`;
+    try {
+      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:textPrompt}]})
+      });
+      const data=await res.json();
+      const text=data.content?.[0]?.text||'خطا';
+      document.getElementById('text-result-text').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+      document.getElementById('result-text').classList.add('visible');
+    } catch {
+      document.getElementById('text-result-text').innerHTML='❌ خطا در اتصال.';
+      document.getElementById('result-text').classList.add('visible');
+    }
+    if(btn){btn.innerHTML=origText;btn.disabled=false;}
+    return;
+  }
+
+  if(btn){btn.innerHTML=origText;btn.disabled=false;}
+}
+
+// ===== WEB AUDIO =====
+let audioCtx=null, audioNodes=[], audioPlaying=false;
+let audioCurrent=0, audioTotal=60, audioInterval2=null;
+let gainNode=null, audioVol=0.7, vizInterval=null;
+const SCALES={
+  '🎹 کلاسیک':[261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25],
+  '🎸 راک':[110,130.81,146.83,164.81,196.00,220.00,246.94,261.63],
+  '🎺 جاز':[261.63,311.13,369.99,415.30,466.16,523.25,587.33,622.25],
+  '🎤 پاپ':[261.63,293.66,329.63,392.00,440.00,493.88,523.25,587.33],
+  '🥁 الکترونیک':[130.81,155.56,185.00,220.00,261.63,311.13,369.99,440.00],
+  '🌿 محیطی':[220.00,246.94,261.63,293.66,329.63,369.99,392.00,440.00],
+  '🪗 سنتی':[260.74,292.33,325.88,346.65,390.55,434.83,488.27,521.48]
+};
+function initAudio(bpm,totalSec,genre){
+  stopAudio();
+  audioTotal=totalSec; audioCurrent=0;
+  window._audioBPM=bpm; window._audioGenre=genre;
+  updateAudioUI();
+}
+function getCtx(){
+  if(!audioCtx||audioCtx.state==='closed') audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+function toggleAudio(){audioPlaying?stopAudio():startAudio();}
+function startAudio(){
+  const ctx=getCtx();
+  gainNode=ctx.createGain(); gainNode.gain.value=audioVol; gainNode.connect(ctx.destination);
+  const bpm=window._audioBPM||90;
+  const genre=window._audioGenre||'🎹 کلاسیک';
+  const scale=SCALES[genre]||SCALES['🎹 کلاسیک'];
+  const beatDur=60/bpm;
+  const remaining=audioTotal-audioCurrent;
+  const now=ctx.currentTime;
+  const melody=[0,2,4,5,4,2,0,2,4,7,5,4,2,0,2,4];
+  for(let i=0;i<remaining/beatDur;i++){
+    const t=now+i*beatDur;
+    const ni=melody[i%16];
+    // ملودی
+    const o1=ctx.createOscillator(); const g1=ctx.createGain();
+    o1.connect(g1); g1.connect(gainNode);
+    o1.type='sine'; o1.frequency.value=scale[ni]*(i%32<16?1:1.5);
+    g1.gain.setValueAtTime(0,t); g1.gain.linearRampToValueAtTime(0.3,t+0.05);
+    g1.gain.exponentialRampToValueAtTime(0.001,t+beatDur*0.7);
+    o1.start(t); o1.stop(t+beatDur); audioNodes.push(o1);
+    // باس
+    if(i%4===0){
+      const o2=ctx.createOscillator();const g2=ctx.createGain();
+      o2.connect(g2);g2.connect(gainNode);
+      o2.type='triangle';o2.frequency.value=scale[0]/2;
+      g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(0.25,t+0.05);
+      g2.gain.exponentialRampToValueAtTime(0.001,t+beatDur*0.8);
+      o2.start(t);o2.stop(t+beatDur);audioNodes.push(o2);
+    }
+    // هارمونی
+    if(i%2===0){
+      const o3=ctx.createOscillator();const g3=ctx.createGain();
+      o3.connect(g3);g3.connect(gainNode);
+      o3.type='sine';o3.frequency.value=scale[2]*(i%8<4?1:0.75);
+      g3.gain.setValueAtTime(0,t+beatDur*0.25);g3.gain.linearRampToValueAtTime(0.12,t+beatDur*0.3);
+      g3.gain.exponentialRampToValueAtTime(0.001,t+beatDur*0.7);
+      o3.start(t+beatDur*0.25);o3.stop(t+beatDur);audioNodes.push(o3);
+    }
+    // پرکاشن
+    if(i%2===0){
+      const buf=ctx.createBuffer(1,ctx.sampleRate*0.08,ctx.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let j=0;j<d.length;j++) d[j]=(Math.random()*2-1)*(1-j/d.length);
+      const src=ctx.createBufferSource();src.buffer=buf;
+      const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=4000;
+      const g4=ctx.createGain();g4.gain.value=0.1;
+      src.connect(f);f.connect(g4);g4.connect(gainNode);
+      src.start(t);audioNodes.push(src);
+    }
+  }
+  audioPlaying=true;
+  document.getElementById('play-btn-icon').textContent='⏸';
+  document.getElementById('play-btn-text').textContent='⏸ توقف';
+  audioInterval2=setInterval(()=>{
+    audioCurrent++;
+    updateAudioUI();
+    if(audioCurrent>=audioTotal){stopAudio();audioCurrent=0;updateAudioUI();}
+  },1000);
+  vizInterval=setInterval(animateViz,80);
+}
+function stopAudio(){
+  audioNodes.forEach(n=>{try{n.stop();}catch{}});
+  audioNodes=[];
+  clearInterval(audioInterval2); clearInterval(vizInterval);
+  audioPlaying=false;
+  document.querySelectorAll('.vbar').forEach(b=>b.style.height='4px');
+  const icon=document.getElementById('play-btn-icon');
+  const btn=document.getElementById('play-btn-text');
+  if(icon)icon.textContent='▶';
+  if(btn)btn.textContent='▶ پخش';
+}
+function restartAudio(){stopAudio();audioCurrent=0;updateAudioUI();}
+function updateAudioUI(){
+  const prog=document.getElementById('music-progress');
+  const timeEl=document.getElementById('player-time');
+  if(prog)prog.style.width=((audioCurrent/audioTotal)*100)+'%';
+  if(timeEl){
+    const c=`${Math.floor(audioCurrent/60)}:${String(audioCurrent%60).padStart(2,'0')}`;
+    const t=`${Math.floor(audioTotal/60)}:${String(audioTotal%60).padStart(2,'0')}`;
+    timeEl.textContent=`${c} / ${t}`;
+  }
+}
+function seekAudio(e,bar){
+  const rect=bar.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  audioCurrent=Math.floor(pct*audioTotal);
+  updateAudioUI();
+  if(audioPlaying){stopAudio();startAudio();}
+}
+function changeVolAudio(e,bar){
+  const rect=bar.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  audioVol=pct;
+  document.getElementById('vol-bar').style.width=(pct*100)+'%';
+  if(gainNode)gainNode.gain.value=pct;
+}
+function animateViz(){
+  document.querySelectorAll('.vbar').forEach((bar,i)=>{
+    const h=audioPlaying?Math.max(4,Math.abs(Math.sin(Date.now()/200+i*0.7))*34+4):4;
+    bar.style.height=h+'px';
+  });
+}
+function copyMusicText(){
+  const el=document.getElementById('music-result-text');
+  navigator.clipboard.writeText(el.innerText||el.textContent).then(()=>showToast('متن آهنگ کپی شد! 🎵'));
+}
+
+// ===== FEED =====
+const samplePosts=[
+  {user:'Sara AI',avatar:'SA',color:'#4FA8D5',type:'music',emoji:'🎵',title:'موزیک آرامش‌بخش',content:'یک قطعه موسیقی فوق‌العاده با Uliki AI ساختم! سبک کلاسیک با پیانو و ویولن 🎹',tags:['#موزیک_AI','#Uliki','#کلاسیک'],likes:234,comments:42,badge:'AI Music'},
+  {user:'Ali Code',avatar:'AC',color:'#9B59B6',type:'code',emoji:'💻',title:'API با Python',content:'با کمک Uliki AI یک RESTful API کامل نوشتم. کیفیت کد بالاست!',tags:['#Python','#API','#کدنویسی'],likes:187,comments:31,badge:'AI Code'},
+  {user:'Mina Art',avatar:'MA',color:'#E74C3C',type:'image',emoji:'🖼️',title:'منظره دیجیتال',content:'این تصویر رو با Uliki AI ساختم. منظره برفی خارق‌العاده!',tags:['#AI_Art','#DigitalArt','#Uliki'],likes:512,comments:78,badge:'AI Image'}
+];
+let postLikes=[...samplePosts.map(p=>p.likes)];
+function generateFeed(){
+  const container=document.getElementById('feed-posts');
+  container.innerHTML='';
+  const allPosts=[...state.feedPosts,...samplePosts];
+  allPosts.forEach((post,i)=>{container.innerHTML+=createPostHTML(post,i);});
+}
+function addFeedPost(title,desc,type){
+  const emojis={music:'🎵',code:'💻',video:'🎬',image:'🖼️',text:'📝'};
+  const post={user:state.user?.name||'کاربر',avatar:(state.user?.name||'U').charAt(0).toUpperCase(),color:'var(--accent)',type,emoji:emojis[type]||'✨',title,content:desc||'محتوای ساخته شده با Uliki AI',tags:['#Uliki','#AI','#محتوا'],likes:0,comments:0,badge:'AI Content',isNew:true};
+  state.feedPosts.unshift(post);
+  state.totalPosts++;
+  updateUI();
+  generateFeed();
+}
+function createPostHTML(post,i){
+  return `<div class="post-card" style="animation-delay:${i*0.07}s">
+    <div class="post-header">
+      <div class="post-avatar" style="background:linear-gradient(135deg,${post.color},${post.color}88)">${post.avatar}</div>
+      <div class="post-user"><h4>${post.user}${post.isNew?' <span style="background:#27AE60;color:white;font-size:10px;padding:2px 8px;border-radius:50px">شما</span>':''}</h4><span><span class="post-badge-ai">${post.badge}</span> همین الان</span></div>
+      <div class="post-menu">⋯</div>
+    </div>
+    <div class="post-media">${post.emoji}</div>
+    <div class="post-content">${post.content}</div>
+    <div class="post-tags">${post.tags.map(t=>`<span class="post-tag">${t}</span>`).join('')}</div>
+    <div class="post-actions">
+      <button class="post-action" onclick="likePost(this,${i})" data-liked="false">❤️ ${post.likes}</button>
+      <button class="post-action">💬 ${post.comments}</button>
+      <button class="post-action">↗️ اشتراک</button>
+      <button class="post-action">🔖 ذخیره</button>
+    </div>
+  </div>`;
+}
+function likePost(btn,idx){
+  const liked=btn.getAttribute('data-liked')==='true';
+  const allPosts=[...state.feedPosts,...samplePosts];
+  if(liked){allPosts[idx].likes--;btn.setAttribute('data-liked','false');btn.classList.remove('liked');}
+  else{allPosts[idx].likes++;btn.setAttribute('data-liked','true');btn.classList.add('liked');}
+  btn.innerHTML=(liked?'❤️ ':'❤️ ')+allPosts[idx].likes;
+}
+
+// ===== PUBLISH =====
+function publishContent(type){state.publishType=type;document.getElementById('publish-modal').classList.add('open');}
+function confirmPublish(){
+  const title=document.getElementById('publish-title').value||'محتوای بدون عنوان';
+  const desc=document.getElementById('publish-desc').value||'';
+  document.getElementById('publish-modal').classList.remove('open');
+  addFeedPost(title,desc,state.publishType||'text');
+  showToast('محتوا منتشر شد! 🎉');
+}
+
+// ===== EXPLORE =====
+const exploreData=[
+  {emoji:'🎵',title:'موسیقی الکترونیک',user:'DJ Ali',likes:1240,type:'music'},
+  {emoji:'💻',title:'سیستم مدیریت کاربران',user:'Dev Sara',likes:890,type:'code'},
+  {emoji:'🖼️',title:'شهر آینده 2080',user:'ArtBot',likes:2100,type:'image'},
+  {emoji:'🎬',title:'ویدیو طبیعت',user:'NatureAI',likes:560,type:'video'},
+  {emoji:'📝',title:'داستان کوتاه: روبات',user:'Writer X',likes:340,type:'text'},
+  {emoji:'🎵',title:'پیانو Solo',user:'Piano AI',likes:780,type:'music'},
+  {emoji:'🖼️',title:'پرتره هوشمند',user:'PortrAI',likes:1890,type:'image'},
+  {emoji:'💻',title:'الگوریتم مرتب‌سازی',user:'Code Bot',likes:420,type:'code'},
+  {emoji:'🎬',title:'انیمیشن فضایی',user:'SpaceAI',likes:1560,type:'video'}
+];
+function generateExplore(filter='همه'){
+  const grid=document.getElementById('explore-grid');
+  const filtered=filter==='همه'?exploreData:exploreData.filter(e=>e.type===filter);
+  grid.innerHTML=filtered.map((item,i)=>`<div class="explore-card" style="animation-delay:${i*0.07}s"><div class="explore-thumb">${item.emoji}</div><div class="explore-info"><h4>${item.title}</h4><div class="meta"><span>👤 ${item.user}</span><span>❤️ ${item.likes.toLocaleString('fa-IR')}</span></div></div></div>`).join('');
+}
+function filterExplore(btn,type){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  generateExplore(type);
+}
+
+// ===== MISC =====
+function copyResult(type){
+  const el=document.getElementById(type+'-result-text');
+  navigator.clipboard.writeText(el.textContent||el.innerText).then(()=>showToast('کپی شد! 📋'));
+}
+function toggleNotif(){document.getElementById('notif-panel').classList.toggle('open');}
+function handleSearch(e){if(e.key==='Enter'){const q=document.getElementById('search-input').value.trim();if(q){navigate('explore');showToast('جستجو: "'+q+'" 🔍');}}}
+function showLimitMsg(type){showToast('محدودیت '+type+' تمام شد! پلن را ارتقاء دهید ⭐','warn');setTimeout(()=>navigate('plans'),1500);}
+function showToast(msg,type='ok'){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:${type==='warn'?'#E74C3C':'var(--black-soft)'};color:white;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:2000;box-shadow:0 8px 32px rgba(0,0,0,0.2);animation:fadeInUp 0.3s ease;white-space:nowrap;`;
+  t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.notif-btn')&&!e.target.closest('.notif-panel'))document.getElementById('notif-panel').classList.remove('open');});
+
+// CSS for image load animation
+const s=document.createElement('style');
+s.textContent='@keyframes imgLoad{from{width:0%}to{width:92%}}';
+document.head.appendChild(s);
 </script>
 </body>
 </html>
