@@ -296,6 +296,18 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes imgLoad{from{width:0%}to{width:92%}}
+.code-block-wrapper{margin:10px 0;border-radius:12px;overflow:hidden;border:1px solid #2d3748;}
+.code-block-header{display:flex;align-items:center;justify-content:space-between;background:#1a202c;padding:8px 14px;}
+.code-lang{font-size:12px;color:#87CEEB;font-weight:700;font-family:monospace;}
+.code-copy-btn{background:rgba(135,206,235,0.15);border:1px solid rgba(135,206,235,0.3);color:#87CEEB;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.code-copy-btn:hover{background:rgba(135,206,235,0.3);}
+.code-block{margin:0;padding:16px;background:#0d1117;color:#e6edf3;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'Courier New',monospace;}
+.msg-bubble.ai .code-block-wrapper{margin:8px -4px;}
+.video-scene{background:var(--snow-blue);border-radius:12px;overflow:hidden;margin-bottom:12px;border:1px solid var(--glass-border);}
+.video-scene-header{background:var(--accent);color:white;padding:8px 14px;font-size:13px;font-weight:700;}
+.video-scene-img{width:100%;height:200px;object-fit:cover;display:block;}
+.video-scene-img-placeholder{height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#e8f4ff,#d0e8f8);}
+.video-scene-desc{padding:12px 14px;font-size:13px;line-height:1.7;}
 @keyframes vizPulse{0%,100%{height:4px}50%{height:28px}}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:3px;}
 @media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:repeat(2,1fr)}.plans-grid{grid-template-columns:1fr}.feed-layout{grid-template-columns:1fr}.sidebar{display:none}.explore-grid{grid-template-columns:repeat(2,1fr)}.profile-grid{grid-template-columns:1fr}}
@@ -450,10 +462,22 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
             </div>
           </div>
           <div class="chat-main">
-            <div class="chat-header">
-              <div class="ai-avatar">🤖</div>
-              <div class="chat-header-info"><h4>Uliki AI</h4><span><span class="online-dot"></span>آنلاین و آماده</span></div>
-              <div style="margin-right:auto;display:flex;gap:8px">
+            <div class="chat-header" style="flex-wrap:wrap;gap:8px">
+              <div class="ai-avatar" id="chat-ai-avatar">🤖</div>
+              <div class="chat-header-info"><h4 id="chat-ai-name">Uliki AI</h4><span><span class="online-dot"></span>آنلاین و آماده</span></div>
+              <div style="margin-right:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+                <!-- انتخاب هوش مصنوعی -->
+                <div style="display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px">
+                  <button class="ai-select-btn active" id="ai-btn-luolaf" onclick="selectAI('luolaf',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--accent);transition:all 0.3s">🧠 Luolaf</button>
+                  <button class="ai-select-btn" id="ai-btn-uliki" onclick="selectAI('uliki',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">⚡ Uliki</button>
+                </div>
+                <!-- انتخاب مدل -->
+                <div style="display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px">
+                  <button class="model-btn active" id="model-btn-luolaf3" onclick="selectModel('luolaf3',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:white;color:var(--accent2);transition:all 0.3s">Luolaf.3</button>
+                  <button class="model-btn" id="model-btn-uliki2" onclick="selectModel('uliki2',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.2</button>
+                  <button class="model-btn" id="model-btn-google" onclick="selectModel('google',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Google AI</button>
+                </div>
+                <!-- حالت چت -->
                 <div class="ai-modes" id="ai-modes">
                   <button class="ai-mode active" onclick="setAIMode(this,'عمومی')">💡 عمومی</button>
                   <button class="ai-mode" onclick="setAIMode(this,'کدنویسی')">💻 کد</button>
@@ -491,6 +515,16 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
       <div id="page-create" class="page-content" style="display:none">
         <h2 style="font-size:22px;font-weight:800;margin-bottom:6px">✨ ایجاد محتوا با AI</h2>
         <p style="color:var(--gray-light);font-size:14px;margin-bottom:20px">با هوش مصنوعی Uliki هر چیزی بسازید</p>
+        <!-- انتخاب مدل در بخش ایجاد محتوا -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:var(--gray-dark)">🤖 مدل:</span>
+          <div style="display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px">
+            <button class="create-model-btn active" id="cm-luolaf3" onclick="selectCreateModel('luolaf3',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--accent2);box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:all 0.3s">Luolaf.3</button>
+            <button class="create-model-btn" id="cm-uliki2" onclick="selectCreateModel('uliki2',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.2</button>
+            <button class="create-model-btn" id="cm-google" onclick="selectCreateModel('google',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Google AI</button>
+          </div>
+          <span id="create-model-label" style="font-size:11px;color:var(--gray-light)">Claude Sonnet — دقیق و حرفه‌ای</span>
+        </div>
         <div class="create-tabs">
           <button class="create-tab active" id="tab-music" onclick="switchCreate('music')">🎵 آهنگ</button>
           <button class="create-tab" id="tab-code" onclick="switchCreate('code')">💻 کد</button>
@@ -803,13 +837,29 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
   if(authEl) { authEl.style.display = 'flex'; authEl.classList.add('active'); }
 })();
 
+// ===== WORKER URLS =====
+const WORKER_URL = 'https://uliki.amiralitanaomi2015.workers.dev';
+// API های مختلف از طریق Worker
+const MODELS = {
+  luolaf3: { name:'Luolaf.3', label:'Claude Sonnet — دقیق و حرفه‌ای', emoji:'🧠', api:'claude' },
+  uliki2:  { name:'Uliki.2',  label:'Llama 3.3 Groq — سریع و قدرتمند', emoji:'⚡', api:'groq'   },
+  google:  { name:'Google AI',label:'Gemini Flash — خلاق و هوشمند',    emoji:'🌐', api:'google' }
+};
+const AI_AGENTS = {
+  luolaf: { name:'Luolaf', emoji:'🧠', api:'groq',   color:'var(--accent)'  },
+  uliki:  { name:'Uliki',  emoji:'⚡', api:'google', color:'#9B59B6'        }
+};
+
 // ===== STATE =====
 let state = {
   user: null, plan: 'Rax',
   chatsRemaining: 1, msgsRemaining: 5, createsRemaining: 2,
   totalMsgs: 0, totalCreates: 0, totalPosts: 0,
   chatHistory: [], currentPage: 'home', publishType: null,
-  pendingPlan: null, feedPosts: [], aiMode: 'عمومی'
+  pendingPlan: null, feedPosts: [], aiMode: 'عمومی',
+  selectedAI: 'luolaf',    // هوش مصنوعی انتخابی در چت
+  selectedModel: 'luolaf3', // مدل انتخابی در چت
+  createModel: 'luolaf3'    // مدل انتخابی در ایجاد محتوا
 };
 const PLAN_LIMITS = {
   'Rax':  {chats:1,msgs:5,creates:2},
@@ -1054,6 +1104,89 @@ function startNewChat() {
   state.chatHistory=[];
   updateUI();
 }
+// ===== AI & MODEL SELECTORS =====
+function selectAI(ai, btn) {
+  state.selectedAI = ai;
+  document.querySelectorAll('.ai-select-btn').forEach(b => {
+    b.style.background = 'transparent'; b.style.color = 'var(--gray-dark)';
+  });
+  btn.style.background = 'white'; btn.style.color = 'var(--accent)';
+  const agent = AI_AGENTS[ai];
+  document.getElementById('chat-ai-avatar').textContent = agent.emoji;
+  document.getElementById('chat-ai-name').textContent = agent.name + ' AI';
+}
+
+function selectModel(model, btn) {
+  state.selectedModel = model;
+  document.querySelectorAll('.model-btn').forEach(b => {
+    b.style.background = 'transparent'; b.style.color = 'var(--gray-dark)';
+  });
+  btn.style.background = 'white'; btn.style.color = 'var(--accent2)';
+}
+
+function selectCreateModel(model, btn) {
+  state.createModel = model;
+  document.querySelectorAll('.create-model-btn').forEach(b => {
+    b.style.background = 'transparent'; b.style.color = 'var(--gray-dark)';
+    b.style.boxShadow = 'none';
+  });
+  btn.style.background = 'white'; btn.style.color = 'var(--accent2)';
+  btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.08)';
+  const lbl = document.getElementById('create-model-label');
+  if(lbl) lbl.textContent = MODELS[model]?.label || '';
+}
+
+// ===== API CALLER - همه مدل‌ها =====
+async function callAI(messages, systemPrompt='', modelKey='luolaf3') {
+  const model = MODELS[modelKey] || MODELS['luolaf3'];
+  const body = {
+    messages: messages,
+    max_tokens: 2000,
+    model_key: modelKey
+  };
+  if(systemPrompt) body.system = systemPrompt;
+
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || data.error || 'خطا در دریافت پاسخ';
+}
+
+// ===== فرمت‌دهی پیام در چت =====
+function formatAIMessage(text, type='general') {
+  // تبدیل کد بلاک‌ها به HTML
+  text = text.replace(/```(\w+)?
+?([\s\S]*?)```/g, (match, lang, code) => {
+    const language = lang || 'code';
+    return `<div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">${language}</span>
+        <button class="code-copy-btn" onclick="copyCode(this)">📋 کپی</button>
+      </div>
+      <pre class="code-block"><code>${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>
+    </div>`;
+  });
+  // bold
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // italic  
+  text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // newlines
+  text = text.replace(/
+/g, '<br>');
+  return text;
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✅ کپی شد';
+    setTimeout(() => btn.textContent = '📋 کپی', 2000);
+  });
+}
+
 function setAIMode(btn,mode){
   document.querySelectorAll('.ai-mode').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active'); state.aiMode=mode;
@@ -1073,30 +1206,30 @@ async function sendMessage() {
   addMessage(text,'user');
   state.chatHistory.push({role:'user',content:text});
   const tid=addTyping();
+  // تعیین مدل بر اساس انتخاب کاربر
+  const modelKey = state.selectedModel || 'luolaf3';
+  const modelInfo = MODELS[modelKey];
+  const sysPrompt = `تو ${modelInfo.name} هستی، دستیار هوش مصنوعی فارسی‌زبان پلتفرم Uliki. حالت: ${state.aiMode}. پاسخ‌های دقیق، کامل و دوستانه به فارسی بده. برای کدها از بلاک کد استفاده کن.`;
   try {
-    const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
-        system:`تو Uliki AI هستی، دستیار هوش مصنوعی فارسی‌زبان. حالت: ${state.aiMode}. پاسخ‌های دقیق و دوستانه به فارسی بده.`,
-        messages:state.chatHistory})
-    });
-    const data=await res.json();
+    const reply = await callAI(state.chatHistory, sysPrompt, modelKey);
     removeTyping(tid);
-    const reply=data.content?.[0]?.text||'متاسفانه مشکلی پیش آمد.';
-    addMessage(reply,'ai');
+    addMessage(reply,'ai', true);
     state.chatHistory.push({role:'assistant',content:reply});
   } catch {
     removeTyping(tid);
     addMessage('خطا در اتصال. دوباره تلاش کنید.','ai');
   }
 }
-function addMessage(text,role) {
+function addMessage(text, role, format=false) {
   const msgs=document.getElementById('chat-messages');
   const div=document.createElement('div');
   div.className=`message ${role}`;
-  const av=role==='ai'?'🤖':(state.user?.name?.charAt(0)?.toUpperCase()||'U');
+  const modelInfo = role==='ai' ? MODELS[state.selectedModel||'luolaf3'] : null;
+  const av = role==='ai' ? (modelInfo?.emoji||'🤖') : (state.user?.name?.charAt(0)?.toUpperCase()||'U');
   const time=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
-  div.innerHTML=`<div class="msg-avatar ${role}">${av}</div><div><div class="msg-bubble ${role}">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div></div>`;
+  const displayText = (role==='ai' && format) ? formatAIMessage(text) : text.replace(/\n/g,'<br>');
+  const modelLabel = role==='ai' ? `<span style="font-size:10px;opacity:0.6;margin-top:4px;display:block">${modelInfo?.name||'AI'}</span>` : '';
+  div.innerHTML=`<div class="msg-avatar ${role}">${av}</div><div><div class="msg-bubble ${role}">${displayText}${modelLabel}</div><div class="msg-time">${time}</div></div>`;
   msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
 }
 let typingCounter=0;
@@ -1142,9 +1275,10 @@ async function generateContent(type) {
     try {
       const styleEl = document.querySelector('#panel-image .style-chip.selected');
       const style = styleEl?.textContent?.trim() || 'رئالیستی';
+      const modelKey = state.createModel || 'luolaf3';
       const claudeRes=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,model_key:modelKey,
           messages:[{role:'user',content:`Convert to English image generation prompt (max 60 words, only prompt, style: ${style}): "${prompt}"`}]})
       });
       const cd=await claudeRes.json();
@@ -1197,9 +1331,10 @@ async function generateContent(type) {
     const durMap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120,'۳ دقیقه':180};
     const totalSec=durMap[duration]||60;
     try {
+      const modelKey = state.createModel || 'luolaf3';
       const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,model_key:modelKey,
           messages:[{role:'user',content:`تو آهنگساز حرفه‌ای هستی. آهنگ کامل بساز:
 موضوع: ${prompt} | سبک: ${genre} | حال و هوا: ${mood} | مدت: ${duration}
 
@@ -1263,61 +1398,116 @@ async function generateContent(type) {
   if(type==='code') {
     const lang = document.querySelector('#panel-code .style-chip.selected')?.textContent?.trim() || 'Python';
     const reqType = document.querySelectorAll('#panel-code .style-chips')[1]?.querySelector('.selected')?.textContent?.trim() || 'نوشتن کد';
+    const modelKey = state.createModel || 'luolaf3';
     const codePrompt = `تو یک برنامه‌نویس حرفه‌ای هستی.
 زبان: ${lang}
 نوع درخواست: ${reqType}
 درخواست کاربر: ${prompt}
 
-لطفاً:
-۱. کد کامل و اجرا شدنی بنویس
-۲. هر بخش را با کامنت فارسی توضیح بده
-۳. اگر باگ یا بهبود داری ذکر کن
-۴. مثال استفاده هم بنویس`;
+قوانین مهم:
+۱. فقط کد اصلی را داخل بلاک کد بنویس
+۲. توضیحات را خارج از بلاک کد و به فارسی بنویس
+۳. کد باید کامل، اجرا شدنی و با کامنت فارسی باشه
+۴. مثال استفاده هم بده`;
     try {
-      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:codePrompt}]})
-      });
-      const data=await res.json();
-      const text=data.content?.[0]?.text||'خطا در دریافت کد';
-      document.getElementById('code-result-text').textContent=text;
+      const text = await callAI([{role:'user',content:codePrompt}], '', modelKey);
+      // نمایش کد با فرمت‌دهی
+      const formatted = formatAIMessage(text);
+      document.getElementById('code-result-text').innerHTML = formatted;
       document.getElementById('result-code').classList.add('visible');
     } catch {
-      document.getElementById('code-result-text').textContent='❌ خطا در اتصال به سرور AI. لطفاً دوباره تلاش کنید.';
+      document.getElementById('code-result-text').innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال به سرور AI.</span>';
       document.getElementById('result-code').classList.add('visible');
     }
     if(btn){btn.innerHTML=origText;btn.disabled=false;}
     return;
   }
 
-  // ===== VIDEO =====
+  // ===== VIDEO: ساخت تصاویر صحنه‌ها + اتصال =====
   if(type==='video') {
+    const modelKey = state.createModel || 'luolaf3';
     const videoPrompt = `یک اسکریپت ویدیو حرفه‌ای با این توضیف بساز: "${prompt}"
-
-فرمت دقیق:
-🎬 عنوان ویدیو: [عنوان]
-⏱ مدت کل: [مدت]
-
-📽 صحنه‌ها:
-صحنه ۱ (۰:۰۰ - ۰:۱۵): [توضیف بصری + دیالوگ/متن]
-صحنه ۲ (۰:۱۵ - ۰:۳۰): [توضیف بصری + دیالوگ/متن]
-صحنه ۳ (۰:۳۰ - ۰:۴۵): [توضیف بصری + دیالوگ/متن]
-...
-
-🎵 موسیقی پیشنهادی: [سبک]
-🎨 جلوه‌های بصری: [توضیف]
-📝 متن روی صفحه: [متن‌ها]`;
+فرمت دقیق (فقط همین فرمت):
+TITLE: [عنوان ویدیو]
+DURATION: [مدت کل]
+SCENES:
+SCENE_1: [توضیف کوتاه انگلیسی برای تصویر] | [توضیف فارسی صحنه]
+SCENE_2: [توضیف کوتاه انگلیسی برای تصویر] | [توضیف فارسی صحنه]
+SCENE_3: [توضیف کوتاه انگلیسی برای تصویر] | [توضیف فارسی صحنه]
+SCENE_4: [توضیف کوتاه انگلیسی برای تصویر] | [توضیف فارسی صحنه]
+MUSIC: [سبک موسیقی]
+NARRATION: [متن روایت فارسی]`;
     try {
-      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:videoPrompt}]})
-      });
-      const data=await res.json();
-      const text=data.content?.[0]?.text||'خطا';
-      document.getElementById('video-result-text').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+      const text = await callAI([{role:'user',content:videoPrompt}], '', modelKey);
+      // parse صحنه‌ها
+      const lines = text.split('
+');
+      let title='ویدیو AI', duration='۱ دقیقه', music='', narration='';
+      const scenes = [];
+      for(const line of lines) {
+        if(line.startsWith('TITLE:')) title = line.replace('TITLE:','').trim();
+        else if(line.startsWith('DURATION:')) duration = line.replace('DURATION:','').trim();
+        else if(line.startsWith('MUSIC:')) music = line.replace('MUSIC:','').trim();
+        else if(line.startsWith('NARRATION:')) narration = line.replace('NARRATION:','').trim();
+        else if(line.startsWith('SCENE_')) {
+          const parts = line.split('|');
+          const engDesc = parts[0].replace(/SCENE_\d+:/,'').trim();
+          const faDesc = parts[1]?.trim() || engDesc;
+          scenes.push({engDesc, faDesc});
+        }
+      }
+      // نمایش container ویدیو
+      const videoContainer = document.getElementById('video-result-text');
+      videoContainer.innerHTML = `
+        <div style="margin-bottom:16px">
+          <h3 style="font-size:18px;font-weight:800;margin-bottom:4px">🎬 ${title}</h3>
+          <div style="font-size:13px;color:var(--gray-light)">⏱ مدت: ${duration} | 🎵 ${music}</div>
+        </div>
+        <div style="font-size:13px;color:var(--gray-dark);background:var(--snow-blue);padding:12px;border-radius:10px;margin-bottom:16px;line-height:1.7">
+          📝 ${narration}
+        </div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px">📽 صحنه‌های ویدیو (در حال ساخت تصاویر...):</div>
+        <div id="video-scenes-container"></div>`;
       document.getElementById('result-video').classList.add('visible');
-    } catch {
-      document.getElementById('video-result-text').innerHTML='❌ خطا در اتصال.';
+      // ساخت تصویر برای هر صحنه
+      const container = document.getElementById('video-scenes-container');
+      for(let i=0; i<scenes.length; i++) {
+        const scene = scenes[i];
+        const sceneDiv = document.createElement('div');
+        sceneDiv.className = 'video-scene';
+        sceneDiv.innerHTML = `
+          <div class="video-scene-header">صحنه ${i+1}</div>
+          <div class="video-scene-img-placeholder" id="scene-img-${i}">
+            <div style="text-align:center"><div style="font-size:36px;animation:pulse 1.5s infinite">🎨</div><div style="font-size:12px;margin-top:8px;color:var(--gray-light)">در حال ساخت...</div></div>
+          </div>
+          <div class="video-scene-desc">${scene.faDesc}</div>`;
+        container.appendChild(sceneDiv);
+        // ساخت تصویر با Pollinations
+        const seed = Math.floor(Math.random()*99999);
+        const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(scene.engDesc+', cinematic, high quality')}?width=512&height=288&seed=${seed}&nologo=true`;
+        // fetch تصویر
+        (async (idx, url, div) => {
+          try {
+            const imgRes = await fetch(url);
+            if(imgRes.ok) {
+              const blob = await imgRes.blob();
+              const blobUrl = URL.createObjectURL(blob);
+              div.innerHTML = `<img src="${blobUrl}" class="video-scene-img" alt="صحنه ${idx+1}">`;
+            } else throw new Error();
+          } catch {
+            div.innerHTML = `<a href="${url}" target="_blank" style="display:flex;align-items:center;justify-content:center;height:200px;text-decoration:none;color:var(--accent);font-weight:600">🔗 مشاهده تصویر صحنه ${idx+1}</a>`;
+          }
+        })(i, imgUrl, document.getElementById(`scene-img-${i}`));
+      }
+      // دکمه خروجی ویدیو
+      container.innerHTML += `
+        <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#1A3A5C,#0D5F8A);border-radius:14px;color:white;text-align:center">
+          <div style="font-size:14px;margin-bottom:10px">🎬 تصاویر صحنه‌ها ساخته شدند!</div>
+          <div style="font-size:12px;opacity:0.7;margin-bottom:14px">برای ساخت ویدیو واقعی از تصاویر، می‌توانید از ابزارهایی مثل CapCut یا DaVinci Resolve استفاده کنید</div>
+          <button onclick="publishContent('video')" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:10px 24px;border-radius:50px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">📤 انتشار در فید</button>
+        </div>`;
+    } catch(e) {
+      document.getElementById('video-result-text').innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال.</span>';
       document.getElementById('result-video').classList.add('visible');
     }
     if(btn){btn.innerHTML=origText;btn.disabled=false;}
@@ -1327,21 +1517,16 @@ async function generateContent(type) {
   // ===== TEXT =====
   if(type==='text') {
     const contentType = document.querySelector('#panel-text .style-chip.selected')?.textContent?.trim() || 'مقاله';
+    const modelKey = state.createModel || 'luolaf3';
     const textPrompt = `نوع محتوا: ${contentType}
 موضوع: ${prompt}
-
 یک ${contentType} حرفه‌ای، کامل و خواندنی به فارسی بنویس. از ساختار مناسب، تیترها و پاراگراف‌بندی درست استفاده کن.`;
     try {
-      const res=await fetch('https://uliki.amiralitanaomi2015.workers.dev',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:textPrompt}]})
-      });
-      const data=await res.json();
-      const text=data.content?.[0]?.text||'خطا';
-      document.getElementById('text-result-text').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+      const text = await callAI([{role:'user',content:textPrompt}], '', modelKey);
+      document.getElementById('text-result-text').innerHTML = formatAIMessage(text);
       document.getElementById('result-text').classList.add('visible');
     } catch {
-      document.getElementById('text-result-text').innerHTML='❌ خطا در اتصال.';
+      document.getElementById('text-result-text').innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال.</span>';
       document.getElementById('result-text').classList.add('visible');
     }
     if(btn){btn.innerHTML=origText;btn.disabled=false;}
@@ -1580,7 +1765,19 @@ document.addEventListener('click',e=>{if(!e.target.closest('.notif-btn')&&!e.tar
 
 // CSS for image load animation
 const s=document.createElement('style');
-s.textContent='@keyframes imgLoad{from{width:0%}to{width:92%}}';
+s.textContent='@keyframes imgLoad{from{width:0%}to{width:92%}}
+.code-block-wrapper{margin:10px 0;border-radius:12px;overflow:hidden;border:1px solid #2d3748;}
+.code-block-header{display:flex;align-items:center;justify-content:space-between;background:#1a202c;padding:8px 14px;}
+.code-lang{font-size:12px;color:#87CEEB;font-weight:700;font-family:monospace;}
+.code-copy-btn{background:rgba(135,206,235,0.15);border:1px solid rgba(135,206,235,0.3);color:#87CEEB;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.code-copy-btn:hover{background:rgba(135,206,235,0.3);}
+.code-block{margin:0;padding:16px;background:#0d1117;color:#e6edf3;font-size:13px;line-height:1.7;overflow-x:auto;font-family:monospace;}
+.msg-bubble.ai .code-block-wrapper{margin:8px -4px;}
+.video-scene{background:var(--snow-blue);border-radius:12px;overflow:hidden;margin-bottom:12px;border:1px solid var(--glass-border);}
+.video-scene-header{background:var(--accent);color:white;padding:8px 14px;font-size:13px;font-weight:700;}
+.video-scene-img{width:100%;height:200px;object-fit:cover;display:block;}
+.video-scene-img-placeholder{height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#e8f4ff,#d0e8f8);}
+.video-scene-desc{padding:12px 14px;font-size:13px;line-height:1.7;}
 document.head.appendChild(s);
 </script>
 </body>
