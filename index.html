@@ -311,6 +311,20 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 @keyframes vizPulse{0%,100%{height:4px}50%{height:28px}}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:3px;}
 @media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:repeat(2,1fr)}.plans-grid{grid-template-columns:1fr}.feed-layout{grid-template-columns:1fr}.sidebar{display:none}.explore-grid{grid-template-columns:repeat(2,1fr)}.profile-grid{grid-template-columns:1fr}}
+
+@keyframes imgLoad{from{width:0%}to{width:92%}}
+.code-block-wrapper{margin:10px 0;border-radius:12px;overflow:hidden;border:1px solid #2d3748;}
+.code-block-header{display:flex;align-items:center;justify-content:space-between;background:#1a202c;padding:8px 14px;}
+.code-lang{font-size:12px;color:#87CEEB;font-weight:700;font-family:monospace;}
+.code-copy-btn{background:rgba(135,206,235,0.15);border:1px solid rgba(135,206,235,0.3);color:#87CEEB;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.code-copy-btn:hover{background:rgba(135,206,235,0.3);}
+.code-block{margin:0;padding:16px;background:#0d1117;color:#e6edf3;font-size:13px;line-height:1.7;overflow-x:auto;font-family:monospace;}
+.msg-bubble.ai .code-block-wrapper{margin:8px -4px;}
+.video-scene{background:var(--snow-blue);border-radius:12px;overflow:hidden;margin-bottom:12px;border:1px solid var(--glass-border);}
+.video-scene-header{background:var(--accent);color:white;padding:8px 14px;font-size:13px;font-weight:700;}
+.video-scene-img{width:100%;height:200px;object-fit:cover;display:block;}
+.video-scene-img-placeholder{height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#e8f4ff,#d0e8f8);}
+.video-scene-desc{padding:12px 14px;font-size:13px;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -870,12 +884,15 @@ const PLAN_LIMITS = {
 };
 
 // ===== AUTH =====
+// alias برای سازگاری
 function switchAuthTab(tab, el) {
-  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
-  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
 }
+// ===== AUTH =====
+
 function showAuthError(msg) {
   let el = document.getElementById('auth-error-msg');
   if(!el) {
@@ -1156,29 +1173,21 @@ async function callAI(messages, systemPrompt='', modelKey='luolaf3') {
 }
 
 // ===== فرمت‌دهی پیام در چت =====
-function formatAIMessage(text, type='general') {
-  // تبدیل کد بلاک‌ها به HTML
-  text = text.replace(/```(\w+)?
-?([\s\S]*?)```/g, (match, lang, code) => {
-    const language = lang || 'code';
-    return `<div class="code-block-wrapper">
-      <div class="code-block-header">
-        <span class="code-lang">${language}</span>
-        <button class="code-copy-btn" onclick="copyCode(this)">📋 کپی</button>
-      </div>
-      <pre class="code-block"><code>${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>
-    </div>`;
+function formatAIMessage(text) {
+  // کد بلاک
+  text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, function(match, lang, code) {
+    var language = lang || 'code';
+    var safeCode = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<div class="code-block-wrapper"><div class="code-block-header"><span class="code-lang">' + language + '</span><button class="code-copy-btn" onclick="copyCode(this)">📋 کپی</button></div><pre class="code-block"><code>' + safeCode + '</code></pre></div>';
   });
   // bold
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  // italic  
+  // italic
   text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  // newlines
-  text = text.replace(/
-/g, '<br>');
+  // newline
+  text = text.replace(/\n/g, '<br>');
   return text;
 }
-
 function copyCode(btn) {
   const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
   navigator.clipboard.writeText(code).then(() => {
@@ -1440,8 +1449,7 @@ NARRATION: [متن روایت فارسی]`;
     try {
       const text = await callAI([{role:'user',content:videoPrompt}], '', modelKey);
       // parse صحنه‌ها
-      const lines = text.split('
-');
+      const lines = text.split('\n');
       let title='ویدیو AI', duration='۱ دقیقه', music='', narration='';
       const scenes = [];
       for(const line of lines) {
@@ -1764,21 +1772,7 @@ function showToast(msg,type='ok'){
 document.addEventListener('click',e=>{if(!e.target.closest('.notif-btn')&&!e.target.closest('.notif-panel'))document.getElementById('notif-panel').classList.remove('open');});
 
 // CSS for image load animation
-const s=document.createElement('style');
-s.textContent='@keyframes imgLoad{from{width:0%}to{width:92%}}
-.code-block-wrapper{margin:10px 0;border-radius:12px;overflow:hidden;border:1px solid #2d3748;}
-.code-block-header{display:flex;align-items:center;justify-content:space-between;background:#1a202c;padding:8px 14px;}
-.code-lang{font-size:12px;color:#87CEEB;font-weight:700;font-family:monospace;}
-.code-copy-btn{background:rgba(135,206,235,0.15);border:1px solid rgba(135,206,235,0.3);color:#87CEEB;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s;}
-.code-copy-btn:hover{background:rgba(135,206,235,0.3);}
-.code-block{margin:0;padding:16px;background:#0d1117;color:#e6edf3;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'Courier New',monospace;direction:ltr;text-align:left;}
-.msg-bubble.ai .code-block-wrapper{margin:8px -4px;}
-.video-scene{background:var(--snow-blue);border-radius:12px;overflow:hidden;margin-bottom:12px;border:1px solid var(--glass-border);}
-.video-scene-header{background:var(--accent);color:white;padding:8px 14px;font-size:13px;font-weight:700;}
-.video-scene-img{width:100%;height:200px;object-fit:cover;display:block;}
-.video-scene-img-placeholder{height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#e8f4ff,#d0e8f8);}
-.video-scene-desc{padding:12px 14px;font-size:13px;line-height:1.7;background:#ffffff;color:#1a202c;}
-document.head.appendChild(s);
+
 </script>
 </body>
 </html>
