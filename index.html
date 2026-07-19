@@ -345,6 +345,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
       <div id="login-form">
         <div class="input-group"><label>ایمیل یا شماره موبایل</label><input type="text" placeholder="example@email.com" id="login-email"></div>
         <div class="input-group"><label>رمز عبور</label><input type="password" placeholder="••••••••" id="login-pass"></div>
+        <!-- CAPTCHA -->
+        <div id="captcha-login" style="background:var(--snow-blue);border:1.5px solid var(--glass-border);border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleCaptcha('login')">
+          <div id="captcha-login-box" style="width:22px;height:22px;border:2px solid var(--graymd);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.3s"></div>
+          <span style="font-size:13px;color:var(--graydark)">من روبات نیستم</span>
+          <div style="margin-right:auto;font-size:20px">🤖</div>
+        </div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogin()">ورود به Uliki</button>
         <div class="auth-divider">یا</div>
         <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="doLogin()">🌐 ورود با Google</button>
@@ -375,6 +381,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
           <input type="password" placeholder="رمز عبور را دوباره وارد کنید" id="reg-pass2"
             oninput="checkPassMatch()"
             style="width:100%;padding:14px 18px;border:1.5px solid var(--gray-mid);border-radius:var(--radius-sm);font-family:Vazirmatn,sans-serif;font-size:15px;background:white;outline:none;transition:var(--transition);color:var(--black-soft)">
+        </div>
+        <!-- CAPTCHA -->
+        <div id="captcha-reg" style="background:var(--snow-blue);border:1.5px solid var(--glass-border);border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleCaptcha('reg')">
+          <div id="captcha-reg-box" style="width:22px;height:22px;border:2px solid var(--graymd);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.3s"></div>
+          <span style="font-size:13px;color:var(--graydark)">من روبات نیستم</span>
+          <div style="margin-right:auto;font-size:20px">🤖</div>
         </div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doRegister()">ایجاد حساب رایگان 🚀</button>
         <p style="font-size:12px;color:var(--gray-light);text-align:center;margin-top:10px">✅ اطلاعات شما ذخیره می‌شود — دفعات بعد می‌توانید وارد شوید</p>
@@ -489,7 +501,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
                 <div style="display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px">
                   <button class="model-btn active" id="model-btn-luolaf3" onclick="selectModel('luolaf3',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:white;color:var(--accent2);transition:all 0.3s">Luolaf.3</button>
                   <button class="model-btn" id="model-btn-uliki2" onclick="selectModel('uliki2',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.2</button>
-                  <button class="model-btn" id="model-btn-google" onclick="selectModel('google',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Google AI</button>
+                  <button class="model-btn" id="model-btn-google" onclick="selectModel('google',this)" style="padding:5px 12px;border-radius:50px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.3</button>
                 </div>
                 <!-- حالت چت -->
                 <div class="ai-modes" id="ai-modes">
@@ -535,7 +547,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
           <div style="display:flex;gap:4px;background:var(--snow-blue);padding:4px;border-radius:50px">
             <button class="create-model-btn active" id="cm-luolaf3" onclick="selectCreateModel('luolaf3',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--accent2);box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:all 0.3s">Luolaf.3</button>
             <button class="create-model-btn" id="cm-uliki2" onclick="selectCreateModel('uliki2',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.2</button>
-            <button class="create-model-btn" id="cm-google" onclick="selectCreateModel('google',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Google AI</button>
+            <button class="create-model-btn" id="cm-google" onclick="selectCreateModel('google',this)" style="padding:6px 14px;border-radius:50px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-dark);transition:all 0.3s">Uliki.3</button>
           </div>
           <span id="create-model-label" style="font-size:11px;color:var(--gray-light)">Claude Sonnet — دقیق و حرفه‌ای</span>
         </div>
@@ -549,6 +561,10 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 
         <!-- MUSIC PANEL -->
         <div class="create-panel active" id="panel-music">
+          <div style="background:linear-gradient(135deg,#FFF3CD,#FFEAA0);border:2px solid #F39C12;border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px">
+            <span style="font-size:24px;flex-shrink:0">⚠️</span>
+            <div><div style="font-size:14px;font-weight:800;color:#856404;margin-bottom:4px">در حال توسعه — تیم LuoLaf</div><div style="font-size:13px;color:#856404;line-height:1.7">تیم LuoLaf فعلاً در حال کار روی این بخش است. استفاده توصیه نمی‌شود. این بخش فعلاً مخصوص <strong>سناریونویسی</strong> است.</div></div>
+          </div>
           <div class="create-card">
             <h3>🎵 ساخت آهنگ با AI</h3>
             <p class="sub">توضیف دهید — متن آهنگ + پلیر با صدای واقعی دریافت کنید</p>
@@ -622,6 +638,10 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 
         <!-- VIDEO PANEL -->
         <div class="create-panel" id="panel-video">
+          <div style="background:linear-gradient(135deg,#FFF3CD,#FFEAA0);border:2px solid #F39C12;border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px">
+            <span style="font-size:24px;flex-shrink:0">⚠️</span>
+            <div><div style="font-size:14px;font-weight:800;color:#856404;margin-bottom:4px">در حال توسعه — تیم LuoLaf</div><div style="font-size:13px;color:#856404;line-height:1.7">تیم LuoLaf فعلاً در حال کار روی این بخش است. استفاده توصیه نمی‌شود. این بخش فعلاً مخصوص <strong>سناریونویسی</strong> است.</div></div>
+          </div>
           <div class="create-card">
             <h3>🎬 ساخت ویدیو با AI</h3>
             <p class="sub">ایده خود را بدهید، Uliki اسکریپت کامل ویدیو می‌سازد</p>
@@ -855,14 +875,79 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--white-thick);color:var(
 const WORKER_URL = 'https://uliki.amiralitanaomi2015.workers.dev';
 // API های مختلف از طریق Worker
 const MODELS = {
-  luolaf3: { name:'Luolaf.3', label:'Claude Sonnet — دقیق و حرفه‌ای', emoji:'🧠', api:'claude' },
-  uliki2:  { name:'Uliki.2',  label:'Llama 3.3 Groq — سریع و قدرتمند', emoji:'⚡', api:'groq'   },
-  google:  { name:'Google AI',label:'Gemini Flash — خلاق و هوشمند',    emoji:'🌐', api:'google' }
+  luolaf3: { name:'Luolaf.3', label:'Llama 3.3 — دقیق و حرفه‌ای',    emoji:'🧠', api:'groq', groqModel:'llama-3.3-70b-versatile' },
+  uliki2:  { name:'Uliki.2',  label:'Mixtral — سریع و قدرتمند',       emoji:'⚡', api:'groq', groqModel:'mixtral-8x7b-32768'      },
+  google:  { name:'Uliki.3',  label:'Gemma2 — خلاق و هوشمند',         emoji:'🌐', api:'groq', groqModel:'gemma2-9b-it'            }
 };
 const AI_AGENTS = {
   luolaf: { name:'Luolaf', emoji:'🧠', api:'groq',   color:'var(--accent)'  },
   uliki:  { name:'Uliki',  emoji:'⚡', api:'google', color:'#9B59B6'        }
 };
+
+// ===== STORAGE HELPERS =====
+function saveToStorage(key, value) {
+  try { localStorage.setItem('uliki_' + key, JSON.stringify(value)); } catch(e) {}
+}
+function loadFromStorage(key, def=null) {
+  try { const v = localStorage.getItem('uliki_' + key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+
+// ===== AUTO LOGIN =====
+function getDeviceFingerprint() {
+  const fp = {
+    ua: navigator.userAgent,
+    lang: navigator.language,
+    screen: screen.width + 'x' + screen.height,
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    platform: navigator.platform
+  };
+  return btoa(JSON.stringify(fp)).slice(0, 32);
+}
+
+function tryAutoLogin() {
+  const fp = getDeviceFingerprint();
+  const sessions = loadFromStorage('sessions', {});
+  const session = sessions[fp];
+  if (!session) return false;
+  const users = loadFromStorage('users', {});
+  const user = users[session.email];
+  if (!user) return false;
+  // بررسی دو فاکتور fingerprint
+  const fpParts = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height];
+  const savedFp = session.fpParts || [];
+  const matches = fpParts.filter((p, i) => savedFp[i] === p).length;
+  if (matches >= 2) {
+    enterApp(user.name, user.email, false);
+    return true;
+  }
+  return false;
+}
+
+function saveSession(email) {
+  const fp = getDeviceFingerprint();
+  const sessions = loadFromStorage('sessions', {});
+  sessions[fp] = {
+    email,
+    fpParts: [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height],
+    time: Date.now()
+  };
+  saveToStorage('sessions', sessions);
+}
+
+// ===== CAPTCHA =====
+const captchaState = { login: false, reg: false };
+function toggleCaptcha(type) {
+  captchaState[type] = !captchaState[type];
+  const box = document.getElementById('captcha-' + type + '-box');
+  if (box) {
+    box.style.background = captchaState[type] ? '#27AE60' : '';
+    box.style.borderColor = captchaState[type] ? '#27AE60' : 'var(--graymd)';
+    box.innerHTML = captchaState[type] ? '✓' : '';
+    box.style.color = '#fff';
+    box.style.fontSize = '14px';
+    box.style.fontWeight = '700';
+  }
+}
 
 // ===== STATE =====
 let state = {
@@ -910,24 +995,21 @@ function showAuthError(msg) {
 }
 
 function doLogin() {
+  if(!captchaState.login){ showAuthError('لطفاً تیک "من روبات نیستم" را بزنید'); return; }
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value;
-
-  if(!email) { showAuthError('لطفاً ایمیل یا شماره موبایل را وارد کنید.'); return; }
-  if(!pass)  { showAuthError('لطفاً رمز عبور را وارد کنید.'); return; }
-
-  // بررسی اینکه آیا کاربر ثبت‌نام کرده
-  const saved = JSON.parse(localStorage.getItem('uliki_users') || '{}');
-  if(saved[email]) {
-    if(saved[email].password !== pass) { showAuthError('رمز عبور اشتباه است.'); return; }
-    loginUser(saved[email].name, email);
+  if(!email){ showAuthError('ایمیل را وارد کنید'); return; }
+  if(!email.includes('@')){ showAuthError('فرمت ایمیل صحیح نیست'); return; }
+  if(!pass){ showAuthError('رمز عبور را وارد کنید'); return; }
+  const users = loadFromStorage('users', {});
+  if(users[email]) {
+    if(users[email].password !== pass){ showAuthError('رمز عبور اشتباه است'); return; }
+    saveSession(email);
+    loginUser(users[email].name, email);
   } else {
-    // ورود مهمان با هر ایمیل
-    loginUser(email.split('@')[0] || 'کاربر', email);
+    showAuthError('حساب کاربری پیدا نشد. ابتدا ثبت‌نام کنید.');
   }
 }
-
-// ===== PASSWORD HELPERS =====
 function checkPassStrength(val) {
   const len = val.length;
   const count = document.getElementById('pass-count');
@@ -980,36 +1062,35 @@ function togglePassVis(inputId, btn) {
 }
 
 function doRegister() {
+  if(!captchaState.reg){ showAuthError('لطفاً تیک "من روبات نیستم" را بزنید'); return; }
   const name  = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-pass').value;
   const pass2 = document.getElementById('reg-pass2')?.value || '';
-
-  // اعتبارسنجی کامل
-  if(!name)  { showAuthError('لطفاً نام خود را وارد کنید.'); return; }
-  if(!email) { showAuthError('لطفاً ایمیل را وارد کنید.'); return; }
-  if(!email.includes('@')) { showAuthError('فرمت ایمیل صحیح نیست.'); return; }
-  if(pass.length < 8) {
-    showAuthError('رمز عبور باید حداقل ۸ کاراکتر باشد. ('+pass.length+' از ۸ کاراکتر)');
-    document.getElementById('reg-pass').style.borderColor='#E74C3C';
-    document.getElementById('reg-pass').focus();
-    return;
-  }
-  if(pass2 && pass !== pass2) { showAuthError('رمز عبور و تکرار آن یکسان نیستند.'); return; }
-
-  // ذخیره کاربر در localStorage
-  const saved = JSON.parse(localStorage.getItem('uliki_users') || '{}');
-  if(saved[email]) { showAuthError('این ایمیل قبلاً ثبت‌نام کرده. لطفاً وارد شوید.'); return; }
-  saved[email] = { name, email, password: pass, plan: 'Rax', createdAt: new Date().toISOString() };
-  localStorage.setItem('uliki_users', JSON.stringify(saved));
-
+  if(!name){ showAuthError('نام را وارد کنید'); return; }
+  if(!email || !email.includes('@')){ showAuthError('ایمیل معتبر وارد کنید'); return; }
+  if(pass.length < 8){ showAuthError('رمز باید حداقل ۸ کاراکتر باشد (' + pass.length + '/8)'); return; }
+  if(pass2 && pass !== pass2){ showAuthError('رمز و تکرار آن یکسان نیستند'); return; }
+  const users = loadFromStorage('users', {});
+  if(users[email]){ showAuthError('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.'); return; }
+  users[email] = { name, email, password: pass, plan: 'Rax', joinDate: new Date().toISOString() };
+  saveToStorage('users', users);
+  saveSession(email);
   showToast('✅ ثبت‌نام موفق! خوش آمدید ' + name);
   loginUser(name, email);
 }
-
 function loginUser(name, email) {
   state.user = {name, email};
-  applyPlan('Rax');
+  // بارگذاری پلن از storage
+  const users = loadFromStorage('users', {});
+  const plan = users[email]?.plan || 'Rax';
+  applyPlan(plan);
+  // بارگذاری چت‌های ذخیره شده
+  const savedChats = loadFromStorage('chats_' + email, []);
+  if(savedChats.length > 0) {
+    state.chatHistory = savedChats[0]?.history || [];
+    renderSavedChats(savedChats);
+  }
   document.getElementById('user-greeting').textContent = name;
   document.getElementById('nav-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('profile-name').textContent = name;
@@ -1156,10 +1237,12 @@ function selectCreateModel(model, btn) {
 // ===== API CALLER - همه مدل‌ها =====
 async function callAI(messages, systemPrompt='', modelKey='luolaf3') {
   const model = MODELS[modelKey] || MODELS['luolaf3'];
+  // همه مدل‌ها از Groq استفاده می‌کنن
   const body = {
     messages: messages,
     max_tokens: 2000,
-    model_key: modelKey
+    model_key: 'groq_direct',
+    groq_model: model.groqModel || 'llama-3.3-70b-versatile'
   };
   if(systemPrompt) body.system = systemPrompt;
 
@@ -1772,6 +1855,101 @@ function showToast(msg,type='ok'){
 document.addEventListener('click',e=>{if(!e.target.closest('.notif-btn')&&!e.target.closest('.notif-panel'))document.getElementById('notif-panel').classList.remove('open');});
 
 // CSS for image load animation
+
+
+// ===== CHAT SAVE =====
+function renderSavedChats(chats) {
+  const list = document.getElementById('chat-list');
+  if(!list || !chats.length) return;
+  list.innerHTML = '';
+  chats.forEach((chat, i) => {
+    const d = document.createElement('div');
+    d.className = 'chat-item' + (i===0?' active':'');
+    d.innerHTML = '<div class="chat-item-title">' + (chat.title||'چت '+( i+1)) + '</div><div class="chat-item-time">' + (chat.date||'') + '</div>';
+    d.onclick = function() {
+      document.querySelectorAll('.chat-item').forEach(x=>x.classList.remove('active'));
+      this.classList.add('active');
+      state.chatHistory = chat.history || [];
+      renderChatHistory(state.chatHistory);
+    };
+    list.appendChild(d);
+  });
+}
+
+function renderChatHistory(history) {
+  const msgs = document.getElementById('chat-messages');
+  if(!msgs) return;
+  msgs.innerHTML = '';
+  history.forEach(msg => {
+    addMessage(msg.content, msg.role==='user'?'user':'ai', msg.role==='assistant');
+  });
+}
+
+function saveChatHistory() {
+  if(!state.user || !state.chatHistory.length) return;
+  const email = state.user.email;
+  const chats = loadFromStorage('chats_' + email, []);
+  const title = state.chatHistory[0]?.content?.slice(0,30) || 'مکالمه جدید';
+  const date = new Date().toLocaleDateString('fa-IR');
+  if(chats.length > 0 && chats[0].active) {
+    chats[0] = { title, date, history: state.chatHistory, active: true };
+  } else {
+    chats.unshift({ title, date, history: state.chatHistory, active: true });
+  }
+  // نگه داشتن حداکثر 20 چت
+  saveToStorage('chats_' + email, chats.slice(0, 20));
+}
+
+// ===== AUTO LOGIN =====
+function tryAutoLogin() {
+  try {
+    const fp = getDeviceFingerprint();
+    const sessions = loadFromStorage('sessions', {});
+    const session = sessions[fp];
+    if(!session) return false;
+    const users = loadFromStorage('users', {});
+    const user = users[session.email];
+    if(!user) return false;
+    const fpParts = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height];
+    const savedFp = session.fpParts || [];
+    const matches = fpParts.filter((p,i) => savedFp[i] === p).length;
+    if(matches >= 2) {
+      loginUser(user.name, user.email);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ===== WORKER برای Groq مستقیم =====
+async function callGroqDirect(messages, system, groqModel) {
+  const msgs = system ? [{role:'system',content:system}, ...messages] : messages;
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      messages: msgs,
+      model_key: 'groq_direct',
+      groq_model: groqModel || 'llama-3.3-70b-versatile',
+      max_tokens: 2000
+    })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || 'خطا';
+}
+
+// ذخیره خودکار چت بعد از هر پیام
+const origAddMsg = addMessage;
+
+// init
+(function(){
+  const appEl = document.getElementById('app-screen');
+  const authEl = document.getElementById('auth-screen');
+  if(appEl){ appEl.style.display='none'; appEl.classList.remove('active'); }
+  if(authEl){ authEl.style.display='flex'; authEl.classList.add('active'); }
+  // تلاش ورود خودکار
+  setTimeout(() => { if(!state.user) tryAutoLogin(); }, 150);
+})();
 
 </script>
 </body>
