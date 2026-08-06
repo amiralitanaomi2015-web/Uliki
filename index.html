@@ -1732,7 +1732,7 @@ async function gen(type){
       const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 50 words, style:'+style+'): "'+prompt+'"'}],'',mk);
       const seed=Math.floor(Math.random()*99999);
       const imgUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(ep)+'?width=512&height=512&seed='+seed+'&nologo=true';
-      document.getElementById('image-out').innerHTML='<div style="margin-bottom:10px"><div style="height:4px;background:var(--snow);border-radius:2px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));animation:imgld 15s linear forwards;border-radius:2px"></div></div></div><div id="img-con" style="border-radius:12px;overflow:hidden;background:var(--snow);min-height:260px;display:flex;align-items:center;justify-content:center;font-size:44px">🎨</div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btnp btnsm" id="dl-img-btn" onclick=\"window.open(\'\'+imgUrl+\'\',\'_blank\')\">🔗 مشاهده</button><button class="btn btng btnsm" onclick=\"pubContent(\'image\')\">📤 انتشار</button></div>';
+      document.getElementById('image-out').innerHTML='<div style="margin-bottom:10px"><div style="height:4px;background:var(--snow);border-radius:2px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));animation:imgld 15s linear forwards;border-radius:2px"></div></div></div><div id="img-con" style="border-radius:12px;overflow:hidden;background:var(--snow);min-height:260px;display:flex;align-items:center;justify-content:center;font-size:44px">🎨</div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btnp btnsm" id="dl-img-btn" data-url="'+imgUrl+'" onclick=\"window.open(this.dataset.url,\'_blank\')\">🔗 مشاهده</button><button class="btn btng btnsm" onclick=\"pubContent(\'image\')\">📤 انتشار</button></div>';
       rb.classList.add('on');
       fetch(imgUrl).then(r=>{if(r.ok)return r.blob();throw new Error();}).then(b=>{const u=URL.createObjectURL(b);document.getElementById('img-con').innerHTML='<img src="'+u+'" style="width:100%;display:block;border-radius:12px">';document.getElementById('dl-img-btn').onclick=()=>{const a=document.createElement('a');a.href=u;a.download='uliki-image.png';a.click();};toast('✅ تصویر ساخته شد!');}).catch(()=>{document.getElementById('img-con').innerHTML='<a href="'+imgUrl+'" target="_blank" style="display:flex;align-items:center;justify-content:center;height:200px;text-decoration:none;color:var(--accent);font-weight:600">🔗 مشاهده تصویر</a>';});
     } else if(type==='code'){
@@ -2207,11 +2207,11 @@ function handleUpload(input) {
     if(file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = e => {
-        item.innerHTML = '<img src="'+e.target.result+'"><button class="rm" onclick="removeUpload(this,\'\'+file.name+\'\')">✕</button>';
+        item.innerHTML = '<img src="'+e.target.result+'"><button class="rm" data-name="'+file.name+'" onclick="removeUpload(this,this.dataset.name)">✕</button>';
       };
       reader.readAsDataURL(file);
     } else {
-      item.innerHTML = '<div style="width:60px;height:60px;border-radius:8px;background:var(--snow);border:1px solid var(--gb);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--gray);text-align:center;padding:4px">📎<br>'+file.name.slice(0,10)+'</div><button class="rm" onclick="removeUpload(this,\'\'+file.name+\'\')">✕</button>';
+      item.innerHTML = '<div style="width:60px;height:60px;border-radius:8px;background:var(--snow);border:1px solid var(--gb);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--gray);text-align:center;padding:4px">📎<br>'+file.name.slice(0,10)+'</div><button class="rm" data-name="'+file.name+'" onclick="removeUpload(this,this.dataset.name)">✕</button>';
     }
     if(preview) preview.appendChild(item);
   });
