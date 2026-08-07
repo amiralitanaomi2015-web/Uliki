@@ -308,9 +308,23 @@ html,body{font-family:"Vazirmatn",sans-serif;background:var(--bg);color:var(--bl
 .ntxt{font-size:11px;line-height:1.5;}.ntxt strong{display:block;font-weight:600;}
 .fab{position:fixed;bottom:20px;left:20px;z-index:50;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;color:#fff;font-size:20px;box-shadow:0 8px 24px rgba(79,168,213,0.4);transition:var(--tr);display:flex;align-items:center;justify-content:center;}
 .fab:hover{transform:scale(1.1) rotate(10deg);}
-@media(max-width:768px){.sb{display:none;}.fgrid{grid-template-columns:repeat(2,1fr);}.strow{grid-template-columns:repeat(2,1fr);}.plgrid{grid-template-columns:1fr;}.feed-layout{grid-template-columns:1fr;}.exgrid{grid-template-columns:repeat(2,1fr);}.profgrid{grid-template-columns:1fr;}.wallet-layout{grid-template-columns:1fr;}.store-grid{grid-template-columns:1fr;}.chat-sb{display:none;}.hero{padding:28px 20px;}.hero h1{font-size:20px;}.mc{padding:12px;}}
+html[data-theme="dark"]{--sky:#2D6A8F;--snow:#1E2530;--bg:#12161D;--black:#EDEFF2;--gray:#8A94A6;--graymd:#3A4250;--graydark:#C4CDD8;--accent:#4FA8D5;--accent2:#2D8FBF;--gb:rgba(79,168,213,0.25);--glass:rgba(30,37,48,0.75);--shadow:0 8px 32px rgba(0,0,0,0.35);--shadowlg:0 20px 60px rgba(0,0,0,0.5);}
+html[data-theme="dark"] body{background:var(--bg);color:var(--black);}
+html[data-theme="dark"] .nav,html[data-theme="dark"] .sb{background:rgba(18,22,29,0.85);}
+html[data-theme="dark"] .mc,html[data-theme="dark"] .modal,html[data-theme="dark"] .postcard,html[data-theme="dark"] .plcard,html[data-theme="dark"] .fwdg,html[data-theme="dark"] .profsec,html[data-theme="dark"] .exitem,html[data-theme="dark"] .strcard{background:var(--glass);color:var(--black);}
+html[data-theme="dark"] input,html[data-theme="dark"] textarea,html[data-theme="dark"] select{background:var(--snow);color:var(--black);}
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:none;background:var(--snow);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:var(--tr);}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:190;}
+.sb-backdrop.on{display:block;}
+@media(max-width:768px){
+  .sb{display:flex;flex-direction:column;position:fixed;top:58px;right:0;height:calc(100vh - 58px);width:78%;max-width:280px;z-index:200;transform:translateX(100%);transition:transform 0.3s ease;box-shadow:-6px 0 24px rgba(0,0,0,0.18);background:#fff;}
+  html[data-theme="dark"] .sb{background:#161B24;}
+  .sb.mopen{transform:translateX(0);}
+  .fgrid{grid-template-columns:repeat(2,1fr);}.strow{grid-template-columns:repeat(2,1fr);}.plgrid{grid-template-columns:1fr;}.feed-layout{grid-template-columns:1fr;}.exgrid{grid-template-columns:repeat(2,1fr);}.profgrid{grid-template-columns:1fr;}.wallet-layout{grid-template-columns:1fr;}.store-grid{grid-template-columns:1fr;}.chat-sb{display:none;}.hero{padding:28px 20px;}.hero h1{font-size:20px;}.mc{padding:12px;}
+}
 @media(max-width:480px){.fgrid{grid-template-columns:1fr;}.exgrid{grid-template-columns:1fr;}.nav-search{display:none;}}
 </style>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
 <div class="amb"></div>
@@ -377,6 +391,7 @@ function togCap(t){
     <span class="nav-logo" onclick="nav('home')">Uliki</span>
     <div class="nav-search"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input placeholder="جستجو..." id="srch" onkeydown="if(event.key==='Enter'){nav('explore');toast('جستجو 🔍')}"></div>
     <div class="nav-right">
+      <button class="theme-toggle" id="themebtn" onclick="toggleTheme()" title="حالت شب/روز">🌙</button>
       <div style="position:relative">
         <button class="nbell" onclick="togNotif()">🔔<span class="ndot"></span></button>
         <div class="npanel" id="npanel"><h4>اعلان‌ها</h4><div class="nitem"><div class="nic">🤖</div><div class="ntxt"><strong>تولید محتوا کامل شد</strong></div></div><div class="nitem"><div class="nic">❤️</div><div class="ntxt"><strong>Sara به پست شما لایک داد</strong></div></div></div>
@@ -387,6 +402,7 @@ function togCap(t){
     </div>
   </nav>
   <div class="abody">
+    <div class="sb-backdrop" id="sb-backdrop" onclick="closeSBMobile()"></div>
     <aside class="sb" id="sb">
       <div class="sb-sec">
         <div class="sb-lbl">منو اصلی</div>
@@ -764,8 +780,8 @@ function togCap(t){
             <div class="fwdg">
               <h4>👥 پیشنهادی</h4>
               <div style="display:flex;flex-direction:column;gap:8px">
-                <div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#4FA8D5,#2D8FBF)">SA</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Sara AI</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px">دنبال</button></div>
-                <div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#9B59B6,#6C3483)">AM</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Ali Music</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px">دنبال</button></div>
+                <div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#4FA8D5,#2D8FBF)">SA</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Sara AI</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px" onclick="toggleFollow(this)">دنبال</button></div>
+                <div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#9B59B6,#6C3483)">AM</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Ali Music</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px" onclick="toggleFollow(this)">دنبال</button></div>
               </div>
             </div>
           </div>
@@ -925,11 +941,10 @@ function togCap(t){
               <div class="profstat"><div class="n" id="pmsg">0</div><div class="l">پیام</div></div>
             </div>
           </div>
-          <div style="margin-right:auto"><button class="btn btng" style="color:#fff;border-color:rgba(255,255,255,0.3)">✏️ ویرایش</button></div>
+          <div style="margin-right:auto"><button class="btn btng" style="color:#fff;border-color:rgba(255,255,255,0.3)" onclick="openEditProfile()">✏️ ویرایش</button></div>
         </div>
         <div class="profgrid">
           <div class="profsec"><h4>⚙️ تنظیمات</h4>
-            <div class="setitem"><span class="setlbl">اعلان‌های ایمیل</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
             <div class="setitem"><span class="setlbl">ذخیره خودکار چت</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
             <div class="setitem"><span class="setlbl">نمایش پست در فید</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
           </div>
@@ -955,6 +970,38 @@ function togCap(t){
 </div>
 
 <!-- MODALS -->
+<div class="moverlay" id="comments-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('comments-modal')">✕</button>
+    <h3>💬 نظرات</h3>
+    <div id="comments-list" style="max-height:280px;overflow-y:auto;margin:14px 0;display:flex;flex-direction:column;gap:8px"></div>
+    <div style="display:flex;gap:8px">
+      <input class="inp" id="comment-inp" placeholder="نظر خود را بنویسید..." onkeydown="if(event.key==='Enter'){addComment()}">
+      <button class="btn btnp btnsm" onclick="addComment()">ارسال</button>
+    </div>
+  </div>
+</div>
+<div class="moverlay" id="pay-pending-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('pay-pending-modal')">✕</button>
+    <div style="text-align:center;padding:10px 0 6px">
+      <div style="font-size:44px;margin-bottom:10px">⏳</div>
+      <h3>درخواست شما ثبت شد</h3>
+      <p class="msub" style="line-height:1.9">اطلاعات شما برای تیم خرید ارسال شد. لطفاً منتظر نظر کارشناسان خرید باشید — پس از تأیید، حساب شما به‌صورت دستی فعال می‌شود و نتیجه اطلاع‌رسانی خواهد شد.</p>
+    </div>
+    <button class="btn btnp" style="width:100%" onclick="closemod('pay-pending-modal')">متوجه شدم</button>
+  </div>
+</div>
+<div class="moverlay" id="editprofile-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('editprofile-modal')">✕</button>
+    <h3>✏️ ویرایش پروفایل</h3>
+    <p class="msub">اطلاعات حساب خود را بروزرسانی کنید</p>
+    <div class="ig"><label class="lbl">نام</label><input class="inp" id="ep-name" placeholder="نام شما"></div>
+    <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="ep-email" placeholder="email@example.com"></div>
+    <button class="btn btnp" style="width:100%;margin-top:6px" onclick="saveEditProfile()">💾 ذخیره تغییرات</button>
+  </div>
+</div>
 <div class="moverlay" id="pay-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('pay-modal')">✕</button>
@@ -1094,7 +1141,7 @@ function togCap(t){
 
 <script>
 // ===== CONFIG =====
-const WK = 'https://uliki.amiralitanaomi2015.workers.dev';
+const WK = ''; // آدرس Cloudflare Worker خودتان را اینجا قرار دهید، مثلاً: 'https://your-worker.your-subdomain.workers.dev'
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
 const MODELS = {
   luolaf3: {n:'Luolaf.3', e:'🧠', gm:'llama-3.3-70b-versatile'},
@@ -1127,6 +1174,7 @@ let S = {
   cooldown:{active:false, count:0},
   payTarget:null,
   feedPosts:[],
+  feedComments:{},
   trialUsed: 0
 };
 
@@ -1233,6 +1281,39 @@ function doOut(){
   document.getElementById('auth').classList.add('on');
   stopAdTimer(); stopWalletTimer(); stopMsgReset();
 }
+// ===== ویرایش پروفایل =====
+function openEditProfile(){
+  document.getElementById('ep-name').value=S.user?.name||'';
+  document.getElementById('ep-email').value=S.user?.email||'';
+  openmod('editprofile-modal');
+}
+function saveEditProfile(){
+  const nm=document.getElementById('ep-name').value.trim();
+  const em=document.getElementById('ep-email').value.trim();
+  if(!nm||!em){toast('نام و ایمیل را وارد کنید','w');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('ایمیل معتبر نیست','w');return;}
+  const oldEmail=S.user?.email;
+  const users=ld('users',{});
+  if(oldEmail&&oldEmail!==em){
+    if(users[em]){toast('این ایمیل قبلاً استفاده شده','w');return;}
+    users[em]=users[oldEmail]?{...users[oldEmail],name:nm,email:em}:{name:nm,email:em,password:'',plan:S.plan,joined:new Date().toISOString()};
+    delete users[oldEmail];
+    sv('users',users);
+    const w=ld('wallet_'+oldEmail,null); if(w)sv('wallet_'+em,w);
+    const chats=ld('chats_'+oldEmail,null); if(chats)sv('chats_'+em,chats);
+    const trial=ld('trial_'+oldEmail,null); if(trial!==null)sv('trial_'+em,trial);
+  } else if(oldEmail&&users[oldEmail]){
+    users[oldEmail].name=nm; sv('users',users);
+  }
+  S.user={name:nm,email:em};
+  document.getElementById('greet').textContent=nm;
+  document.getElementById('navav').textContent=nm.charAt(0).toUpperCase();
+  document.getElementById('profav').textContent=nm.charAt(0).toUpperCase();
+  document.getElementById('profname').textContent=nm;
+  document.getElementById('profemail').textContent=em;
+  closemod('editprofile-modal');
+  toast('✅ پروفایل بروزرسانی شد');
+}
 
 // ===== ENTER APP =====
 function enterApp(name,email){
@@ -1305,7 +1386,35 @@ function updateUI(){
 
 // ===== NAV =====
 let sbOpen=true;
-function togSB(){sbOpen=!sbOpen;const sb=document.getElementById('sb');sb.classList.toggle('closed',!sbOpen);}
+function togSB(){
+  if(window.innerWidth<=768){
+    const sb=document.getElementById('sb');
+    const isOpen=sb.classList.toggle('mopen');
+    document.getElementById('sb-backdrop').classList.toggle('on',isOpen);
+    return;
+  }
+  sbOpen=!sbOpen;const sb=document.getElementById('sb');sb.classList.toggle('closed',!sbOpen);
+}
+function closeSBMobile(){
+  document.getElementById('sb').classList.remove('mopen');
+  document.getElementById('sb-backdrop').classList.remove('on');
+}
+// ===== تم شب/روز =====
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('themebtn');
+  if(btn)btn.textContent=t==='dark'?'☀️':'🌙';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
+  const next=cur==='dark'?'light':'dark';
+  applyTheme(next);
+  sv('theme',next);
+}
+(function initTheme(){
+  const saved=ld('theme',null)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  applyTheme(saved);
+})();
 function nav(pg){
   document.querySelectorAll('.pg').forEach(p=>{p.style.display='none';p.classList.remove('on');});
   document.querySelectorAll('.sbi').forEach(i=>i.classList.remove('on'));
@@ -1316,6 +1425,7 @@ function nav(pg){
   document.getElementById('npanel').classList.remove('on');
   S.currentPage=pg;
   if(pg==='projects')renderProjects();
+  closeSBMobile();
 }
 function togNotif(){document.getElementById('npanel').classList.toggle('on');}
 document.addEventListener('click',e=>{
@@ -1391,27 +1501,10 @@ function submitPay(){
   const body=encodeURIComponent('نام: '+nm+' '+ln+'\nایمیل: '+em+'\nکشور: '+co+'\nشهر: '+ci+'\nموبایل: '+mo+'\nمحصول: '+S.payTarget+'\nتاریخ: '+new Date().toLocaleDateString('fa-IR'));
   window.open('mailto:'+TEAM_EMAIL+'?subject='+subj+'&body='+body);
   closemod('pay-modal');
-  // اگه کردیت یا پلن: بلافاصله اضافه کن
-  // اگه توکن: کد بده
-  if(S.payTarget&&S.payTarget.startsWith('credit_')){
-    const cnt=parseInt(S.payTarget.split('_')[1])||0;
-    S.wallet.credits+=cnt;
-    sv('wallet_'+(S.user?.email||''),S.wallet);
-    updateUI();
-    toast('✅ '+cnt+' کردیت به کیف پول اضافه شد 💎');
-    const h=document.getElementById('wallet-history');
-    if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — خرید '+cnt+' کردیت ✅</div>'+h.innerHTML;
-  } else if(S.payTarget&&S.payTarget.startsWith('token_')){
-    // تولید کد توکن
-    const code=genTokenCode(S.payTarget);
-    document.getElementById('token-code').textContent=code;
-    openmod('token-modal');
-  } else {
-    // پلن
-    setPlan(S.payTarget);
-    startWalletTimer(); startMsgReset();
-    if(PLAN_LIMITS[S.payTarget]?.noAd)stopAdTimer();
-  }
+  // ثبت درخواست در تاریخچه به‌عنوان «در انتظار بررسی» — چیزی خودکار فعال نمی‌شود
+  const h=document.getElementById('wallet-history');
+  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — درخواست '+(S.payTarget||'')+' — <span style="color:#E67E22">⏳ در انتظار بررسی</span></div>'+h.innerHTML;
+  openmod('pay-pending-modal');
 }
 function genTokenCode(type){
   const prefix={token_normal:'NRM',token_base:'BAS',token_team:'TEM',token_pro:'PRO',token_vip:'VIP'}[type]||'ULK';
@@ -1639,6 +1732,7 @@ async function doSend(){
   if(S.cooldown.count>=10)startCooldown();
   addMsg(txt,'u');
   S.hist.push({role:'user',content:txt});
+  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');S.msgs=Math.min(S.msgs+1,999);return;}
   const tid=addTyping();
   const mod=MODELS[S.selMod]||MODELS.luolaf3;
   const sys='تو '+mod.n+' هستی، دستیار AI فارسی‌زبان پلتفرم Uliki. حالت: '+S.aiMode+'. پاسخ دقیق و دوستانه به فارسی بده. برای کدها از بلاک ``` استفاده کن. برای جداول از | استفاده کن.';
@@ -1678,22 +1772,10 @@ function addTyping(){
 }
 function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
-// ===== VOICE =====
-let recognition=null, isRec=false;
-function togVoice(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('مرورگر از صدا پشتیبانی نمی‌کند','w');return;}
-  if(isRec){recognition?.stop();isRec=false;document.getElementById('voicebtn').classList.remove('rec');return;}
-  recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
-  recognition.lang='fa-IR'; recognition.continuous=false; recognition.interimResults=false;
-  recognition.onresult=e=>{const t=e.results[0][0].transcript;document.getElementById('chat-inp').value=t;};
-  recognition.onend=()=>{isRec=false;document.getElementById('voicebtn').classList.remove('rec');};
-  recognition.start(); isRec=true;
-  document.getElementById('voicebtn').classList.add('rec');
-  toast('🎤 در حال گوش دادن...','i');
-}
 
 // ===== CALL AI =====
 async function callAI(msgs,sys,modKey){
+  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const mod=MODELS[modKey]||MODELS.luolaf3;
   const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:'groq_direct',groq_model:mod.gm})});
   const data=await res.json();
@@ -1937,17 +2019,50 @@ async function genOffice(){
   } catch(e){toast('خطا در اتصال','w');}
   btn.innerHTML='✨ ساخت با AI'; btn.disabled=false;
 }
+function parsePptSlides(txt){
+  const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l);
+  const slideLines=lines.filter(l=>/^SLIDE\s*:/i.test(l));
+  if(slideLines.length){
+    return slideLines.map(l=>{
+      const rest=l.replace(/^SLIDE\s*:/i,'').trim();
+      const parts=rest.split('|');
+      return {title:(parts[0]||'اسلاید').trim(), body:(parts.slice(1).join('|')||'').trim()};
+    });
+  }
+  // اگه AI فرمت SLIDE: را رعایت نکرده بود، متن رو به چند اسلاید تقسیم کن
+  const chunkSize=4, slides=[];
+  for(let i=0;i<lines.length;i+=chunkSize){
+    const chunk=lines.slice(i,i+chunkSize);
+    slides.push({title:chunk[0]||('اسلاید '+(slides.length+1)), body:chunk.slice(1).join('\n')});
+  }
+  if(!slides.length)slides.push({title:'اسلاید ۱', body:txt});
+  return slides;
+}
 function dlOffice(){
   if(!window._officeData){toast('ابتدا محتوا بسازید','w');return;}
   const {type,txt}=window._officeData;
   if(type==='excel'){
     const csv='﻿'+txt.replace(/\|/g,',');
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='uliki.csv';a.click();
+    toast('✅ فایل دانلود شد!');
+  } else if(type==='ppt'){
+    if(typeof PptxGenJS==='undefined'){toast('کتابخانه ساخت PowerPoint لود نشده — اتصال اینترنت را چک کنید','w');return;}
+    const pptx=new PptxGenJS();
+    pptx.defineLayout({name:'ULIKI',width:10,height:5.63});
+    pptx.layout='ULIKI';
+    parsePptSlides(txt).forEach(s=>{
+      const slide=pptx.addSlide();
+      slide.background={color:'FFFFFF'};
+      slide.addText(s.title,{x:0.5,y:0.35,w:9,h:1,fontSize:26,bold:true,color:'1A3A5C',align:'right',rtlMode:true,fontFace:'Arial'});
+      slide.addText(s.body,{x:0.5,y:1.4,w:9,h:3.9,fontSize:15,color:'333333',align:'right',rtlMode:true,fontFace:'Arial',valign:'top'});
+    });
+    pptx.writeFile({fileName:'uliki.pptx'});
+    toast('✅ فایل دانلود شد!');
   } else {
-    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}\n/* VOICE & UPLOAD */\n.voice-lang-sel{padding:4px 8px;border:1px solid var(--gb);border-radius:50px;font-family:inherit;font-size:11px;background:var(--snow);color:var(--graydark);outline:none;cursor:pointer;}\n.voice-panel{background:var(--snow);border-radius:14px;padding:14px;margin-bottom:10px;display:none;animation:fid 0.3s ease;}\n.voice-panel.on{display:block;}\n.voice-wave{display:flex;align-items:center;gap:3px;height:36px;justify-content:center;margin:10px 0;}\n.voice-wave-bar{width:4px;background:var(--accent);border-radius:3px;height:4px;transition:height 0.1s ease;}\n.upload-zone{border:2px dashed var(--graymd);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:var(--tr);position:relative;}\n.upload-zone:hover{border-color:var(--accent);background:var(--snow);}\n.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}\n.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}\n.upload-item{position:relative;display:inline-block;}\n.upload-item img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--gb);}\n.upload-item .rm{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#E74C3C;color:#fff;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;}\n.voice-1v1{background:linear-gradient(135deg,#1A3A5C,#0D5F8A);border-radius:16px;padding:20px;color:#fff;margin-bottom:16px;}\n.voice-1v1 h3{font-size:15px;font-weight:800;margin-bottom:12px;}\n.v1v1-status{display:flex;align-items:center;gap:8px;margin-bottom:14px;}\n.v1v1-dot{width:10px;height:10px;border-radius:50%;background:#27AE60;animation:pulse 1s infinite;flex-shrink:0;}\n\n</style></head><body>'+txt.replace(/\n/g,'<br>')+'</body></html>';
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'application/msword'}));a.download='uliki.'+(type==='ppt'?'doc':'doc');a.click();
+    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}</style></head><body>'+txt.replace(/\n/g,'<br>')+'</body></html>';
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'application/msword'}));a.download='uliki.doc';a.click();
+    toast('✅ فایل دانلود شد!');
   }
-  toast('✅ فایل دانلود شد!');
 }
 
 // ===== FEED =====
@@ -1961,7 +2076,7 @@ function genFeed(){
   [...S.feedPosts,...SAMPLE_POSTS].forEach((p,i)=>{c.innerHTML+=mkPost(p,i);});
 }
 function mkPost(p,i){
-  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${p.av}</div><div class="postuser"><h4>${p.user}${p.isNew?'<span style="background:#27AE60;color:#fff;font-size:9px;padding:2px 6px;border-radius:50px;margin-right:5px">شما</span>':''}</h4><span><span class="postbdg">${p.bdg}</span>همین الان</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${p.cont}</div><div class="posttags">${p.tags.map(t=>'<span class="posttag">'+t+'</span>').join('')}</div><div class="postacts"><button class="postact" data-lk="${p.lk}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk}</button><button class="postact">💬 ${p.cm}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact">🔖 ذخیره</button></div></div>`;
+  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${p.av}</div><div class="postuser"><h4>${p.user}${p.isNew?'<span style="background:#27AE60;color:#fff;font-size:9px;padding:2px 6px;border-radius:50px;margin-right:5px">شما</span>':''}</h4><span><span class="postbdg">${p.bdg}</span>همین الان</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${p.cont}</div><div class="posttags">${p.tags.map(t=>'<span class="posttag">'+t+'</span>').join('')}</div><div class="postacts"><button class="postact" data-lk="${p.lk}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk}</button><button class="postact" data-cmtid="${i}" onclick="openComments(${i})">💬 ${p.cm}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${i}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button></div></div>`;
 }
 function likePost(btn){
   const liked=btn.getAttribute('data-liked')==='1';
@@ -1969,6 +2084,53 @@ function likePost(btn){
   if(liked){lk--;btn.setAttribute('data-liked','0');btn.classList.remove('liked');}
   else{lk++;btn.setAttribute('data-liked','1');btn.classList.add('liked');}
   btn.setAttribute('data-lk',lk);btn.innerHTML='❤️ '+lk;
+}
+function savePost(btn){
+  const saved=btn.getAttribute('data-saved')==='1';
+  const key='saved_'+(S.user?.email||'guest');
+  const savedList=ld(key,[]);
+  const pid=btn.getAttribute('data-pid');
+  if(saved){
+    btn.setAttribute('data-saved','0');btn.classList.remove('liked');btn.innerHTML='🔖 ذخیره';
+    const idx=savedList.indexOf(pid); if(idx>-1)savedList.splice(idx,1);
+    toast('از ذخیره‌شده‌ها حذف شد');
+  } else {
+    btn.setAttribute('data-saved','1');btn.classList.add('liked');btn.innerHTML='🔖 ذخیره‌شد ✓';
+    if(!savedList.includes(pid))savedList.push(pid);
+    toast('✅ پست ذخیره شد');
+  }
+  sv(key,savedList);
+}
+let currentCommentPid=null;
+function openComments(pid){
+  currentCommentPid=pid;
+  renderComments();
+  openmod('comments-modal');
+}
+function renderComments(){
+  const list=document.getElementById('comments-list');
+  const comments=S.feedComments[currentCommentPid]||[];
+  list.innerHTML=comments.length?comments.map(c=>'<div style="font-size:13px;background:var(--snow);border-radius:10px;padding:8px 12px;text-align:right"><strong>'+c.user+':</strong> '+c.txt+'</div>').join(''):'<div style="font-size:12px;color:var(--gray);text-align:center;padding:24px 0">هنوز نظری ثبت نشده — اولین نفر باشید!</div>';
+}
+function addComment(){
+  const inp=document.getElementById('comment-inp');
+  const txt=inp.value.trim();
+  if(!txt||currentCommentPid===null)return;
+  if(!S.feedComments[currentCommentPid])S.feedComments[currentCommentPid]=[];
+  S.feedComments[currentCommentPid].push({user:S.user?.name||'کاربر',txt});
+  inp.value='';
+  renderComments();
+  const btn=document.querySelector('[data-cmtid="'+currentCommentPid+'"]');
+  if(btn)btn.innerHTML='💬 '+S.feedComments[currentCommentPid].length;
+}
+function toggleFollow(btn){
+  const following=btn.classList.contains('following');
+  if(following){
+    btn.classList.remove('following');btn.textContent='دنبال';
+  } else {
+    btn.classList.add('following');btn.textContent='دنبال شد ✓';
+    toast('✅ دنبال شد');
+  }
 }
 function sharePost(){if(navigator.share){navigator.share({title:'Uliki AI',text:'یک محتوای AI ببینید!',url:location.href});}else{navigator.clipboard.writeText(location.href);toast('لینک کپی شد! 📋');}}
 function pubContent(type){S.pubtype=type;document.getElementById('pub-title').value='';document.getElementById('pub-desc').value='';openmod('pub-modal');}
@@ -2032,12 +2194,6 @@ async function sendSupport(){
 
 // ===== HELPERS =====
 function copyTxt(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.innerText||el.textContent).then(()=>toast('کپی شد! 📋'));}
-function setPlan(p){
-  applyPlan(p);
-  const users=ld('users',{});
-  if(S.user?.email&&users[S.user.email]){users[S.user.email].plan=p;sv('users',users);}
-  toast('پلن '+p+' فعال شد 🎉');
-}
 
 
 // ===== VOICE SYSTEM =====
