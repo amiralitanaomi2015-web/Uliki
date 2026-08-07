@@ -724,18 +724,7 @@ function togCap(t){
         <!-- LIP SYNC -->
         <div class="cpanel" id="cp-lipsync">
           <div class="ccard">
-            <h3>🎭 Lip Sync</h3><p class="csub">عکس + صدا = ویدیو talking-head با D-ID API</p>
-            <div class="lip-api-hint">
-              <strong>⚙️ راه‌اندازی D-ID API:</strong><br>
-              ۱. برید به <a href="https://www.d-id.com" target="_blank" style="color:var(--accent)">d-id.com</a> و API Key رایگان بگیرید<br>
-              ۲. کلید را در تنظیمات → AI Keys وارد کنید<br>
-              ۳. سپس از این بخش استفاده کنید
-            </div>
-            <div class="ig" style="margin-top:16px">
-              <label class="lbl">API Key D-ID</label>
-              <input class="inp" type="password" id="did-key" placeholder="Basic ...">
-              <div style="font-size:11px;color:var(--gray);margin-top:4px">این کلید فقط در مرورگر شما ذخیره می‌شود</div>
-            </div>
+            <h3>🎭 Lip Sync</h3><p class="csub">عکس + صدا = ویدیو talking-head</p>
             <div class="ig">
               <label class="lbl">تصویر چهره</label>
               <input type="file" id="lip-img" accept="image/*" style="display:none" onchange="previewLipImg(this)">
@@ -953,11 +942,6 @@ function togCap(t){
             <div class="setitem"><span class="setlbl">محتوا تولیدی</span><strong id="stat-cr">0</strong></div>
             <div class="setitem"><span class="setlbl">پلن</span><strong id="stat-plan">Rax</strong></div>
           </div>
-          <div class="profsec"><h4>🔑 D-ID API Key</h4>
-            <p style="font-size:11px;color:var(--gray);margin-bottom:10px">برای قابلیت Lip Sync</p>
-            <input class="inp" type="password" id="did-key-save" placeholder="Basic ...">
-            <button class="btn btnp btnsm" style="margin-top:10px" onclick="saveDIDKey()">💾 ذخیره</button>
-          </div>
           <div class="profsec"><h4>🚪 خروج</h4>
             <p style="font-size:12px;color:var(--gray);margin-bottom:12px">از حساب کاربری خارج شوید</p>
             <button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C;border:1px solid #FFCCCC;width:100%" onclick="doOut()">🚪 خروج از حساب</button>
@@ -1143,6 +1127,47 @@ function togCap(t){
 // ===== CONFIG =====
 const WK = ''; // آدرس Cloudflare Worker خودتان را اینجا قرار دهید، مثلاً: 'https://your-worker.your-subdomain.workers.dev'
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
+const SUPPORT_KB = `### معرفی پلتفرم
+Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتشرشده روی GitHub Pages، با نسخه اندروید در حال آماده‌سازی برای بازارهای اپلیکیشن ایرانی.
+قابلیت‌های اصلی: چت با هوش مصنوعی، تولید موسیقی، دستیار برنامه‌نویسی، تولید تصویر و ویدیو، فید عمومی، سیستم اشتراک پولی (سه پلن)، و Lip Sync (تصویر+صدا به ویدیوی گفتاری).
+پلتفرم کاملاً فارسی و راست‌به‌چپ (RTL) است و طراحی واکنش‌گرا دارد (روی موبایل هم درست نمایش داده می‌شود).
+
+### زیرساخت فنی
+- میزبانی: GitHub Pages (وب)
+- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال و به Groq API وصل می‌شوند. مدل‌های فعلی: Luolaf.3 (llama-3.3-70b-versatile)، Uliki.2 (mixtral-8x7b-32768)، Uliki.3 (gemma2-9b-it).
+- ذخیره‌سازی داده کاربر: در حافظه محلی مرورگر (localStorage) — نه دیتابیس سمت سرور. یعنی فعلاً همگام‌سازی بین دستگاه‌ها/مرورگرهای مختلف وجود ندارد.
+
+### وضعیت قابلیت‌ها
+- چت با هوش مصنوعی: فعال
+- تولید موسیقی: فعال
+- دستیار برنامه‌نویسی: فعال
+- تولید تصویر و ویدیو: فعال
+- فید عمومی: فعال (لایک، کامنت، ذخیره، دنبال‌کردن)
+- Lip Sync: فعال (نیازی به کلید API از کاربر نیست، سرویس مستقیماً از طریق پلتفرم کار می‌کند)
+
+### پلن‌های اشتراک و محدودیت‌ها
+- Rax/Free (رایگان): ۲۰ پیام در روز، ۲ تا ۵ تولید محتوا، کیف‌پول ۳ توکن/کردیت، شامل تبلیغ
+- Pro (۱۵۰,۰۰۰ تومان): ۶۰ پیام در روز، ۲۰ تولید محتوا، ۲۰ توکن/کردیت، بدون تبلیغ
+- Plus (۲۱۰,۰۰۰ تومان): پیام و تولید نامحدود، ۵۰ توکن/کردیت، بدون تبلیغ
+- VIP (۳۰۰,۰۰۰ تومان): پیام و تولید کاملاً نامحدود، بدون تبلیغ، اولویت پردازش
+دوره اشتراک و روش دقیق پرداخت: فعلاً خرید از طریق فرم داخل پلتفرم انجام می‌شود؛ بعد از تکمیل فرم، درخواست برای بررسی تیم خرید ارسال می‌شود و فعال‌سازی به‌صورت دستی پس از تأیید انجام می‌گیرد (نه خودکار).
+
+### سوالات متداول
+- چرا سابقه چت/داده‌هایم پاک شد؟ چون داده‌ها فقط در حافظه محلی همان مرورگر ذخیره می‌شوند، پاک‌کردن کش مرورگر، حالت ناشناس، یا تغییر دستگاه باعث از‌دست‌رفتن یا عدم دسترسی به داده‌های قبلی می‌شود.
+- چرا اطلاعاتم بین موبایل و دسکتاپ یکی نیست؟ چون هنوز همگام‌سازی سمت سرور بین دستگاه‌ها وجود ندارد؛ هر مرورگر/دستگاه داده‌های جداگانه خودش را نگه می‌دارد.
+- Uliki روی موبایل هم کار می‌کند؟ بله، نسخه وب واکنش‌گراست؛ نسخه اختصاصی اندروید هم برای بازارهای ایرانی در حال آماده‌سازی است.
+- چطور مشترک شوم؟ از صفحه پلن‌ها (بخش قیمت‌گذاری) پلن مدنظر را انتخاب و فرم پرداخت را پر کنید؛ پس از تأیید تیم خرید فعال می‌شود.
+
+### مشکلات رایج فنی (راهنمای پاسخ به کاربر)
+- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس Groq است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
+- گم‌شدن اطلاعات کاربر: ماهیت localStorage را طبق بخش سوالات متداول توضیح بده.
+- مشکل نمایش در برخی گوشی/مرورگرها: مدل دستگاه، مرورگر و نسخه آن را از کاربر بپرس.
+
+### تماس با پشتیبانی
+ایمیل رسمی تیم: ${TEAM_EMAIL}
+
+### قوانین پاسخ‌دهی
+اگر سوالی درباره جزئیاتی بود که در این اطلاعات نیامده (مثلاً فرمت دقیق خروجی موسیقی، رزولوشن دقیق تصویر/ویدیو، سقف تولید روزانه دقیق، یا قوانین کامل انتشار محتوا در فید)، هرگز عدد یا جزئیات از خودت نساز — صادقانه بگو این جزئیات را نداری و کاربر را به ایمیل پشتیبانی ارجاع بده.`;
 const MODELS = {
   luolaf3: {n:'Luolaf.3', e:'🧠', gm:'llama-3.3-70b-versatile'},
   uliki2:  {n:'Uliki.2',  e:'⚡', gm:'mixtral-8x7b-32768'},
@@ -1885,8 +1910,7 @@ function previewLipImg(inp){
   document.getElementById('lip-audio').onchange=e=>{if(e.target.files[0])document.getElementById('lip-audio-name').textContent=e.target.files[0].name;};
 }
 async function genLipSync(){
-  const apiKey=document.getElementById('did-key').value.trim()||ld('did_key','');
-  if(!apiKey){toast('ابتدا API Key D-ID را وارد کنید','w');return;}
+  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return;}
   const imgFile=document.getElementById('lip-img').files[0];
   const audioFile=document.getElementById('lip-audio').files[0];
   if(!imgFile||!audioFile){toast('تصویر و فایل صوتی را انتخاب کنید','w');return;}
@@ -1896,10 +1920,10 @@ async function genLipSync(){
     // تبدیل تصویر به base64
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
-    // ارسال به D-ID
-    const res=await fetch('https://api.d-id.com/talks',{
+    // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
+    const res=await fetch(WK+'/lipsync',{
       method:'POST',
-      headers:{'Authorization':apiKey,'Content-Type':'application/json','Accept':'application/json'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
     });
     const data=await res.json();
@@ -1907,9 +1931,9 @@ async function genLipSync(){
       // polling برای نتیجه
       document.getElementById('lipsync-out').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray)"><div class="spin" style="border-color:var(--graymd);border-top-color:var(--accent);width:30px;height:30px;margin:0 auto 12px"></div>در حال پردازش ویدیو... (۱-۲ دقیقه)</div>';
       document.getElementById('res-lipsync').classList.add('on');
-      pollDID(data.id,apiKey);
+      pollDID(data.id);
     } else {
-      throw new Error(data.message||'خطا در D-ID');
+      throw new Error(data.message||data.error||'خطا در سرویس Lip Sync');
     }
   } catch(e){
     document.getElementById('lipsync-out').innerHTML='<span style="color:#E74C3C">❌ خطا: '+e.message+'</span>';
@@ -1917,10 +1941,10 @@ async function genLipSync(){
   }
   btn.innerHTML='🎭 ساخت ویدیو Lip Sync'; btn.disabled=false;
 }
-async function pollDID(id,key,attempt=0){
+async function pollDID(id,attempt=0){
   if(attempt>30)return;
   try{
-    const res=await fetch('https://api.d-id.com/talks/'+id,{headers:{'Authorization':key}});
+    const res=await fetch(WK+'/lipsync/'+id);
     const data=await res.json();
     if(data.status==='done'&&data.result_url){
       document.getElementById('lipsync-out').innerHTML='<video controls style="width:100%;border-radius:12px" src="'+data.result_url+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+data.result_url+'" download target="_blank">⬇️ دانلود</a><button class="btn btng btnsm" onclick=\"pubContent(\'video\')\">📤 انتشار</button></div>';
@@ -1928,16 +1952,9 @@ async function pollDID(id,key,attempt=0){
     } else if(data.status==='error'){
       document.getElementById('lipsync-out').innerHTML='<span style="color:#E74C3C">❌ خطا در پردازش D-ID</span>';
     } else {
-      setTimeout(()=>pollDID(id,key,attempt+1),4000);
+      setTimeout(()=>pollDID(id,attempt+1),4000);
     }
-  } catch(e){setTimeout(()=>pollDID(id,key,attempt+1),4000);}
-}
-function saveDIDKey(){
-  const k=document.getElementById('did-key-save')?.value?.trim();
-  if(!k){toast('کلید را وارد کنید','w');return;}
-  sv('did_key',k);
-  if(document.getElementById('did-key'))document.getElementById('did-key').value=k;
-  toast('✅ API Key D-ID ذخیره شد');
+  } catch(e){setTimeout(()=>pollDID(id,attempt+1),4000);}
 }
 
 // ===== MUSIC PLAYER =====
@@ -2183,7 +2200,7 @@ async function sendSupport(){
   msgs.appendChild(ud);msgs.scrollTop=msgs.scrollHeight;
   setTimeout(async()=>{
     try{
-      const reply=await callAI([{role:'user',content:txt}],'تو پشتیبان پلتفرم Uliki از تیم LuoLaf هستی. مودبانه و حرفه‌ای به فارسی پاسخ بده.',S.selMod||'luolaf3');
+      const reply=await callAI([{role:'user',content:txt}],'تو پشتیبان پلتفرم Uliki از تیم LuoLaf هستی. کوتاه، مودبانه، صمیمی و حرفه‌ای به فارسی پاسخ بده. فقط بر اساس این اطلاعات مرجع درباره پلتفرم پاسخ بده و چیزی از خودت حدس نزن:\n\n'+SUPPORT_KB,S.selMod||'luolaf3');
       const ad=document.createElement('div');ad.className='msg fiu';
       const t2=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
       ad.innerHTML='<div class="msgav ai">👨‍💼</div><div><div class="msgb ai">'+reply.replace(/\n/g,'<br>')+'</div><div class="msgt">'+t2+'</div></div>';
@@ -2387,9 +2404,6 @@ function togVoice() { togVoicePanel(); }
 (function(){
   const app=document.getElementById('app');
   app.style.display='none';app.classList.remove('on');
-  // بارگذاری D-ID key
-  const savedDID=ld('did_key','');
-  if(savedDID&&document.getElementById('did-key'))document.getElementById('did-key').value=savedDID;
   // تلاش ورود خودکار
   setTimeout(()=>{if(!S.user)tryAutoLogin();},100);
 })();
