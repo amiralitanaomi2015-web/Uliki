@@ -1112,9 +1112,10 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
           <div class="profsec">
             <h4>🧠 مدل‌های AI فعال</h4>
-            <div class="setitem"><span class="setlbl">Luolaf.3</span><span style="font-size:11px;color:var(--gray)">DeepSeek V4 Pro</span></div>
-            <div class="setitem"><span class="setlbl">Uliki.2</span><span style="font-size:11px;color:var(--gray)">DeepSeek V4 Flash</span></div>
-            <div class="setitem"><span class="setlbl">Uliki.3</span><span style="font-size:11px;color:var(--gray)">DeepSeek V4 Flash</span></div>
+            <div class="setitem"><span class="setlbl">Luolaf.3</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Llama 3.3 · Pro+: DeepSeek V4 Pro</span></div>
+            <div class="setitem"><span class="setlbl">Uliki.2</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Llama 3.1 8B · Pro+: DeepSeek V4 Flash</span></div>
+            <div class="setitem"><span class="setlbl">Uliki.3</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Gemma2 · Pro+: DeepSeek V4 Flash</span></div>
+            <p style="font-size:10px;color:var(--gray);margin-top:8px">مدل DeepSeek فقط برای پلن‌های Pro، Plus و VIP فعاله؛ پلن رایگان از Groq استفاده می‌کنه.</p>
             <div class="setitem"><span class="setlbl">پرامپت‌ساز</span><span style="font-size:11px;color:var(--gray)">OpenRouter</span></div>
           </div>
         </div>
@@ -1210,6 +1211,15 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
       <div class="ig"><label class="lbl">شهر</label><input class="inp" id="pf-city" placeholder="تهران"></div>
     </div>
     <div class="ig"><label class="lbl">موبایل</label><input class="inp" id="pf-mobile" placeholder="+98 912 ..."></div>
+    <div class="ig">
+      <label class="lbl">🎟️ کد تخفیف (اختیاری)</label>
+      <div style="display:flex;gap:8px">
+        <input class="inp" id="pf-discount" placeholder="کد تخفیف را وارد کنید" style="flex:1">
+        <button class="btn btno btnsm" type="button" onclick="applyDiscountCode()">اعمال کد</button>
+      </div>
+      <div id="discount-result" style="display:none;margin-top:8px;background:linear-gradient(135deg,#FFF4E0,#FFE8CC);border-radius:10px;padding:10px 12px;text-align:center;font-weight:800;color:#B8620A;font-size:14px"></div>
+    </div>
+    <div id="price-summary" style="font-size:13px;background:var(--snow);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;justify-content:space-between"><span>مبلغ نهایی</span><strong id="price-final">—</strong></div>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:10px"><input type="checkbox" id="pf-agree"> حاضر به خرید هستم و شرایط را می‌پذیرم</label>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:16px"><input type="checkbox" id="pf-robot"> من روبات نیستم</label>
     <button class="btn btnp" style="width:100%" onclick="submitPay()">📧 ارسال اطلاعات و خرید</button>
@@ -1335,6 +1345,8 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 <script>
 // ===== CONFIG =====
 const WK = ''; // آدرس Cloudflare Worker خودتان را اینجا قرار دهید، مثلاً: 'https://your-worker.your-subdomain.workers.dev'
+const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
+const API_CONFIGURED = !!WK || USE_RELATIVE_API;
 const GOOGLE_CLIENT_ID = ''; // Client ID از Google Cloud Console — مثلاً: '123456-abc.apps.googleusercontent.com'
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
 const SUPPORT_KB = `### معرفی پلتفرم
@@ -1344,7 +1356,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 
 ### زیرساخت فنی
 - میزبانی: GitHub Pages (وب)
-- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال و به DeepSeek API وصل می‌شوند. مدل‌های فعلی: Luolaf.3 (deepseek-v4-pro)، Uliki.2 و Uliki.3 (deepseek-v4-flash).
+- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال می‌شوند. کاربران پلن رایگان از Groq (مدل‌های Llama 3.3, Llama 3.1, Gemma2) استفاده می‌کنند؛ کاربران پلن Pro، Plus و VIP از DeepSeek (مدل‌های V4 Pro و V4 Flash) بهره‌مند می‌شوند.
 - ذخیره‌سازی داده کاربر: در حافظه محلی مرورگر (localStorage) — نه دیتابیس سمت سرور. یعنی فعلاً همگام‌سازی بین دستگاه‌ها/مرورگرهای مختلف وجود ندارد.
 
 ### وضعیت قابلیت‌ها
@@ -1369,7 +1381,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 - چطور مشترک شوم؟ از صفحه پلن‌ها (بخش قیمت‌گذاری) پلن مدنظر را انتخاب و فرم پرداخت را پر کنید؛ پس از تأیید تیم خرید فعال می‌شود.
 
 ### مشکلات رایج فنی (راهنمای پاسخ به کاربر)
-- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس DeepSeek است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
+- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس‌های Groq/DeepSeek است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
 - گم‌شدن اطلاعات کاربر: ماهیت localStorage را طبق بخش سوالات متداول توضیح بده.
 - مشکل نمایش در برخی گوشی/مرورگرها: مدل دستگاه، مرورگر و نسخه آن را از کاربر بپرس.
 
@@ -1379,10 +1391,21 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 ### قوانین پاسخ‌دهی
 اگر سوالی درباره جزئیاتی بود که در این اطلاعات نیامده (مثلاً فرمت دقیق خروجی موسیقی، رزولوشن دقیق تصویر/ویدیو، سقف تولید روزانه دقیق، یا قوانین کامل انتشار محتوا در فید)، هرگز عدد یا جزئیات از خودت نساز — صادقانه بگو این جزئیات را نداری و کاربر را به ایمیل پشتیبانی ارجاع بده.`;
 const MODELS = {
-  luolaf3: {n:'Luolaf.3', e:'🧠', gm:'deepseek-v4-pro'},
-  uliki2:  {n:'Uliki.2',  e:'⚡', gm:'deepseek-v4-flash'},
-  uliki3:  {n:'Uliki.3',  e:'🌐', gm:'deepseek-v4-flash'}
+  luolaf3: {n:'Luolaf.3', e:'🧠'},
+  uliki2:  {n:'Uliki.2',  e:'⚡'},
+  uliki3:  {n:'Uliki.3',  e:'🌐'}
 };
+const MODEL_MAP = {
+  groq: {luolaf3:'llama-3.3-70b-versatile', uliki2:'llama-3.1-8b-instant', uliki3:'gemma2-9b-it'},
+  deepseek: {luolaf3:'deepseek-v4-pro', uliki2:'deepseek-v4-flash', uliki3:'deepseek-v4-flash'}
+};
+function getAIProvider(){
+  return (S.plan==='Pro'||S.plan==='Plus'||S.plan==='VIP')?'deepseek':'groq';
+}
+function getModelId(modKey){
+  const provider=getAIProvider();
+  return (MODEL_MAP[provider]&&MODEL_MAP[provider][modKey])||MODEL_MAP.groq.luolaf3;
+}
 const PLAN_LIMITS = {
   Rax:  {msgs:20, creates:2, chats:1,  wallet:3,  wRate:2,  noAd:false, uploadMB:10, maxFiles:3,  promptImprove:false, officeUpload:false, label:'رایگان'},
   Free: {msgs:20, creates:5, chats:2,  wallet:3,  wRate:2,  noAd:false, uploadMB:10, maxFiles:3,  promptImprove:false, officeUpload:false, label:'رایگان'},
@@ -1473,7 +1496,7 @@ function initGoogleAuth(){
   const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
 }
 async function handleGoogleCredential(resp){
-  if(!WK){aerr('آدرس API تنظیم نشده');return;}
+  if(!API_CONFIGURED){aerr('آدرس API تنظیم نشده');return;}
   try{
     const r=await fetch(WK+'/auth/google',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id_token:resp.credential})});
     const data=await r.json();
@@ -1870,7 +1893,7 @@ async function createApiKey(){
   const list=ld(apiKeysKey(),[]);
   const limit=getApiKeyLimit();
   if(list.length>=limit){toast('به سقف '+limit+' کلید پلن '+S.plan+' رسیدید — ارتقا دهید','w');return;}
-  if(!WK){toast('آدرس API تنظیم نشده','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   const key=genApiKeyStr();
   try{
     const r=await fetch(WK+'/apikey/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
@@ -2076,15 +2099,43 @@ function storeTab(t){
 }
 
 // ===== PAYMENT =====
+const PAY_PRICES={Pro:150000,Plus:210000,VIP:300000,token_normal:20000,token_base:35000,token_team:56000,token_pro:98000,token_vip:122000,credit_10:50000,credit_20:100000,credit_30:150000,credit_40:200000,credit_45:225000,credit_55:275000,credit_65:325000,credit_78:390000};
 function openPayForm(target){
   S.payTarget=target;
   const labels={Pro:'پلن Pro — ۱۵۰,۰۰۰ تومان',Plus:'پلن Plus — ۲۱۰,۰۰۰ تومان',VIP:'پلن VIP — ۳۰۰,۰۰۰ تومان',token_normal:'توکن معمولی — ۲۰,۰۰۰ تومان',token_base:'توکن پایه — ۳۵,۰۰۰ تومان',token_team:'توکن تیمی — ۵۶,۰۰۰ تومان',token_pro:'توکن تخصصی — ۹۸,۰۰۰ تومان',token_vip:'توکن VIP — ۱۲۲,۰۰۰ تومان',credit_10:'۱۰ کردیت — ۵۰,۰۰۰ تومان',credit_20:'۲۰ کردیت — ۱۰۰,۰۰۰ تومان',credit_30:'۳۰ کردیت — ۱۵۰,۰۰۰ تومان',credit_40:'۴۰ کردیت — ۲۰۰,۰۰۰ تومان',credit_45:'۴۵ کردیت — ۲۲۵,۰۰۰ تومان',credit_55:'۵۵ کردیت — ۲۷۵,۰۰۰ تومان',credit_65:'۶۵ کردیت — ۳۲۵,۰۰۰ تومان',credit_78:'۷۸ کردیت — ۳۹۰,۰۰۰ تومان'};
   document.getElementById('pay-label').textContent=labels[target]||target;
   if(S.user?.email)document.getElementById('pf-email').value=S.user.email;
-  ['pf-fname','pf-lname','pf-country','pf-mobile'].forEach(id=>{document.getElementById(id).value='';});
+  ['pf-fname','pf-lname','pf-country','pf-mobile','pf-discount'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('pf-agree').checked=false;
   document.getElementById('pf-robot').checked=false;
+  document.getElementById('discount-result').style.display='none';
+  S.discountPercent=0;
+  updatePriceSummary();
   openmod('pay-modal');
+}
+function updatePriceSummary(){
+  const base=PAY_PRICES[S.payTarget]||0;
+  const pct=S.discountPercent||0;
+  const final=Math.round(base*(1-pct/100));
+  document.getElementById('price-final').textContent=(pct>0?final.toLocaleString('fa-IR')+' تومان (بجای '+base.toLocaleString('fa-IR')+')':base.toLocaleString('fa-IR')+' تومان');
+}
+function applyDiscountCode(){
+  const code=document.getElementById('pf-discount').value.trim();
+  if(!code){toast('کد تخفیف را وارد کنید','w');return;}
+  // درصد تخفیف به‌صورت شانسی مشخص می‌شود
+  const options=[5,10,15,20,25,30,40,50];
+  const weights=[25,22,18,14,10,6,3,2]; // هرچی درصد بالاتر، احتمال کمتر
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total, pct=options[0];
+  for(let i=0;i<options.length;i++){ if(r<weights[i]){pct=options[i];break;} r-=weights[i]; }
+  S.discountPercent=pct;
+  S.discountCode=code;
+  const box=document.getElementById('discount-result');
+  box.style.display='block';
+  box.style.animation='none'; void box.offsetWidth; box.style.animation='fid 0.4s ease';
+  box.innerHTML='🎉 شانس شما: <span style="font-size:18px">'+pct+'٪ تخفیف!</span>';
+  updatePriceSummary();
+  toast('✅ کد تخفیف اعمال شد');
 }
 function submitPay(){
   const nm=document.getElementById('pf-fname').value.trim();
@@ -2097,15 +2148,19 @@ function submitPay(){
   const ro=document.getElementById('pf-robot').checked;
   if(!nm||!ln||!em||!co||!mo){toast('همه فیلدها را پر کنید','w');return;}
   if(!ag||!ro){toast('موافقت با شرایط و تیک روبات الزامی است','w');return;}
+  const base=PAY_PRICES[S.payTarget]||0;
+  const pct=S.discountPercent||0;
+  const finalPrice=Math.round(base*(1-pct/100));
+  const discountLine=pct>0?('\nکد تخفیف: '+(S.discountCode||'')+' ('+pct+'٪)\nمبلغ اصلی: '+base.toLocaleString('fa-IR')+' تومان\nمبلغ نهایی: '+finalPrice.toLocaleString('fa-IR')+' تومان'):'\nمبلغ: '+base.toLocaleString('fa-IR')+' تومان';
   // ارسال ایمیل به تیم
   const subj=encodeURIComponent('خرید '+S.payTarget+' — Uliki');
-  const body=encodeURIComponent('نام: '+nm+' '+ln+'\nایمیل: '+em+'\nکشور: '+co+'\nشهر: '+ci+'\nموبایل: '+mo+'\nمحصول: '+S.payTarget+'\nتاریخ: '+new Date().toLocaleDateString('fa-IR'));
+  const body=encodeURIComponent('نام: '+nm+' '+ln+'\nایمیل: '+em+'\nکشور: '+co+'\nشهر: '+ci+'\nموبایل: '+mo+'\nمحصول: '+S.payTarget+discountLine+'\nتاریخ: '+new Date().toLocaleDateString('fa-IR'));
   window.open('mailto:'+TEAM_EMAIL+'?subject='+subj+'&body='+body);
   closemod('pay-modal');
   // ثبت درخواست در تاریخچه به‌عنوان «در انتظار بررسی» — چیزی خودکار فعال نمی‌شود
   const h=document.getElementById('wallet-history');
-  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — درخواست '+(S.payTarget||'')+' — <span style="color:#E67E22">⏳ در انتظار بررسی</span></div>'+h.innerHTML;
-  addPaymentHistoryEntry({item:S.payTarget||'',status:'pending',date:new Date().toLocaleDateString('fa-IR')});
+  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — درخواست '+(S.payTarget||'')+(pct>0?' ('+pct+'٪ تخفیف)':'')+' — <span style="color:#E67E22">⏳ در انتظار بررسی</span></div>'+h.innerHTML;
+  addPaymentHistoryEntry({item:S.payTarget||''+(pct>0?' — '+pct+'٪ تخفیف':''),status:'pending',date:new Date().toLocaleDateString('fa-IR')});
   openmod('pay-pending-modal');
 }
 function genTokenCode(type){
@@ -2435,14 +2490,14 @@ async function doSend(){
   const attachCtx=buildAttachmentContext();
   S.hist.push({role:'user',content:txt+attachCtx});
   clearUploads();
-  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');S.msgs=Math.min(S.msgs+1,999);return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');S.msgs=Math.min(S.msgs+1,999);return;}
   const tid=addTyping();
   const mod=MODELS[S.selMod]||MODELS.luolaf3;
   const sys='تو '+mod.n+' هستی، دستیار AI فارسی‌زبان پلتفرم Uliki. حالت: '+S.aiMode+'. پاسخ دقیق و دوستانه به فارسی بده. برای کدها از بلاک ``` استفاده کن. برای جدول یا مقایسه چند موردی از فرمت جدول با | استفاده کن. اگه کاربر خواست چیزی رو به‌صورت مقایسه دوطرفه (مثلاً A در برابر B) ببینه، از این فرمت دقیق استفاده کن: «مقایسه: عنوان۱: مورد۱, مورد۲ || عنوان۲: موردA, موردB». اگه کاربر خواست داده‌ای رو به‌صورت نمودار ببینه، از این فرمت دقیق استفاده کن: «نمودار: برچسب۱:عدد۱, برچسب۲:عدد۲, ...». اگه فایلی توسط کاربر پیوست شده و محتوایش در پیام آورده شده، بر اساس همون محتوا تحلیل و پاسخ بده.'+buildAISettingsPromptNote();
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:'deepseek',model:mod.gm,temperature})});
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
     const data=await res.json();
     remTyping(tid);
     const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
@@ -2480,17 +2535,16 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 // ===== CALL AI =====
 async function callAI(msgs,sys,modKey){
-  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
-  const mod=MODELS[modKey]||MODELS.luolaf3;
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:'deepseek',model:mod.gm,temperature})});
+  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
   return data.content?.[0]?.text||'خطا';
 }
 
 async function callOpenRouter(messages,system,model){
-  if(!WK)return null;
+  if(!API_CONFIGURED)return null;
   try{
     const res=await fetch(WK+'/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
     const data=await res.json();
@@ -2666,7 +2720,7 @@ function previewLipImg(inp){
   document.getElementById('lip-audio').onchange=e=>{if(e.target.files[0])document.getElementById('lip-audio-name').textContent=e.target.files[0].name;};
 }
 async function genLipSync(){
-  if(!WK){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return;}
   const imgFile=document.getElementById('lip-img').files[0];
   const audioFile=document.getElementById('lip-audio').files[0];
   if(!imgFile||!audioFile){toast('تصویر و فایل صوتی را انتخاب کنید','w');return;}
@@ -2860,7 +2914,7 @@ function dlOffice(){
 let feedCache=[];
 async function genFeed(){
   const c=document.getElementById('feed-posts');
-  if(!WK){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
+  if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
   c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
   try{
     const res=await fetch(WK+'/feed');
@@ -2958,7 +3012,7 @@ function pubContent(type){S.pubtype=type;document.getElementById('pub-title').va
 async function doPub(){
   const desc=document.getElementById('pub-desc').value||'';
   const ems={music:'🎵',code:'💻',video:'🎬',image:'🖼️',text:'📝'};
-  if(!WK){toast('آدرس API تنظیم نشده','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   try{
     await fetch(WK+'/feed',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       user:S.user?.name||'کاربر',av:(S.user?.name||'U').charAt(0).toUpperCase(),col:'#4FA8D5',
@@ -3270,7 +3324,7 @@ function togVoice() { togVoicePanel(); }
 
 <!-- ATTRIBUTION -->
 <div style="position:fixed;bottom:5px;right:10px;font-size:10px;color:var(--gray);z-index:10;opacity:0.6">
-  Powered by <a href="https://deepseek.com" target="_blank" style="color:var(--accent);text-decoration:none">DeepSeek</a> · 
+  Powered by Groq &amp; <a href="https://deepseek.com" target="_blank" style="color:var(--accent);text-decoration:none">DeepSeek</a> · 
   Images by <a href="https://pollinations.ai" target="_blank" style="color:var(--accent);text-decoration:none">Pollinations AI</a>
 </div>
 
