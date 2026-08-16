@@ -1219,23 +1219,60 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
       <!-- HUGY (COMING SOON) -->
       <div id="pg-hugy" class="pg" style="display:none">
-        <div class="ccard" style="text-align:center;padding:50px 20px">
-          <div style="font-size:52px;margin-bottom:14px">🎮</div>
-          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Hugy — به‌زودی</h2>
-          <p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">
-            بازی پلتفرمر دو‌بعدی و جهان‌باز Hugy، جایی که باید در دنیای مجازی Uliki از Uli محافظت کنید، در حال ساخته شدنه. این یه پروژه‌ی بزرگه و داریم روش کار می‌کنیم — به‌زودی اینجا در دسترس خواهد بود! 🚀
-          </p>
+        <div class="ccard" style="padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h2 style="font-size:16px;font-weight:800">🎮 Hugy</h2>
+            <span style="font-size:11px;color:var(--gray)" id="hugy-goal">🎯 Uli رو به مهد کودک برسون</span>
+          </div>
+          <div id="hugy-wrap" style="position:relative;width:100%;aspect-ratio:16/10;background:#BFE6FF;border-radius:16px;overflow:hidden;touch-action:none;user-select:none">
+            <canvas id="hugy-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+            <button id="hugy-bag" onclick="toggleHugyBag()" style="position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:#fff;border:none;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:6">🎒</button>
+            <div id="hugy-bag-panel" style="display:none;position:absolute;top:56px;right:10px;background:#fff;border-radius:12px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,0.15);z-index:6;min-width:150px;font-size:11px"></div>
+            <button id="hugy-interact-btn" onclick="hugyInteract()" style="display:none;position:absolute;bottom:100px;left:50%;transform:translateX(-50%);background:#8A3AE8;color:#fff;border:none;border-radius:50px;padding:10px 22px;font-weight:800;font-size:13px;box-shadow:0 4px 14px rgba(138,58,232,0.4);z-index:6">🗣️ تعامل</button>
+            <div id="hugy-joy-base" style="position:absolute;bottom:16px;right:16px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.4);z-index:6">
+              <div id="hugy-joy-stick" style="position:absolute;top:25px;left:25px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.9);box-shadow:0 2px 8px rgba(0,0,0,0.2)"></div>
+            </div>
+          </div>
+          <p style="font-size:10px;color:var(--gray);margin-top:8px">دایره‌ی پایین‌راست: راه رفتن Uli · 🎒 بالا‌راست: کیف · روی وسایل دوبار کلیک کن برای برداشتن</p>
         </div>
       </div>
 
       <!-- ULI (COMING SOON) -->
       <div id="pg-uli" class="pg" style="display:none">
-        <div class="ccard" style="text-align:center;padding:50px 20px">
-          <div style="font-size:52px;margin-bottom:14px">🩵</div>
-          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Uli — به‌زودی</h2>
-          <p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">
-            دوست کوچولوی هوشمند شما، Uli، داره ساخته می‌شه — می‌تونید باهاش بازی کنید، بهش غذا بدید، لباس بپوشونیدش و کمکش کنید بخوابه. کمی صبر کنید! 🚀
-          </p>
+        <div class="ccard">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+            <h2 style="font-size:18px;font-weight:800">🩵 Uli</h2>
+            <div style="display:flex;gap:10px;font-size:12px">
+              <span style="background:var(--snow);padding:6px 12px;border-radius:50px;font-weight:700">💛 <span id="uli-uol">0</span> UOL</span>
+              <span style="background:var(--snow);padding:6px 12px;border-radius:50px;font-weight:700">📶 <span id="uli-net">0</span> اینترنت</span>
+            </div>
+          </div>
+          <div id="uli-stage" style="position:relative;background:linear-gradient(180deg,#EAF6FF,#D6EEFF);border-radius:16px;height:320px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+            <div id="uli-speech" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#fff;border-radius:14px;padding:8px 14px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,0.1);display:none;max-width:220px;text-align:center;z-index:5"></div>
+            <div id="uli-char" onclick="clickUli()" style="cursor:pointer;position:relative;width:140px;height:140px;transition:transform 0.15s ease">
+              <div id="uli-body" style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8FD3FF,#3AA5E8);position:relative;margin:0 auto;box-shadow:0 8px 20px rgba(58,165,232,0.4)">
+                <div style="position:absolute;top:42px;left:28px;width:16px;height:20px;background:#1A3A5C;border-radius:50%"></div>
+                <div style="position:absolute;top:42px;right:28px;width:16px;height:20px;background:#1A3A5C;border-radius:50%"></div>
+                <div id="uli-mouth" style="position:absolute;top:68px;left:50%;transform:translateX(-50%);width:22px;height:10px;border-radius:0 0 12px 12px;background:#1A3A5C"></div>
+                <div style="position:absolute;top:50px;left:18px;width:8px;height:5px;background:#ffb3c6;border-radius:50%;opacity:0.7"></div>
+                <div style="position:absolute;top:50px;right:18px;width:8px;height:5px;background:#ffb3c6;border-radius:50%;opacity:0.7"></div>
+              </div>
+              <div id="uli-outfit" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:26px"></div>
+            </div>
+            <div id="uli-zzz" style="display:none;position:absolute;top:20px;right:30px;font-size:20px;color:#7FB3D5;font-weight:800">Z Z Z</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn btno btnsm" onclick="openUliFeed()">🍽️ غذا دادن</button>
+            <button class="btn btno btnsm" onclick="throwBallUli()">⚽ بازی با توپ</button>
+            <button class="btn btno btnsm" onclick="openUliCloset()">👕 لباس‌ها</button>
+            <button class="btn btno btnsm" onclick="giveBottleUli()">🍼 شیشه شیر</button>
+            <button class="btn btno btnsm" onclick="tellStoryUli()">📖 قصه‌گویی</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <input class="inp" id="uli-say-inp" placeholder="یه چیزی بگو تا Uli تکرارش کنه..." onkeydown="if(event.key==='Enter')sayToUli()">
+            <button class="btn btnp btnsm" onclick="sayToUli()">بگو</button>
+          </div>
+          <div style="margin-top:12px;background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--graydark)" id="uli-status">Uli امروز حالش خوبه! 😊</div>
         </div>
       </div>
 
@@ -1243,7 +1280,36 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
   </div>
 </div>
 
+<div class="moverlay" id="hugy-dialogue-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('hugy-dialogue-modal')">✕</button>
+    <div id="hugy-dialogue-speaker" style="font-weight:800;font-size:13px;color:var(--accent2);margin-bottom:6px"></div>
+    <p id="hugy-dialogue-text" style="font-size:14px;line-height:1.9;margin-bottom:16px"></p>
+    <div id="hugy-dialogue-options" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
 <!-- MODALS -->
+<div class="moverlay" id="uli-feed-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('uli-feed-modal')">✕</button>
+    <h3>🍽️ به Uli غذا بده</h3>
+    <p class="msub">اگه Uli مریض بود، اینترنت یولیکی حالش رو خوب می‌کنه</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+      <button class="btn btno" onclick="feedUli('token')">🎫 توکن (از کیف‌پولت کم می‌شه)</button>
+      <button class="btn btno" onclick="feedUli('credit')">🪙 کردیت (از کیف‌پولت کم می‌شه)</button>
+      <button class="btn btno" onclick="feedUli('uol')">💛 ۱ UOL</button>
+      <button class="btn btnp" onclick="feedUli('net')">📶 ۱ اینترنت یولیکی (حال Uli رو خوب می‌کنه)</button>
+    </div>
+  </div>
+</div>
+<div class="moverlay" id="uli-closet-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('uli-closet-modal')">✕</button>
+    <h3>👕 کمد لباس Uli</h3>
+    <div id="uli-closet-list" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
+  </div>
+</div>
+
 <div class="moverlay" id="welcome-modal">
   <div class="modal" style="background:#fff;color:#111;max-width:520px">
     <h3 style="color:#111">سلام و خوش آمدید 👋</h3>
@@ -1792,6 +1858,349 @@ function submitOnboarding(){
   enterApp(pendingEnterApp.name,pendingEnterApp.email);
   pendingEnterApp=null;
 }
+// ===== ULI (حیوان خانگی مجازی) =====
+const ULI_COLORS=['#3AA5E8','#E88A3A','#8A3AE8','#3AE88F','#E83A6E','#E8D33A'];
+const ULI_CLOTHES=[
+  {id:'hat',name:'کلاه',emoji:'🎩',cost:2},
+  {id:'bow',name:'پاپیون',emoji:'🎀',cost:2},
+  {id:'glasses',name:'عینک',emoji:'🕶️',cost:2},
+  {id:'crown',name:'تاج',emoji:'👑',cost:4},
+  {id:'scarf',name:'شال',emoji:'🧣',cost:4},
+];
+function uliKey(){return 'uli_'+(S.user?.email||'guest');}
+function loadUliState(){
+  let st=ld(uliKey(),null);
+  const today=new Date().toISOString().slice(0,10);
+  if(!st){
+    st={color:0,uol:5,net:1,sick:false,clothes:[],equipped:null,lastGrant:today};
+    sv(uliKey(),st);
+  } else if(st.lastGrant!==today){
+    st.uol=(st.uol||0)+2;
+    st.net=(st.net||0)+1;
+    st.lastGrant=today;
+    if(Math.random()<0.12)st.sick=true; // شانس کوچیک مریض‌شدن هر روز، برای درگیرکردن کاربر
+    sv(uliKey(),st);
+  }
+  return st;
+}
+function saveUliState(st){sv(uliKey(),st);}
+function lightenColor(hex){
+  const num=parseInt(hex.slice(1),16);
+  let r=Math.min(255,(num>>16)+90), g=Math.min(255,((num>>8)&0xff)+90), b=Math.min(255,(num&0xff)+90);
+  return 'rgb('+r+','+g+','+b+')';
+}
+function renderUli(){
+  const stage=document.getElementById('uli-stage'); if(!stage)return;
+  const st=loadUliState();
+  document.getElementById('uli-uol').textContent=st.uol;
+  document.getElementById('uli-net').textContent=st.net;
+  document.getElementById('uli-body').style.background='radial-gradient(circle at 35% 30%,'+lightenColor(ULI_COLORS[st.color])+','+ULI_COLORS[st.color]+')';
+  const outfitEl=document.getElementById('uli-outfit');
+  const cloth=ULI_CLOTHES.find(c=>c.id===st.equipped);
+  outfitEl.textContent=cloth?cloth.emoji:'';
+  const statusEl=document.getElementById('uli-status');
+  const hour=new Date().getHours();
+  const sleepy=hour>=21||hour<6;
+  document.getElementById('uli-zzz').style.display=(sleepy&&window._uliAsleep)?'block':'none';
+  document.getElementById('uli-mouth').style.display=(sleepy&&window._uliAsleep)?'none':'block';
+  if(st.sick)statusEl.textContent='😷 Uli حالش خوب نیست — بهش اینترنت یولیکی بده تا خوب بشه';
+  else if(sleepy&&!window._uliAsleep)statusEl.textContent='😴 Uli خوابش گرفته... با شیشه‌شیر یا قصه کمکش کن بخوابه';
+  else if(window._uliAsleep)statusEl.textContent='😴 Uli خوابیده... خروپف می‌کنه';
+  else statusEl.textContent='Uli امروز حالش خوبه! 😊';
+}
+function clickUli(){
+  const st=loadUliState();
+  st.color=(st.color+1)%ULI_COLORS.length;
+  saveUliState(st);
+  renderUli();
+  const char=document.getElementById('uli-char');
+  char.style.transform='scale(1.15) rotate(-4deg)';
+  setTimeout(()=>{char.style.transform='scale(1)';},180);
+}
+function sayToUli(){
+  const inp=document.getElementById('uli-say-inp');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  const bubble=document.getElementById('uli-speech');
+  bubble.textContent=txt.slice(0,80);
+  bubble.style.display='block';
+  inp.value='';
+  clearTimeout(window._uliSpeechTimeout);
+  window._uliSpeechTimeout=setTimeout(()=>{bubble.style.display='none';},3000);
+}
+function openUliFeed(){openmod('uli-feed-modal');}
+function feedUli(type){
+  const st=loadUliState();
+  if(type==='token'){
+    if(S.wallet.tokens<1){toast('توکن کافی نداری','w');return;}
+    S.wallet.tokens--; sv('wallet_'+(S.user?.email||''),S.wallet); updateUI();
+  } else if(type==='credit'){
+    if(S.wallet.credits<1){toast('کردیت کافی نداری','w');return;}
+    S.wallet.credits--; sv('wallet_'+(S.user?.email||''),S.wallet); updateUI();
+  } else if(type==='uol'){
+    if(st.uol<1){toast('UOL کافی نداری','w');return;}
+    st.uol--;
+  } else if(type==='net'){
+    if(st.net<1){toast('اینترنت یولیکی کافی نداری','w');return;}
+    st.net--;
+    st.sick=false;
+  }
+  saveUliState(st);
+  renderUli();
+  closemod('uli-feed-modal');
+  toast('😋 Uli غذا خورد!');
+}
+function throwBallUli(){
+  const char=document.getElementById('uli-char');
+  char.style.transform='translateX(24px) scale(0.92)';
+  setTimeout(()=>{char.style.transform='translateX(-16px) scale(1.08)';},220);
+  setTimeout(()=>{char.style.transform='scale(1)';},440);
+  toast('⚽ Uli توپ رو گرفت!');
+}
+function openUliCloset(){
+  const st=loadUliState();
+  const el=document.getElementById('uli-closet-list');
+  el.innerHTML=ULI_CLOTHES.map(c=>{
+    const owned=st.clothes.includes(c.id);
+    const equipped=st.equipped===c.id;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;background:var(--snow);border-radius:10px;padding:10px 12px"><span>'+c.emoji+' '+c.name+(owned?'':' — '+c.cost+' UOL')+'</span>'+
+      (owned?('<button class="btn '+(equipped?'btnp':'btno')+' btnsm" onclick="equipCloth(\''+c.id+'\')">'+(equipped?'پوشیده':'بپوشون')+'</button>'):
+      ('<button class="btn btnp btnsm" onclick="buyCloth(\''+c.id+'\')">خرید</button>'))+
+      '</div>';
+  }).join('');
+  openmod('uli-closet-modal');
+}
+function buyCloth(id){
+  const st=loadUliState();
+  const c=ULI_CLOTHES.find(x=>x.id===id);
+  if(!c||st.clothes.includes(id))return;
+  if(st.uol<c.cost){toast('UOL کافی نداری','w');return;}
+  st.uol-=c.cost;
+  st.clothes.push(id);
+  saveUliState(st);
+  renderUli();
+  openUliCloset();
+  toast('✅ خریداری شد!');
+}
+function equipCloth(id){
+  const st=loadUliState();
+  st.equipped=(st.equipped===id)?null:id;
+  saveUliState(st);
+  renderUli();
+  openUliCloset();
+}
+function putUliToSleep(){
+  const hour=new Date().getHours();
+  if(!(hour>=21||hour<6)){toast('Uli هنوز خوابش نگرفته 🙂','w');return;}
+  window._uliAsleep=true;
+  renderUli();
+  const char=document.getElementById('uli-char');
+  char.style.transform='scale(0.95)';
+  toast('😴 Uli خوابید... شب بخیر!');
+}
+function giveBottleUli(){putUliToSleep();}
+function tellStoryUli(){putUliToSleep();}
+
+// ===== HUGY (بازی پلتفرمر) =====
+let hugyState=null;
+function hugyKey(){return 'hugy_'+(S.user?.email||'guest');}
+function initHugyGame(){
+  const wrap=document.getElementById('hugy-wrap');
+  const canvas=document.getElementById('hugy-canvas');
+  if(!wrap||!canvas)return;
+  if(hugyState&&hugyState.running)return; // از قبل در حال اجراست
+  const ctx=canvas.getContext('2d');
+  const saved=ld(hugyKey(),null);
+  hugyState={
+    running:true, ctx,
+    world:{w:1600,h:900},
+    player:{x:saved?.px||120,y:saved?.py||420,r:22,speed:2.6,color:ULI_COLORS[loadUliState().color]},
+    cam:{x:0,y:0},
+    joy:{active:false,cx:0,cy:0,dx:0,dy:0},
+    bag:saved?.bag||[],
+    kindergarten:{x:1420,y:380,r:70,reached:false},
+    items:[
+      {id:'flower',x:300,y:300,emoji:'🌸',dangerous:false,collected:(saved?.collected||[]).includes('flower')},
+      {id:'book',x:520,y:520,emoji:'📗',dangerous:false,collected:(saved?.collected||[]).includes('book')},
+      {id:'scissors',x:760,y:260,emoji:'✂️',dangerous:true,collected:(saved?.collected||[]).includes('scissors')},
+      {id:'coin',x:980,y:480,emoji:'🪙',dangerous:false,collected:(saved?.collected||[]).includes('coin')},
+      {id:'candle',x:1180,y:260,emoji:'🕯️',dangerous:true,collected:(saved?.collected||[]).includes('candle')},
+    ],
+    events:[
+      {id:'ev1',x:450,y:400,r:70,triggered:(saved?.events||[]).includes('ev1'),speaker:'پروانه‌ی سخنگو',text:'سلام Uli کوچولو! می‌خوای امروز از کدوم راه بریم؟',options:[
+        {label:'راه گل‌ها 🌸',outcome:'چه انتخاب قشنگی! این راه خیلی خوش‌بو بود.'},
+        {label:'راه میان‌بر ⚡',outcome:'زودتر رسیدی، ولی یکم هیجان‌انگیز بود!'}]},
+      {id:'ev2',x:900,y:380,r:70,triggered:(saved?.events||[]).includes('ev2'),speaker:'ربات نگهبان پارک',text:'اینجا یه رباتِ مهربونه که از پارک محافظت می‌کنه. باهاش صحبت کن؟',options:[
+        {label:'سلام بده 👋',outcome:'ربات خیلی خوشحال شد و برات دست تکون داد!'},
+        {label:'رد شو',outcome:'با احتیاط از کنارش رد شدی.'}]},
+      {id:'ev3',x:1250,y:420,r:70,triggered:(saved?.events||[]).includes('ev3'),speaker:'دوست جدید',text:'یه بچه‌ی دیگه هم داره میره مهد کودک. باهاش هم‌قدم بشی؟',options:[
+        {label:'باهم بریم 🤝',outcome:'با هم دوست شدید و خندیدید!'},
+        {label:'تنها برم',outcome:'با آرامش خودت به مسیرت ادامه دادی.'}]},
+    ],
+    activeEvent:null,
+  };
+  bindHugyControls();
+  window.addEventListener('resize',resizeHugyCanvas);
+  resizeHugyCanvas();
+  requestAnimationFrame(hugyLoop);
+}
+function resizeHugyCanvas(){
+  if(!hugyState)return;
+  const wrap=document.getElementById('hugy-wrap');
+  const canvas=document.getElementById('hugy-canvas');
+  if(!wrap||!canvas)return;
+  canvas.width=wrap.clientWidth;
+  canvas.height=wrap.clientHeight;
+}
+function bindHugyControls(){
+  const base=document.getElementById('hugy-joy-base');
+  const stick=document.getElementById('hugy-joy-stick');
+  const canvas=document.getElementById('hugy-canvas');
+  const rectOf=el=>el.getBoundingClientRect();
+  function start(e){
+    hugyState.joy.active=true;
+    const r=rectOf(base);
+    hugyState.joy.cx=r.left+r.width/2; hugyState.joy.cy=r.top+r.height/2;
+    move(e);
+  }
+  function move(e){
+    if(!hugyState.joy.active)return;
+    const p=e.touches?e.touches[0]:e;
+    let dx=p.clientX-hugyState.joy.cx, dy=p.clientY-hugyState.joy.cy;
+    const max=32, dist=Math.hypot(dx,dy);
+    if(dist>max){dx=dx/dist*max;dy=dy/dist*max;}
+    hugyState.joy.dx=dx/max; hugyState.joy.dy=dy/max;
+    stick.style.transform='translate('+dx+'px,'+dy+'px)';
+  }
+  function end(){
+    hugyState.joy.active=false; hugyState.joy.dx=0; hugyState.joy.dy=0;
+    stick.style.transform='translate(0,0)';
+  }
+  base.addEventListener('mousedown',start); window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  base.addEventListener('touchstart',start,{passive:true}); window.addEventListener('touchmove',move,{passive:true}); window.addEventListener('touchend',end);
+  canvas.addEventListener('dblclick',e=>{
+    const r=rectOf(canvas);
+    const sx=e.clientX-r.left, sy=e.clientY-r.top;
+    const wx=sx+hugyState.cam.x, wy=sy+hugyState.cam.y;
+    hugyState.items.forEach(it=>{
+      if(it.collected)return;
+      if(Math.hypot(wx-it.x,wy-it.y)<30){
+        if(it.dangerous){
+          toast('⚠️ این خطرناکه! Uli نباید اینو برداره','w');
+        } else {
+          it.collected=true;
+          hugyState.bag.push(it.id);
+          toast('🎒 '+it.emoji+' به کیف اضافه شد');
+          renderHugyBag();
+          saveHugyProgress();
+        }
+      }
+    });
+  });
+}
+function saveHugyProgress(){
+  if(!hugyState)return;
+  sv(hugyKey(),{
+    px:hugyState.player.x, py:hugyState.player.y, bag:hugyState.bag,
+    collected:hugyState.items.filter(i=>i.collected).map(i=>i.id),
+    events:hugyState.events.filter(e=>e.triggered).map(e=>e.id),
+  });
+}
+function renderHugyBag(){
+  const panel=document.getElementById('hugy-bag-panel');
+  if(!panel||!hugyState)return;
+  panel.innerHTML=hugyState.bag.length?hugyState.bag.map(id=>{
+    const it=hugyState.items.find(x=>x.id===id);
+    return '<div style="padding:3px 0">'+(it?it.emoji:'📦')+' '+(it?it.id:id)+'</div>';
+  }).join(''):'<div style="color:var(--gray)">کیف خالیه</div>';
+}
+function toggleHugyBag(){
+  const panel=document.getElementById('hugy-bag-panel');
+  panel.style.display=panel.style.display==='block'?'none':'block';
+  renderHugyBag();
+}
+function hugyInteract(){
+  if(!hugyState||!hugyState.activeEvent)return;
+  const ev=hugyState.activeEvent;
+  document.getElementById('hugy-dialogue-speaker').textContent=ev.speaker;
+  document.getElementById('hugy-dialogue-text').textContent=ev.text;
+  const opts=document.getElementById('hugy-dialogue-options');
+  opts.innerHTML='';
+  ev.options.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='btn btnp btnsm';
+    btn.textContent=o.label;
+    btn.onclick=()=>{
+      ev.triggered=true;
+      closemod('hugy-dialogue-modal');
+      document.getElementById('hugy-interact-btn').style.display='none';
+      toast(o.outcome);
+      saveHugyProgress();
+    };
+    opts.appendChild(btn);
+  });
+  openmod('hugy-dialogue-modal');
+}
+function hugyLoop(){
+  if(!hugyState||!hugyState.running)return;
+  const st=hugyState, ctx=st.ctx, canvas=document.getElementById('hugy-canvas');
+  if(!canvas){st.running=false;return;}
+  // حرکت بازیکن
+  st.player.x=Math.max(20,Math.min(st.world.w-20,st.player.x+st.joy.dx*st.player.speed*4));
+  st.player.y=Math.max(20,Math.min(st.world.h-20,st.player.y+st.joy.dy*st.player.speed*4));
+  // دوربین دنبال بازیکن
+  st.cam.x=Math.max(0,Math.min(st.world.w-canvas.width,st.player.x-canvas.width/2));
+  st.cam.y=Math.max(0,Math.min(st.world.h-canvas.height,st.player.y-canvas.height/2));
+
+  // چک رویدادها
+  let nearEvent=null;
+  for(const ev of st.events){
+    if(!ev.triggered&&Math.hypot(st.player.x-ev.x,st.player.y-ev.y)<ev.r)nearEvent=ev;
+  }
+  st.activeEvent=nearEvent;
+  document.getElementById('hugy-interact-btn').style.display=nearEvent?'block':'none';
+
+  // چک رسیدن به مهدکودک
+  if(!st.kindergarten.reached&&Math.hypot(st.player.x-st.kindergarten.x,st.player.y-st.kindergarten.y)<st.kindergarten.r){
+    st.kindergarten.reached=true;
+    document.getElementById('hugy-goal').textContent='🎉 رسیدید به مهد کودک!';
+    toast('🏫 Uli به مهد کودک رسید! امروز باهاش بازی کن و بهش غذا بده');
+    saveHugyProgress();
+  }
+
+  // رندر
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#BFE6FF'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // مسیر
+  ctx.strokeStyle='#FFE9A8'; ctx.lineWidth=46; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(80-st.cam.x,430-st.cam.y); ctx.lineTo(st.kindergarten.x-st.cam.x,st.kindergarten.y-st.cam.y); ctx.stroke();
+  // مهدکودک
+  ctx.fillStyle='#E88A3A';
+  ctx.fillRect(st.kindergarten.x-st.cam.x-45,st.kindergarten.y-st.cam.y-45,90,70);
+  ctx.fillStyle='#C0392B';
+  ctx.beginPath(); ctx.moveTo(st.kindergarten.x-st.cam.x-55,st.kindergarten.y-st.cam.y-45); ctx.lineTo(st.kindergarten.x-st.cam.x,st.kindergarten.y-st.cam.y-90); ctx.lineTo(st.kindergarten.x-st.cam.x+55,st.kindergarten.y-st.cam.y-45); ctx.fill();
+  ctx.font='28px sans-serif'; ctx.textAlign='center'; ctx.fillText('🏫',st.kindergarten.x-st.cam.x,st.kindergarten.y-st.cam.y+18);
+  // آیتم‌ها
+  ctx.font='26px sans-serif';
+  st.items.forEach(it=>{ if(!it.collected) ctx.fillText(it.emoji,it.x-st.cam.x,it.y-st.cam.y); });
+  // نقاط رویداد
+  st.events.forEach(ev=>{
+    if(ev.triggered)return;
+    ctx.fillStyle='rgba(138,58,232,0.15)';
+    ctx.beginPath(); ctx.arc(ev.x-st.cam.x,ev.y-st.cam.y,ev.r,0,7); ctx.fill();
+  });
+  // بازیکن (Uli)
+  const px=st.player.x-st.cam.x, py=st.player.y-st.cam.y;
+  ctx.fillStyle=st.player.color;
+  ctx.beginPath(); ctx.arc(px,py,st.player.r,0,7); ctx.fill();
+  ctx.fillStyle='#1A3A5C';
+  ctx.beginPath(); ctx.arc(px-7,py-4,3,0,7); ctx.fill();
+  ctx.beginPath(); ctx.arc(px+7,py-4,3,0,7); ctx.fill();
+
+  requestAnimationFrame(hugyLoop);
+}
+function stopHugyGame(){ if(hugyState){saveHugyProgress(); hugyState.running=false;} }
+
 function saveSession(email){
   const fp=getFingerprint();
   const sessions=ld('sessions',{});
@@ -2364,6 +2773,8 @@ function nav(pg){
   if(pg==='aisettings'){loadAISettings();updateStorageUsage();refreshBusinessPanel();renderActivityAnalytics();}
   if(pg==='apikeys'){renderApiKeys();loadConnectorSettings();}
   if(pg==='dashboard')renderDashboard();
+  if(pg==='uli'){window._uliAsleep=false;renderUli();}
+  if(pg==='hugy'){setTimeout(initHugyGame,50);} else if(hugyState&&hugyState.running){stopHugyGame();}
   if(pg==='rules')renderRulesContent();
   closeSBMobile();
 }
