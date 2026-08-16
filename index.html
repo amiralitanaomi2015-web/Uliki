@@ -396,6 +396,7 @@ function togCap(t){
         <div class="ig"><label class="lbl">رمز عبور</label><input class="inp" type="password" id="lpass" placeholder="••••••••"></div>
         <div class="captcha-box" onclick="togCap('login')"><div class="captcha-check" id="cap-login-box"></div><span style="font-size:13px">من روبات نیستم</span><span style="margin-right:auto;font-size:18px">🤖</span></div>
         <button class="btn btnp" style="width:100%" onclick="doLogin()">ورود به Uliki</button>
+        <p style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="openmod('forgot-modal')" style="font-size:12px;color:var(--accent)">رمز عبورت رو فراموش کردی؟</a></p>
         <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--gb)"></div><span style="font-size:11px;color:var(--gray)">یا</span><div style="flex:1;height:1px;background:var(--gb)"></div></div>
         <div id="gbtn-login" style="display:flex;justify-content:center"></div>
       </div>
@@ -458,8 +459,18 @@ function togCap(t){
         <div class="sbi" id="snav-support" onclick="nav('support')"><div class="sbic">🎧</div>پشتیبانی</div>
       </div>
       <div class="sb-sec">
+        <div class="sb-lbl">بازی‌های آنلاین</div>
+        <div class="sbi" id="snav-hugy" onclick="nav('hugy')"><div class="sbic">🎮</div>Hugy</div>
+        <div class="sbi" id="snav-uli" onclick="nav('uli')"><div class="sbic">🩵</div>Uli</div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">تیم</div>
+        <div class="sbi" id="snav-about" onclick="nav('about')"><div class="sbic">ℹ️</div>درباره ما</div>
+      </div>
+      <div class="sb-sec">
         <div class="sb-lbl">حساب</div>
         <div class="sbi" id="snav-plans" onclick="nav('plans')"><div class="sbic">⭐</div>پلن‌ها</div>
+        <div class="sbi" id="snav-dashboard" onclick="nav('dashboard')"><div class="sbic">📋</div>پنل کاربری</div>
         <div class="sbi" id="snav-profile" onclick="nav('profile')"><div class="sbic">👤</div>پروفایل</div>
         <div class="sbi" onclick="doOut()"><div class="sbic">🚪</div>خروج</div>
       </div>
@@ -516,6 +527,7 @@ function togCap(t){
             <div class="chat-hdr">
               <div class="chat-av" id="chatav">🤖</div>
               <div class="chat-info"><h4 id="chatname">Uliki AI</h4><span><span class="odot"></span>آنلاین</span></div>
+              <button class="voicebtn" style="margin-right:8px" title="تنظیمات هوش مصنوعی" onclick="nav('aisettings')">⚙️</button>
               <div style="margin-right:auto;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
                 <div class="ai-sels">
                   <button class="aisel on" id="ai-luolaf" onclick="selAI('luolaf',this)">🧠 Luolaf</button>
@@ -1142,11 +1154,154 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
         </div>
       </div>
 
+      <!-- ABOUT US -->
+      <div id="pg-about" class="pg" style="display:none">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">ℹ️ درباره ما</h2>
+        <div class="ccard" style="margin-top:14px">
+          <p style="font-size:14px;line-height:2;color:var(--graydark)">
+            Uliki یک دنیای مجازی و در عین حال یک پلتفرم هوش مصنوعی چندمنظوره است — هم برای فارسی‌زبانان سراسر جهان و هم به‌صورت اختصاصی و بومی‌سازی‌شده برای مردم ایران. تیم لیولاف استودیو با تلاش مستمر برای ارتقای کیفیت و افزودن قابلیت‌های جدید، این پلتفرم را برای شما می‌سازد.
+          </p>
+        </div>
+        <div class="ccard" style="margin-top:16px">
+          <h3 style="margin-bottom:14px">👥 تیم ما</h3>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px"><div class="postav" style="width:44px;height:44px;background:linear-gradient(135deg,var(--sky),var(--accent2))">ا</div><div><strong style="font-size:14px">امیرعلی تنعمی</strong><div style="font-size:12px;color:var(--gray)">مدیرعامل و مدیر محصول</div></div></div>
+            <div style="display:flex;align-items:center;gap:12px"><div class="postav" style="width:44px;height:44px;background:linear-gradient(135deg,#9B59B6,#6C3483)">ل</div><div><strong style="font-size:14px">تیم لیولاف استودیو</strong><div style="font-size:12px;color:var(--gray)">برنامه‌نویسی</div></div></div>
+            <div style="display:flex;align-items:center;gap:12px"><div class="postav" style="width:44px;height:44px;background:linear-gradient(135deg,#27AE60,#1E8449)">ل</div><div><strong style="font-size:14px">تیم لیولاف استودیو</strong><div style="font-size:12px;color:var(--gray)">مدیریت و پشتیبانی</div></div></div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <a href="https://ir.linkedin.com/in/%D9%84%DB%8C%D9%88-%D9%84%D8%A7%D9%81-%D8%A7%D8%B3%D8%AA%D9%88%D8%AF%DB%8C%D9%88-1103b9384" target="_blank" class="btn btno btnsm">🔗 لینکدین لیولاف استودیو</a>
+            <a href="mailto:luolaf.stoudio@gmail.com" class="btn btno btnsm">✉️ luolaf.stoudio@gmail.com</a>
+            <button class="btn btno btnsm" onclick="nav('rules')">📜 مشاهده قوانین کامل</button>
+          </div>
+        </div>
+        <div class="ccard" style="margin-top:16px;text-align:center">
+          <p style="font-size:11px;color:var(--gray);line-height:1.9">به دلیل استفاده از Key های مختلف و مجوز از آن‌ها، تمامی حقوق این پلتفرم متعلق به آقای امیرعلی تنعمی و تیم لیولاف استودیو می‌باشد.<br>© ۲۰۲۵-۲۰۲۶ Uliki</p>
+        </div>
+      </div>
+
+      <!-- RULES -->
+      <div id="pg-rules" class="pg" style="display:none">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">📜 قوانین Uliki</h2>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:14px">استفاده از پلتفرم به‌معنای پذیرش کامل این قوانین است</p>
+        <div class="ccard"><div id="rules-content" style="font-size:13px;line-height:2.1;color:var(--graydark)"></div></div>
+      </div>
+
+      <!-- USER DASHBOARD -->
+      <div id="pg-dashboard" class="pg" style="display:none">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">📋 پنل کاربری</h2>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:18px">اطلاعات و فعالیت حساب شما</p>
+        <div class="profgrid">
+          <div class="profsec">
+            <h4>🆔 شناسه کاربری</h4>
+            <div style="font-family:monospace;background:var(--snow);border-radius:8px;padding:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center"><span id="dash-uid">—</span><button class="btn btng btnsm" onclick="copyTxt('dash-uid')">📋</button></div>
+          </div>
+          <div class="profsec">
+            <h4>🎟️ کد تخفیف اختصاصی شما</h4>
+            <div style="font-family:monospace;background:var(--snow);border-radius:8px;padding:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center"><span id="dash-discount">—</span><button class="btn btng btnsm" onclick="copyTxt('dash-discount')">📋</button></div>
+            <p style="font-size:10px;color:var(--gray);margin-top:6px">این کد رو با دوستانتون به اشتراک بذارید</p>
+          </div>
+          <div class="profsec">
+            <h4>📅 تاریخ عضویت</h4>
+            <div id="dash-joined" style="font-size:14px;font-weight:700">—</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:4px"><span id="dash-days">0</span> روز است در Uliki هستید</div>
+          </div>
+          <div class="profsec">
+            <h4>🕐 آخرین فعالیت</h4>
+            <div id="dash-lastactive" style="font-size:14px;font-weight:700">—</div>
+          </div>
+          <div class="profsec" style="grid-column:1/-1">
+            <h4>🧾 خریدهای انجام‌شده</h4>
+            <div id="dash-purchases" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUGY (COMING SOON) -->
+      <div id="pg-hugy" class="pg" style="display:none">
+        <div class="ccard" style="text-align:center;padding:50px 20px">
+          <div style="font-size:52px;margin-bottom:14px">🎮</div>
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Hugy — به‌زودی</h2>
+          <p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">
+            بازی پلتفرمر دو‌بعدی و جهان‌باز Hugy، جایی که باید در دنیای مجازی Uliki از Uli محافظت کنید، در حال ساخته شدنه. این یه پروژه‌ی بزرگه و داریم روش کار می‌کنیم — به‌زودی اینجا در دسترس خواهد بود! 🚀
+          </p>
+        </div>
+      </div>
+
+      <!-- ULI (COMING SOON) -->
+      <div id="pg-uli" class="pg" style="display:none">
+        <div class="ccard" style="text-align:center;padding:50px 20px">
+          <div style="font-size:52px;margin-bottom:14px">🩵</div>
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Uli — به‌زودی</h2>
+          <p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">
+            دوست کوچولوی هوشمند شما، Uli، داره ساخته می‌شه — می‌تونید باهاش بازی کنید، بهش غذا بدید، لباس بپوشونیدش و کمکش کنید بخوابه. کمی صبر کنید! 🚀
+          </p>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
 
 <!-- MODALS -->
+<div class="moverlay" id="welcome-modal">
+  <div class="modal" style="background:#fff;color:#111;max-width:520px">
+    <h3 style="color:#111">سلام و خوش آمدید 👋</h3>
+    <div style="max-height:340px;overflow-y:auto;font-size:13px;line-height:2.1;color:#222;margin:14px 0;padding-left:6px">
+      سلام به دنیای مجازی Uliki خوش آمدید! همان‌طور که می‌دانید، Uliki یک دنیای مجازی و علاوه بر آن یک هوش مصنوعی بومی‌سازی‌شده برای تمام مردم جهان، و البته یک هوش مصنوعی ایرانیزه‌شده نیز برای مردم ایران و جهان است.
+      <br><br>
+      در طول استفاده از Uliki توجه داشته باشید که حتماً باید به اینترنت متصل باشید. اگر در طول استفاده به خطا خوردید، از طریق ایمیلی که در بخش «درباره ما» در پلتفرم قرار دارد با ما ارتباط برقرار کنید.
+      <br><br>
+      توجه داشته باشید که پشتیبانی همیشه پاسخ‌گوی شماست، اما در شرایط خاص، تیم لیولاف هیچ‌گونه مسئولیتی نمی‌پذیرد. پلتفرم فعلاً در حالت وب است و تمام حقوق آن متعلق به آقای امیرعلی تنعمی و تیم لیولاف استودیو می‌باشد.
+      <br><br>
+      در صورت انتقاد یا نظر، با پشتیبانی ارتباط برقرار کنید و حتماً صفحات ما را در شبکه‌های اجتماعی دنبال کنید.
+    </div>
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;cursor:pointer;margin-bottom:8px;color:#222"><input type="checkbox" id="welcome-agree1" onchange="checkWelcomeCheckboxes()" style="margin-top:3px"> تیم لیولاف استودیو و جناب امیرعلی تنعمی هیچ‌گونه مسئولیتی در شرایط خاص در این پلتفرم نمی‌پذیرند و می‌پذیرم.</label>
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;cursor:pointer;margin-bottom:14px;color:#222"><input type="checkbox" id="welcome-agree2" onchange="checkWelcomeCheckboxes()" style="margin-top:3px"> <span>شما باید <a href="javascript:void(0)" onclick="openRulesModal()" style="color:var(--accent)">قوانین کامل Uliki</a> را بپذیرید.</span></label>
+    <button class="btn btnp" id="welcome-continue-btn" style="width:100%" onclick="welcomeContinue()" disabled>ادامه</button>
+  </div>
+</div>
+
+<div class="moverlay" id="rules-modal">
+  <div class="modal" style="max-width:520px">
+    <button class="mclose" onclick="closemod('rules-modal')">✕</button>
+    <h3>📜 قوانین Uliki</h3>
+    <div id="rules-modal-content" style="max-height:400px;overflow-y:auto;font-size:12px;line-height:2;color:var(--graydark);margin-top:12px"></div>
+  </div>
+</div>
+
+<div class="moverlay" id="onboard-modal">
+  <div class="modal" style="max-width:480px">
+    <h3>یه‌کم درباره خودت بگو 🙂</h3>
+    <p class="msub">این اطلاعات کمک می‌کنه تجربه‌ی بهتری برات بسازیم</p>
+    <div class="ig"><label class="lbl">سن</label><input class="inp" type="number" id="ob-age" min="1" max="120" placeholder="مثلاً ۲۵"></div>
+    <div class="ig"><label class="lbl">جنسیت</label><select class="inp" id="ob-gender"><option value="">ترجیح می‌دم نگم</option><option value="مرد">مرد</option><option value="زن">زن</option></select></div>
+    <div class="ig"><label class="lbl">چطور با Uliki آشنا شدید؟</label><select class="inp" id="ob-source"><option value="">انتخاب کنید</option><option>شبکه‌های اجتماعی</option><option>دوستان و آشنایان</option><option>جست‌وجوی اینترنتی</option><option>تبلیغات</option><option>سایر</option></select></div>
+    <div class="ig"><label class="lbl">دلیل اومدنت به Uliki چیه؟</label><input class="inp" id="ob-reason" placeholder="مثلاً کنجکاوی، نیاز به دستیار AI و..."></div>
+    <div class="ig"><label class="lbl">قراره چه استفاده‌ای از پلتفرم بکنی؟</label><input class="inp" id="ob-purpose" placeholder="مثلاً کار، تحصیل، سرگرمی..."></div>
+    <div class="ig"><label class="lbl">موقعیت / آدرس <span style="color:var(--gray);font-weight:400">(اختیاری)</span></label><input class="inp" id="ob-location" placeholder="اختیاری — می‌تونی خالی بذاری"></div>
+    <button class="btn btnp" style="width:100%;margin-top:6px" onclick="submitOnboarding()">ورود به Uliki 🚀</button>
+  </div>
+</div>
+
+<div class="moverlay" id="forgot-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('forgot-modal')">✕</button>
+    <h3>🔑 فراموشی رمز عبور</h3>
+    <div id="forgot-step1">
+      <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="fg-email" placeholder="email@example.com"></div>
+      <div class="captcha-box" onclick="togCap('forgot')"><div class="captcha-check" id="cap-forgot-box"></div><span style="font-size:13px">من روبات نیستم</span><span style="margin-right:auto;font-size:18px">🤖</span></div>
+      <button class="btn btnp" style="width:100%;margin-top:10px" onclick="sendResetCode()">ارسال کد به ایمیل</button>
+    </div>
+    <div id="forgot-step2" style="display:none">
+      <p class="msub">کد ارسال‌شده به ایمیلت رو وارد کن</p>
+      <div class="ig"><label class="lbl">کد تأیید</label><input class="inp" id="fg-code" placeholder="۶ رقم"></div>
+      <div class="ig"><label class="lbl">رمز عبور جدید</label><input class="inp" type="password" id="fg-newpass" placeholder="حداقل ۸ کاراکتر"></div>
+      <button class="btn btnp" style="width:100%;margin-top:6px" onclick="confirmResetCode()">تغییر رمز عبور</button>
+    </div>
+  </div>
+</div>
+
 <div class="moverlay" id="payhistory-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('payhistory-modal')">✕</button>
@@ -1346,9 +1501,43 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 // ===== CONFIG =====
 const WK = ''; // آدرس Cloudflare Worker خودتان را اینجا قرار دهید، مثلاً: 'https://your-worker.your-subdomain.workers.dev'
 const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
+const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
 const API_CONFIGURED = !!WK || USE_RELATIVE_API;
+function apiUrl(path){ return WK ? WK+path : path; }
 const GOOGLE_CLIENT_ID = ''; // Client ID از Google Cloud Console — مثلاً: '123456-abc.apps.googleusercontent.com'
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
+const RULES_TEXT = `۱. تیم لیولاف همراه با مدیر اصلی‌اش جناب امیرعلی تنعمی، هیچ‌گونه مسئولیتی در شرایط خاص مربوط به این پلتفرم نمی‌پذیرند؛ تمام مسئولیت با خود کاربر است.
+۲. بازی‌هایی که توسط توسعه‌دهندگان یا خود تیم لیولاف در Uliki تولید و در اختیار کاربران در سراسر جهان قرار می‌گیرند، کاملاً قانونی هستند. این بازی‌ها ممکن است مشکلات کیفی جزئی داشته باشند که در نسخه‌های بعدی رفع می‌شود؛ اظهار نظر منفی درباره آن‌ها بدون سند و مدرک معتبر، پیگرد قانونی دارد.
+۳. محیط توسعه‌دهندگان که در نسخه جدید Uliki اضافه شده، برای کارآمدی بهتر پلتفرم ساخته شده است. اگر کدی که برای توسعه می‌نویسید عمداً مخرب باشد، پیگرد قانونی دارد. تمام کدهای شما در این محیط ذخیره می‌شوند؛ تیم توسعه هیچ مسئولیتی در شرایط خاص نمی‌پذیرد.
+۴. برای دریافت این پلتفرم — چه در نسخه وب و چه در نسخه دسکتاپ/اپلیکیشن که به‌زودی منتشر می‌شوند — فقط از منابع رسمی مانند کافه‌بازار یا مایکت استفاده کنید.
+۵. در صورت پیدا کردن ایراد یا مشکل، یا برای بیان نظرات، انتقادات، مزایا و معایب پلتفرم، از طریق ایمیل با پشتیبانی تماس بگیرید.
+۶. تیم لیولاف به‌طور مستمر برای به‌روزرسانی به‌موقع و حفظ سطح کیفیت پلتفرم تلاش می‌کند. برای حمایت مالی یا معنوی از پلتفرم، به بخش «قابلیت‌ها» در Uliki مراجعه و گزینه حمایت را انتخاب کنید.
+۷. به‌زودی قابلیت پنل کاربری کامل‌تری به پلتفرم اضافه خواهد شد.
+۸. برای رابط کاربری بهتر، همیشه آخرین نسخه پلتفرم را دریافت کنید.
+۹. حق استفاده تجاری، مالکیت اصلی و استفاده مالی از این پلتفرم منحصراً متعلق به آقای امیرعلی تنعمی و تیم لیولاف استودیو است؛ هرگونه استفاده بدون هماهنگی پیگرد قانونی دارد.
+۱۰. حق کپی‌رایت این پلتفرم متعلق به سال‌های ۲۰۲۵-۲۰۲۶ است و همواره به‌روز نگه داشته می‌شود.
+۱۱. هرگونه سوءاستفاده یا استفاده غیرمجاز از این پلتفرم بدون هماهنگی، پیگرد قانونی جدی دارد.
+۱۲. این پلتفرم به‌طور اختصاصی و با علاقه برای مردم ایران و همچنین فارسی‌زبانان سراسر جهان ساخته شده است؛ شایعات منفی بدون سند و مدرک معتبر فاقد اعتبارند.
+۱۳. هیچ‌گونه شکایت حقوقی نسبت به این پلتفرم که فاقد مستندات کافی باشد پذیرفته نمی‌شود؛ طرح شکایت غیرمستند خود پیگرد قانونی دارد.
+۱۴. در صورت مسدود یا بسته‌شدن حساب کاربری، از طریق ایمیل با پشتیبانی تماس بگیرید.
+۱۵. محصولات پلتفرم (اکانت، کردیت، توکن و غیره) قیمت مشخصی دارند که ممکن است بر اساس شرایط مختلف تغییر کند.
+۱۶. هرگونه مشکل در خرید یا فعالیت‌های پلتفرم را سریعاً از طریق ایمیل پشتیبانی اطلاع دهید تا در سریع‌ترین زمان رسیدگی شود.
+۱۷. این پلتفرم دارای محیط‌ها و دستیارهای هوش مصنوعی مختلفی است که هرکدام شرایط و قوانین استفاده خاص خود را دارند؛ رعایت این قوانین الزامی است.
+۱۸. این پلتفرم هرگز به فروش نمی‌رسد و همیشه در مالکیت تیم لیولاف و آقای امیرعلی تنعمی باقی می‌ماند؛ هرگونه ادعای تغییر مالکیت نادرست و پیگرد قانونی دارد.
+۱۹. نسخه‌های پولی این پلتفرم فقط از طریق خود پلتفرم Uliki قابل خرید هستند، نه از منابع دیگر.
+۲۰. در صورت قطعی ارتباط با سرور، مشکل ورود، یا هر مشکل دیگر، با پشتیبانی تماس بگیرید.
+۲۱. کاربران زیر سن قانونی باید با نظارت والدین یا سرپرست قانونی از پلتفرم استفاده کنند.
+۲۲. هرگونه تلاش برای هک، نفوذ یا سوءاستفاده فنی از زیرساخت پلتفرم، مسدودسازی فوری حساب و پیگرد قانونی را در پی دارد.
+۲۳. اطلاعات شخصی کاربران مطابق سیاست حریم خصوصی پلتفرم محافظت می‌شود و بدون رضایت کاربر در اختیار اشخاص ثالث قرار نمی‌گیرد، مگر در موارد الزام قانونی.
+۲۴. محتوایی که کاربران در فید عمومی منتشر می‌کنند باید عاری از خشونت، نفرت‌پراکنی یا محتوای غیرقانونی باشد؛ در غیر این صورت محتوا حذف و حساب می‌تواند مسدود شود.
+۲۵. نقض هر یک از این قوانین، پیگرد قانونی جدی برای کاربر خاطی به همراه دارد. تیم لیولاف حق دارد این قوانین را در آینده به‌روزرسانی کند؛ استفاده مستمر از پلتفرم به‌معنای پذیرش قوانین جدید است.`;
+function renderRulesContent(){
+  const html=escHtml(RULES_TEXT).replace(/\n/g,'<br><br>');
+  const p1=document.getElementById('rules-content'); if(p1)p1.innerHTML=html;
+  const p2=document.getElementById('rules-modal-content'); if(p2)p2.innerHTML=html;
+}
+function openRulesModal(){ renderRulesContent(); openmod('rules-modal'); }
+
 const SUPPORT_KB = `### معرفی پلتفرم
 Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتشرشده روی GitHub Pages، با نسخه اندروید در حال آماده‌سازی برای بازارهای اپلیکیشن ایرانی.
 قابلیت‌های اصلی: چت با هوش مصنوعی، تولید موسیقی، دستیار برنامه‌نویسی، تولید تصویر و ویدیو، فید عمومی، سیستم اشتراک پولی (سه پلن)، و Lip Sync (تصویر+صدا به ویدیوی گفتاری).
@@ -1498,16 +1687,19 @@ function initGoogleAuth(){
 async function handleGoogleCredential(resp){
   if(!API_CONFIGURED){aerr('آدرس API تنظیم نشده');return;}
   try{
-    const r=await fetch(WK+'/auth/google',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id_token:resp.credential})});
+    const r=await fetch(apiUrl('/auth/google'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id_token:resp.credential})});
     const data=await r.json();
     if(!data.ok){aerr(data.error||'ورود با گوگل ناموفق بود');return;}
     const users=ld('users',{});
     const em=data.email;
-    if(!users[em]){
-      users[em]={name:data.name,email:em,provider:'google',plan:'Rax',joined:new Date().toISOString()};
+    const isNew=!users[em];
+    if(isNew){
+      users[em]={name:data.name,email:em,provider:'google',plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
       sv('users',users);
     }
-    await check2FAAndEnter(users[em].name,em);
+    saveSession(em);
+    if(isNew){startWelcomeFlow(users[em].name,em);}
+    else{await check2FAAndEnter(users[em].name,em);}
   }catch(e){aerr('خطا در ورود با گوگل — دوباره امتحان کنید');}
 }
 window.addEventListener('load',()=>{setTimeout(initGoogleAuth,300);});
@@ -1553,11 +1745,52 @@ async function doReg(){
   if(users[em]){aerr('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.');return;}
   const salt=genSalt();
   const passHash=await hashPassword(ps,salt);
-  users[em]={name:nm,email:em,salt,passHash,plan:'Rax',joined:new Date().toISOString()};
+  users[em]={name:nm,email:em,salt,passHash,plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
   sv('users',users);
   saveSession(em);
-  toast('✅ ثبت‌نام موفق! خوش آمدید '+nm);
-  enterApp(nm,em);
+  startWelcomeFlow(nm,em);
+}
+function genUserId(){
+  const arr=new Uint8Array(5);
+  crypto.getRandomValues(arr);
+  return 'ULK-'+Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+function genDiscountCode(){
+  const arr=new Uint8Array(4);
+  crypto.getRandomValues(arr);
+  return 'UL'+Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+let pendingEnterApp=null;
+function startWelcomeFlow(name,email){
+  pendingEnterApp={name,email};
+  document.getElementById('welcome-agree1').checked=false;
+  document.getElementById('welcome-agree2').checked=false;
+  document.getElementById('welcome-continue-btn').disabled=true;
+  openmod('welcome-modal');
+}
+function checkWelcomeCheckboxes(){
+  const btn=document.getElementById('welcome-continue-btn');
+  btn.disabled=!(document.getElementById('welcome-agree1').checked&&document.getElementById('welcome-agree2').checked);
+}
+function welcomeContinue(){
+  closemod('welcome-modal');
+  ['ob-age','ob-gender','ob-source','ob-reason','ob-purpose','ob-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  openmod('onboard-modal');
+}
+function submitOnboarding(){
+  if(!pendingEnterApp)return;
+  const data={
+    age:document.getElementById('ob-age').value,
+    gender:document.getElementById('ob-gender').value,
+    source:document.getElementById('ob-source').value,
+    reason:document.getElementById('ob-reason').value,
+    purpose:document.getElementById('ob-purpose').value,
+    location:document.getElementById('ob-location').value,
+  };
+  sv('onboarding_'+pendingEnterApp.email,data);
+  closemod('onboard-modal');
+  enterApp(pendingEnterApp.name,pendingEnterApp.email);
+  pendingEnterApp=null;
 }
 function saveSession(email){
   const fp=getFingerprint();
@@ -1793,6 +2026,45 @@ function openPaymentHistory(){
   openmod('payhistory-modal');
 }
 
+// ===== همگام‌سازی با Ranflr (برای دیدن اطلاعات کاربرا) =====
+function syncUserToRanflr(userRec){
+  if(!RANFLR_URL||!userRec)return; // اگه تنظیم نشده، بی‌صدا رد می‌شه
+  fetch(RANFLR_URL+'/api/sync-user',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:userRec.email,name:userRec.name,plan:S.plan,uid:userRec.uid||'',discountCode:userRec.discountCode||'',provider:userRec.provider||'local'})
+  }).catch(()=>{}); // fire-and-forget؛ اگه سرور در دسترس نبود، تجربه کاربر خراب نمی‌شه
+}
+function logPaymentToRanflr(item,status){
+  if(!RANFLR_URL||!S.user)return;
+  fetch(RANFLR_URL+'/api/log-payment',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:S.user.email,item,status})
+  }).catch(()=>{});
+}
+
+// ===== پنل کاربری (داشبورد) =====
+function renderDashboard(){
+  const em=S.user?.email; if(!em)return;
+  const users=ld('users',{});
+  const u=users[em]||{};
+  const uidEl=document.getElementById('dash-uid'); if(uidEl)uidEl.textContent=u.uid||'—';
+  const dcEl=document.getElementById('dash-discount'); if(dcEl)dcEl.textContent=u.discountCode||'—';
+  const joinedEl=document.getElementById('dash-joined');
+  const daysEl=document.getElementById('dash-days');
+  if(u.joined){
+    const jd=new Date(u.joined);
+    if(joinedEl)joinedEl.textContent=jd.toLocaleDateString('fa-IR');
+    if(daysEl)daysEl.textContent=Math.max(0,Math.floor((Date.now()-jd.getTime())/86400000));
+  }
+  const lastEl=document.getElementById('dash-lastactive');
+  if(lastEl)lastEl.textContent=new Date().toLocaleString('fa-IR');
+  const purchases=ld('payhistory_'+em,[]);
+  const pEl=document.getElementById('dash-purchases');
+  if(pEl)pEl.innerHTML=purchases.length?purchases.map(p=>'<div style="background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px;display:flex;justify-content:space-between"><span>'+escHtml(p.item||'')+'</span><span style="color:'+(p.status==='pending'?'#E67E22':'#27AE60')+'">'+(p.status==='pending'?'⏳ در انتظار بررسی':'✅ تأییدشده')+'</span><span style="color:var(--gray)">'+escHtml(p.date||'')+'</span></div>').join(''):'<div style="text-align:center;color:var(--gray);font-size:12px;padding:16px 0">هنوز خریدی ثبت نشده</div>';
+}
+
 // ===== تحلیل فعالیت =====
 function renderActivityAnalytics(){
   const el=document.getElementById('ais-analytics');
@@ -1930,6 +2202,46 @@ function renderApiKeys(){
   }).join(''):'<div style="text-align:center;color:var(--gray);font-size:12px;padding:16px 0">هنوز کلیدی ساخته نشده</div>';
 }
 
+// ===== فراموشی رمز عبور =====
+async function sendResetCode(){
+  if(!capState.forgot){toast('لطفاً تیک "من روبات نیستم" را بزنید','w');return;}
+  const em=document.getElementById('fg-email').value.trim();
+  if(!em||!em.includes('@')){toast('ایمیل معتبر وارد کنید','w');return;}
+  const users=ld('users',{});
+  if(!users[em]){toast('حسابی با این ایمیل پیدا نشد','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
+  try{
+    const r=await fetch(apiUrl('/auth/send-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'ارسال کد ناموفق بود — سرویس ایمیل هنوز تنظیم نشده','w');return;}
+    document.getElementById('forgot-step1').style.display='none';
+    document.getElementById('forgot-step2').style.display='block';
+    toast('📧 کد به ایمیلت ارسال شد');
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function confirmResetCode(){
+  const em=document.getElementById('fg-email').value.trim();
+  const code=document.getElementById('fg-code').value.trim();
+  const newPs=document.getElementById('fg-newpass').value;
+  if(!code){toast('کد را وارد کنید','w');return;}
+  if(newPs.length<8){toast('رمز جدید باید حداقل ۸ کاراکتر باشد','w');return;}
+  try{
+    const r=await fetch(apiUrl('/auth/verify-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'کد اشتباه یا منقضی‌شده است','w');return;}
+    const users=ld('users',{});
+    const u=users[em];
+    if(!u){toast('حساب پیدا نشد','w');return;}
+    const salt=genSalt();
+    u.salt=salt; u.passHash=await hashPassword(newPs,salt);
+    sv('users',users);
+    closemod('forgot-modal');
+    document.getElementById('forgot-step1').style.display='block';
+    document.getElementById('forgot-step2').style.display='none';
+    toast('✅ رمز عبور با موفقیت تغییر کرد — حالا وارد شوید');
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+
 function enterApp(name,email){
   S.user={name,email};
   const users=ld('users',{});
@@ -1957,6 +2269,8 @@ function enterApp(name,email){
   genFeed(); genExplore(); updateUI();
   startWalletTimer(); startMsgReset();
   loadAISettings(); updateStorageUsage(); refreshBusinessPanel(); loadConnectorSettings(); renderApiKeys(); renderActivityAnalytics();
+  renderDashboard();
+  syncUserToRanflr(users[email]);
   nav('home');
   // شروع تبلیغات بعد از ۵ دقیقه
   if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,300000);
@@ -2049,6 +2363,8 @@ function nav(pg){
   if(pg==='projects')renderProjects();
   if(pg==='aisettings'){loadAISettings();updateStorageUsage();refreshBusinessPanel();renderActivityAnalytics();}
   if(pg==='apikeys'){renderApiKeys();loadConnectorSettings();}
+  if(pg==='dashboard')renderDashboard();
+  if(pg==='rules')renderRulesContent();
   closeSBMobile();
 }
 function togNotif(){document.getElementById('npanel').classList.toggle('on');}
@@ -2161,6 +2477,7 @@ function submitPay(){
   const h=document.getElementById('wallet-history');
   if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — درخواست '+(S.payTarget||'')+(pct>0?' ('+pct+'٪ تخفیف)':'')+' — <span style="color:#E67E22">⏳ در انتظار بررسی</span></div>'+h.innerHTML;
   addPaymentHistoryEntry({item:S.payTarget||''+(pct>0?' — '+pct+'٪ تخفیف':''),status:'pending',date:new Date().toLocaleDateString('fa-IR')});
+  logPaymentToRanflr(S.payTarget||'',pct>0?'pending ('+pct+'% تخفیف)':'pending');
   openmod('pay-pending-modal');
 }
 function genTokenCode(type){
