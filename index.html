@@ -236,6 +236,8 @@ html,body{font-family:"Vazirmatn",sans-serif;background:var(--bg);color:var(--bl
 .postuser h4{font-size:13px;font-weight:700;}
 .postuser span{font-size:10px;color:var(--gray);}
 .postbdg{background:var(--snow);color:var(--accent);font-size:9px;font-weight:700;padding:2px 6px;border-radius:50px;margin-right:4px;}
+.betabdg{background:linear-gradient(135deg,#4FA8D5,#2D8FBF);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:50px;margin-right:6px;box-shadow:0 0 8px rgba(79,168,213,0.6);animation:betaglow 2s ease-in-out infinite;}
+@keyframes betaglow{0%,100%{box-shadow:0 0 6px rgba(79,168,213,0.5);}50%{box-shadow:0 0 14px rgba(79,168,213,0.9);}}
 .postmenu{margin-right:auto;cursor:pointer;color:var(--gray);font-size:17px;}
 .postcont{font-size:13px;line-height:1.7;margin-bottom:10px;}
 .postmedia{border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--snow);display:flex;align-items:center;justify-content:center;height:160px;font-size:40px;}
@@ -450,7 +452,6 @@ function togCap(t){
       <div class="sb-sec">
         <div class="sb-lbl">ابزارها</div>
         <div class="sbi" id="snav-office" onclick="nav('office')"><div class="sbic">📄</div>Office AI</div>
-        <div class="sbi" id="snav-aisettings" onclick="nav('aisettings')"><div class="sbic">🧠</div>تنظیمات هوش مصنوعی</div>
         <div class="sbi" id="snav-apikeys" onclick="nav('apikeys')"><div class="sbic">🔑</div>API</div>
         <div class="sbi" id="snav-promptbuilder" onclick="nav('promptbuilder')"><div class="sbic">🧩</div>پرامپت</div>
         <div class="sbi" id="snav-store" onclick="nav('store')"><div class="sbic">🛍️</div>فروشگاه</div>
@@ -460,8 +461,8 @@ function togCap(t){
       </div>
       <div class="sb-sec">
         <div class="sb-lbl">بازی‌های آنلاین</div>
-        <div class="sbi" id="snav-hugy" onclick="nav('hugy')"><div class="sbic">🎮</div>Hugy</div>
-        <div class="sbi" id="snav-uli" onclick="nav('uli')"><div class="sbic">🩵</div>Uli</div>
+        <div class="sbi" id="snav-hugy" onclick="nav('hugy')"><div class="sbic">🎮</div>Hugy <span class="betabdg">بتا</span></div>
+        <div class="sbi" id="snav-uli" onclick="nav('uli')"><div class="sbic">🩵</div>Uli <span class="betabdg">بتا</span></div>
       </div>
       <div class="sb-sec">
         <div class="sb-lbl">تیم</div>
@@ -1221,9 +1222,10 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
       <div id="pg-hugy" class="pg" style="display:none">
         <div class="ccard" style="padding:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <h2 style="font-size:16px;font-weight:800">🎮 Hugy</h2>
+            <h2 style="font-size:16px;font-weight:800">🎮 Hugy <span class="betabdg">بتا</span></h2>
             <span style="font-size:11px;color:var(--gray)" id="hugy-goal">🎯 Uli رو به مهد کودک برسون</span>
           </div>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:10px">این بازی هنوز در نسخه‌ی بتاست — داریم مرحله‌به‌مرحله قابلیت‌های بیشتری (جهان سه‌بعدی، چندنفره، شخصیت‌های بیشتر) بهش اضافه می‌کنیم. اگه با باگی مواجه شدید، از بخش پشتیبانی خبرمون کنید 🙏</p>
           <div id="hugy-wrap" style="position:relative;width:100%;aspect-ratio:16/10;background:#BFE6FF;border-radius:16px;overflow:hidden;touch-action:none;user-select:none">
             <canvas id="hugy-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
             <button id="hugy-bag" onclick="toggleHugyBag()" style="position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;background:#fff;border:none;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:6">🎒</button>
@@ -1240,13 +1242,14 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
       <!-- ULI (COMING SOON) -->
       <div id="pg-uli" class="pg" style="display:none">
         <div class="ccard">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-            <h2 style="font-size:18px;font-weight:800">🩵 Uli</h2>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:8px">
+            <h2 style="font-size:18px;font-weight:800">🩵 Uli <span class="betabdg">بتا</span></h2>
             <div style="display:flex;gap:10px;font-size:12px">
               <span style="background:var(--snow);padding:6px 12px;border-radius:50px;font-weight:700">💛 <span id="uli-uol">0</span> UOL</span>
               <span style="background:var(--snow);padding:6px 12px;border-radius:50px;font-weight:700">📶 <span id="uli-net">0</span> اینترنت</span>
             </div>
           </div>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:10px">Uli هنوز در نسخه‌ی بتاست — به‌زودی نسخه‌ی سه‌بعدی و قابلیت‌های بیشتری می‌گیره 🩵</p>
           <div id="uli-stage" style="position:relative;background:linear-gradient(180deg,#EAF6FF,#D6EEFF);border-radius:16px;height:320px;overflow:hidden;display:flex;align-items:center;justify-content:center">
             <div id="uli-speech" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#fff;border-radius:14px;padding:8px 14px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,0.1);display:none;max-width:220px;text-align:center;z-index:5"></div>
             <div id="uli-char" onclick="clickUli()" style="cursor:pointer;position:relative;width:140px;height:140px;transition:transform 0.15s ease">
@@ -1483,6 +1486,8 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
     <p class="msub">محتوا را در فید Uliki منتشر کنید</p>
     <div class="ig"><label class="lbl">عنوان</label><input class="inp" id="pub-title" placeholder="عنوان جذاب..."></div>
     <div class="ig"><label class="lbl">توضیحات</label><textarea class="inp" id="pub-desc" style="min-height:60px;resize:none" placeholder="درباره این محتوا..."></textarea></div>
+    <div class="ig"><label class="lbl">رده سنی *</label><select class="inp" id="pub-age"><option value="">انتخاب کنید</option><option value="+18">۱۸+ (بزرگسال)</option><option value="-18">زیر ۱۸ (مناسب همه)</option></select></div>
+    <div class="ig"><label class="lbl">لینک وب‌سایت <span style="color:var(--gray);font-weight:400">(اختیاری)</span></label><input class="inp" id="pub-link" placeholder="https://..."></div>
     <button class="btn btnp" style="width:100%;margin-top:8px" onclick="doPub()">📤 انتشار</button>
   </div>
 </div>
@@ -1570,7 +1575,7 @@ const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کن�
 const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
 const API_CONFIGURED = !!WK || USE_RELATIVE_API;
 function apiUrl(path){ return WK ? WK+path : path; }
-const GOOGLE_CLIENT_ID = ''; // Client ID از Google Cloud Console — مثلاً: '123456-abc.apps.googleusercontent.com'
+const GOOGLE_CLIENT_ID = '867167820423-72bb4nlj7ndfpt9sujv49p515h2cnqhv.apps.googleusercontent.com';
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
 const RULES_TEXT = `۱. تیم لیولاف همراه با مدیر اصلی‌اش جناب امیرعلی تنعمی، هیچ‌گونه مسئولیتی در شرایط خاص مربوط به این پلتفرم نمی‌پذیرند؛ تمام مسئولیت با خود کاربر است.
 ۲. بازی‌هایی که توسط توسعه‌دهندگان یا خود تیم لیولاف در Uliki تولید و در اختیار کاربران در سراسر جهان قرار می‌گیرند، کاملاً قانونی هستند. این بازی‌ها ممکن است مشکلات کیفی جزئی داشته باشند که در نسخه‌های بعدی رفع می‌شود؛ اظهار نظر منفی درباره آن‌ها بدون سند و مدرک معتبر، پیگرد قانونی دارد.
@@ -3669,7 +3674,9 @@ function renderFeedSidebar(){
   if(sugEl)sugEl.innerHTML=recentUsers.length?recentUsers.slice(0,5).map(p=>'<div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,'+p.col+','+p.col+'88)">'+escHtml(p.av)+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+escHtml(p.user)+'</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px" onclick="toggleFollow(this)">دنبال</button></div>').join(''):'<div style="color:var(--gray);font-size:12px">هنوز کسی منتشر نکرده</div>';
 }
 function mkPost(p,i){
-  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span></span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${escHtml(p.cont)}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button></div></div>`;
+  const ageBadge=p.ageRating==='+18'?'<span class="postbdg" style="background:#FFE0E0;color:#C0392B">🔞 ۱۸+</span>':'';
+  const linkHtml=(p.link&&/^https?:\/\//i.test(p.link))?'<a href="'+escHtml(p.link)+'" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);display:block;margin-top:4px;word-break:break-all">🔗 '+escHtml(p.link)+'</a>':'';
+  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span>${ageBadge}</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${escHtml(p.cont)}${linkHtml}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button></div></div>`;
 }
 async function likePost(btn){
   const id=btn.getAttribute('data-id');
@@ -3739,12 +3746,17 @@ function sharePost(){if(navigator.share){navigator.share({title:'Uliki AI',text:
 function pubContent(type){S.pubtype=type;document.getElementById('pub-title').value='';document.getElementById('pub-desc').value='';openmod('pub-modal');}
 async function doPub(){
   const desc=document.getElementById('pub-desc').value||'';
+  const ageRating=document.getElementById('pub-age').value;
+  const link=document.getElementById('pub-link').value.trim();
+  if(!ageRating){toast('رده سنی محتوا رو مشخص کنید','w');return;}
+  if(link&&!/^https?:\/\//i.test(link)){toast('لینک باید با http:// یا https:// شروع بشه','w');return;}
   const ems={music:'🎵',code:'💻',video:'🎬',image:'🖼️',text:'📝'};
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   try{
-    await fetch(WK+'/feed',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    await fetch(apiUrl('/feed'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       user:S.user?.name||'کاربر',av:(S.user?.name||'U').charAt(0).toUpperCase(),col:'#4FA8D5',
-      type:S.pubtype,em:ems[S.pubtype]||'✨',cont:desc||'محتوای AI',tags:['#Uliki'],bdg:'AI Content'
+      type:S.pubtype,em:ems[S.pubtype]||'✨',cont:desc||'محتوای AI',tags:['#Uliki',ageRating],bdg:'AI Content',
+      ageRating,link
     })});
     S.totPosts++;updateUI();genFeed();closemod('pub-modal');toast('📤 منتشر شد!');
   }catch(e){toast('خطا در انتشار','w');}
@@ -4057,4 +4069,4 @@ function togVoice() { togVoicePanel(); }
 </div>
 
 </body>
-</html>
+</html>SS
