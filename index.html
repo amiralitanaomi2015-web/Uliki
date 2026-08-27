@@ -614,6 +614,10 @@ function togCap(t){
                   </div>
                   <div id="voice-status" style="font-size:12px;color:var(--gray);margin-bottom:10px">آماده گوش دادن</div>
                   <button onclick="startVoiceRec()" id="voice-rec-btn" class="btn btnp btnsm">🎤 شروع ضبط</button>
+                  <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:12px;cursor:pointer">
+                    <span>🔊 پاسخ صوتی هوش مصنوعی</span>
+                    <div class="tog" id="voice-reply-toggle" onclick="this.classList.toggle('on');sv('voiceReplyOn',this.classList.contains('on'))"></div>
+                  </label>
                 </div>
               </div>
               <!-- Upload Preview -->
@@ -3238,11 +3242,13 @@ async function doSend(){
     S.hist.push({role:'assistant',content:reply});
     saveChatHistory();
     sv('stats_'+(S.user?.email||''),{totMsgs:S.totMsgs,totCreates:S.totCreates,totPosts:S.totPosts});
+    if(ld('voiceReplyOn',false))speakText(reply.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
   }catch(e){
     remTyping(tid);
     addMsg('❌ خطا در اتصال. دوباره تلاش کنید.','ai');
   }
 }
+let chatMsgTexts=[];
 function addMsg(txt,role,fmt=false){
   const msgs=document.getElementById('chat-msgs');
   const d=document.createElement('div');
@@ -3251,7 +3257,13 @@ function addMsg(txt,role,fmt=false){
   const t=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const disp=fmt?fmtMsg(txt):escHtml(txt).replace(/\n/g,'<br>');
   const ml=role==='ai'?'<span style="font-size:9px;opacity:0.5;display:block;margin-top:2px">'+(MODELS[S.selMod]?.n||'AI')+'</span>':'';
-  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+'</div></div>';
+  let speakBtn='';
+  if(role==='ai'){
+    const idx=chatMsgTexts.length;
+    chatMsgTexts.push(txt.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
+    speakBtn='<button onclick="speakText(chatMsgTexts['+idx+'])" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:12px;margin-top:4px" title="پخش صوتی">🔊</button>';
+  }
+  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+speakBtn+'</div></div>';
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
 let typc=0;
@@ -3823,6 +3835,8 @@ let v1v1Lang = 'fa-IR';
 function togVoicePanel() {
   const p = document.getElementById('voice-panel');
   if(p) p.classList.toggle('on');
+  const t=document.getElementById('voice-reply-toggle');
+  if(t) t.classList.toggle('on',ld('voiceReplyOn',false));
 }
 
 function setVoiceLang(lang) { voiceLang = lang; }
@@ -3950,18 +3964,40 @@ function stopVoice1v1() {
 }
 
 // ===== TEXT TO SPEECH =====
-function speakText(text) {
+function speakTextBrowserFallback(text) {
   if(!window.speechSynthesis) { toast('مرورگر از TTS پشتیبانی نمی‌کند','w'); return; }
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = v1v1Lang || voiceLang || 'fa-IR';
   utt.rate = 0.95;
   utt.pitch = 1;
-  // انتخاب صدای مناسب
   const voices = window.speechSynthesis.getVoices();
   const match = voices.find(v => v.lang.startsWith(utt.lang.slice(0,2)));
   if(match) utt.voice = match;
   window.speechSynthesis.speak(utt);
+}
+let _currentTTSAudio=null;
+async function speakText(text) {
+  if(!text||!text.trim())return;
+  if(!API_CONFIGURED){ speakTextBrowserFallback(text); return; }
+  try{
+    if(_currentTTSAudio){_currentTTSAudio.pause();_currentTTSAudio=null;}
+    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000)})});
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      if(res.status===503){speakTextBrowserFallback(text);return;} // سرویس صدا هنوز تنظیم نشده — بازگشت به صدای مرورگر
+      toast(err.error||'خطا در پخش صدا','w');
+      return;
+    }
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    _currentTTSAudio=audio;
+    audio.onended=()=>{URL.revokeObjectURL(url);if(_currentTTSAudio===audio)_currentTTSAudio=null;};
+    audio.play();
+  }catch(e){
+    speakTextBrowserFallback(text);
+  }
 }
 
 // ===== FILE UPLOAD =====
@@ -4069,4 +4105,4 @@ function togVoice() { togVoicePanel(); }
 </div>
 
 </body>
-</html>SS
+</html>
