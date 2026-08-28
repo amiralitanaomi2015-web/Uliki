@@ -458,6 +458,12 @@ function togCap(t){
         <div class="sbi" id="snav-wallet" onclick="nav('wallet')"><div class="sbic">💰</div>ولت</div>
         <div class="sbi" id="snav-projects" onclick="nav('projects');renderProjects()"><div class="sbic">📁</div>پروژه‌ها</div>
         <div class="sbi" id="snav-support" onclick="nav('support')"><div class="sbic">🎧</div>پشتیبانی</div>
+        <div class="sbi" id="snav-news" onclick="nav('news')"><div class="sbic">📰</div>اخبار</div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">توسعه‌دهندگان</div>
+        <div class="sbi" id="snav-devenv" onclick="nav('devenv')"><div class="sbic">🛠️</div>محیط توسعه‌دهندگان</div>
+        <div class="sbi" id="snav-admin" onclick="nav('admin')" style="display:none"><div class="sbic">🛡️</div>پنل مدیریت</div>
       </div>
       <div class="sb-sec">
         <div class="sb-lbl">بازی‌های آنلاین</div>
@@ -473,6 +479,7 @@ function togCap(t){
         <div class="sbi" id="snav-plans" onclick="nav('plans')"><div class="sbic">⭐</div>پلن‌ها</div>
         <div class="sbi" id="snav-dashboard" onclick="nav('dashboard')"><div class="sbic">📋</div>پنل کاربری</div>
         <div class="sbi" id="snav-profile" onclick="nav('profile')"><div class="sbic">👤</div>پروفایل</div>
+        <div class="sbi" id="snav-parental" onclick="nav('parental')"><div class="sbic">👨‍👩‍👧</div>کنترل والدین</div>
         <div class="sbi" onclick="doOut()"><div class="sbic">🚪</div>خروج</div>
       </div>
     </aside>
@@ -614,10 +621,6 @@ function togCap(t){
                   </div>
                   <div id="voice-status" style="font-size:12px;color:var(--gray);margin-bottom:10px">آماده گوش دادن</div>
                   <button onclick="startVoiceRec()" id="voice-rec-btn" class="btn btnp btnsm">🎤 شروع ضبط</button>
-                  <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:12px;cursor:pointer">
-                    <span>🔊 پاسخ صوتی هوش مصنوعی</span>
-                    <div class="tog" id="voice-reply-toggle" onclick="this.classList.toggle('on');sv('voiceReplyOn',this.classList.contains('on'))"></div>
-                  </label>
                 </div>
               </div>
               <!-- Upload Preview -->
@@ -642,6 +645,7 @@ function togCap(t){
                   <input type="file" id="folder-upload" webkitdirectory directory multiple style="display:none" onchange="handleUpload(this)">
                 </label>
                 <button class="voicebtn" id="voicebtn" onclick="togVoicePanel()" title="ورودی صوتی">🎤</button>
+                <button class="voicebtn" id="voice-reply-btn" onclick="toggleVoiceReply()" title="پخش پاسخ با صدای هوش‌مصنوعی (ElevenLabs)">🔇</button>
                 <button class="sendbtn" id="sendbtn" onclick="doSend()">➤</button>
               </div>
               <div style="display:flex;justify-content:space-between;margin-top:5px">
@@ -1159,6 +1163,220 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
         </div>
       </div>
 
+      <!-- NEWS -->
+      <div id="pg-news" class="pg" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
+          <h2 style="font-size:19px;font-weight:800">📰 اخبار</h2>
+          <button class="btn btng btnsm" onclick="loadNews(true)">🔄 بروزرسانی</button>
+        </div>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:14px">آخرین اخبار — از طریق NewsData.io</p>
+        <div class="nav-search" style="max-width:none;margin-bottom:12px">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="news-search" placeholder="جستجو در اخبار..." onkeydown="if(event.key==='Enter'){newsSearchGo()}">
+        </div>
+        <div class="exfilts" id="news-cats">
+          <button class="exfilt on" onclick="newsCat(this,'')">همه</button>
+          <button class="exfilt" onclick="newsCat(this,'technology')">فناوری</button>
+          <button class="exfilt" onclick="newsCat(this,'business')">اقتصاد</button>
+          <button class="exfilt" onclick="newsCat(this,'science')">علم</button>
+          <button class="exfilt" onclick="newsCat(this,'world')">جهان</button>
+          <button class="exfilt" onclick="newsCat(this,'sports')">ورزش</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:14px;cursor:pointer">
+          <div class="tog" id="news-fa-toggle" onclick="this.classList.toggle('on');loadNews(true)"></div>
+          فقط اخبار فارسی‌زبان
+        </label>
+        <div id="news-list" style="display:flex;flex-direction:column;gap:12px"></div>
+        <div style="text-align:center;margin-top:16px">
+          <button class="btn btno btnsm" id="news-more-btn" onclick="loadNews(false)" style="display:none">بارگذاری بیشتر</button>
+        </div>
+      </div>
+
+      <!-- DEVELOPER ENVIRONMENT -->
+      <div id="pg-devenv" class="pg" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:5px">
+          <h2 style="font-size:19px;font-weight:800">🛠️ محیط توسعه‌دهندگان</h2>
+          <span id="devenv-role-tag" style="font-size:11px;background:var(--snow);color:var(--accent2);padding:4px 12px;border-radius:50px;font-weight:700">نقش شما: کاربر عادی</span>
+        </div>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">به توسعه Uliki کمک کنید — کد را بررسی، اصلاح یا بهبود دهید و برای تیم ارسال کنید</p>
+        <div class="warn-banner">
+          <div class="wi">ℹ️</div>
+          <div>
+            <div class="warn-banner-t">فرآیند بررسی</div>
+            <div class="warn-banner-s">ارسال شما مستقیم روی نسخه اصلی اعمال نمی‌شود. تیم لیولاف/متخصصان کدنویسی ابتدا آن را بررسی و تست می‌کنند و در صورت تأیید در نسخه بعدی منتشر می‌شود.</div>
+          </div>
+        </div>
+        <div class="ctabs">
+          <button class="ctab on" id="dt-repo" onclick="swDevEnv('repo');loadRepoTree()" style="display:none">📦 مرورگر کد (زنده)</button>
+          <button class="ctab" id="dt-submit" onclick="swDevEnv('submit')">📤 ارسال تغییرات</button>
+          <button class="ctab" id="dt-mine" onclick="swDevEnv('mine');renderMySubmissions()">📋 ارسال‌های من</button>
+          <button class="ctab" id="dt-review" onclick="swDevEnv('review');loadAdminSubmissions()" style="display:none">✅ بررسی ارسال‌ها</button>
+        </div>
+
+        <div class="cpanel" id="dp-repo">
+          <div class="ccard">
+            <h3>📦 مخزن رسمی Uliki</h3>
+            <p class="csub">دسترسی مستقیم گیت‌هاب + مرورگر فایل زنده (ویژه نقش توسعه‌دهنده به بالا، سمت سرور بررسی می‌شود)</p>
+            <div style="background:var(--snow);border-radius:10px;padding:12px 14px;font-family:monospace;font-size:12px;direction:ltr;text-align:left;overflow-x:auto;margin-bottom:12px">github.com/amiralitanaomi2015-web/Uliki</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+              <a class="btn btnp btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki" target="_blank">🔗 مشاهده مخزن</a>
+              <a class="btn btno btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki/archive/refs/heads/main.zip" target="_blank">⬇️ دانلود کد (main.zip)</a>
+              <a class="btn btno btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki/issues" target="_blank">🐞 گزارش باگ (Issues)</a>
+              <button class="btn btng btnsm" onclick="loadRepoTree()">🔄 بارگذاری ساختار فایل‌ها</button>
+            </div>
+            <div style="display:grid;grid-template-columns:260px 1fr;gap:12px;min-height:280px">
+              <div>
+                <input class="inp" id="repo-file-search" placeholder="جستجوی فایل..." style="margin-bottom:8px;font-size:12px" oninput="filterRepoTree(this.value)">
+                <div id="repo-tree" style="max-height:360px;overflow-y:auto;background:var(--snow);border-radius:10px;padding:8px;font-size:12px;direction:ltr;text-align:left"></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <strong style="font-size:12px" id="repo-file-path">فایلی انتخاب نشده</strong>
+                  <button class="btn btng btnsm" onclick="copyTxt('repo-file-content')" style="display:none" id="repo-file-copy">📋 کپی</button>
+                </div>
+                <pre id="repo-file-content" style="max-height:360px;overflow:auto;background:#0d1117;color:#e6edf3;border-radius:10px;padding:14px;font-size:11px;line-height:1.7;direction:ltr;text-align:left;font-family:monospace">یک فایل را از لیست کنار انتخاب کنید</pre>
+              </div>
+            </div>
+          </div>
+          <div class="ccard">
+            <h3>🔀 گردش‌کار توسعه پیشنهادی</h3>
+            <div style="font-size:12px;line-height:2.3;color:var(--graydark)">
+              <div>۱. مخزن را فورک یا دانلود کنید (یا مستقیم از مرورگر بالا فایل‌ها را بررسی کنید).</div>
+              <div>۲. یک برنچ جدید بسازید (<code style="direction:ltr;display:inline-block">feature/*</code> یا <code style="direction:ltr;display:inline-block">bugfix/*</code>).</div>
+              <div>۳. تغییرات را اعمال و به‌صورت محلی تست کنید.</div>
+              <div>۴. از فرم «ارسال تغییرات» برای ثبت درخواست بررسی استفاده کنید.</div>
+              <div>۵. یک متخصص کدنویسی یا ادمین تغییرات را بررسی، تست و تأیید/رد می‌کند.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cpanel on" id="dp-submit">
+          <div class="ccard">
+            <h3>📤 فرم ارسال توسعه‌دهنده</h3>
+            <p class="csub">اطلاعات را کامل پر کنید — موارد ستاره‌دار الزامی است. حساب و ایمیل شما به‌صورت خودکار از جلسه فعلی ثبت می‌شود.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="ig"><label class="lbl">نام *</label><input class="inp" id="dev-fname" placeholder="نام"></div>
+              <div class="ig"><label class="lbl">نام خانوادگی *</label><input class="inp" id="dev-lname" placeholder="نام خانوادگی"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div class="ig"><label class="lbl">کشور</label><input class="inp" id="dev-country" placeholder="ایران"></div>
+              <div class="ig"><label class="lbl">استان</label><input class="inp" id="dev-province" placeholder="اختیاری"></div>
+              <div class="ig"><label class="lbl">شهر</label><input class="inp" id="dev-city" placeholder="اختیاری"></div>
+            </div>
+            <div class="ig"><label class="lbl">هدف توسعه *</label><input class="inp" id="dev-goal" placeholder="مثلاً: رفع باگ، افزودن قابلیت، بهینه‌سازی..."></div>
+            <div class="ig"><label class="lbl">شرح دقیق تغییر *</label><textarea class="ptarea" id="dev-changedesc" placeholder="دقیقاً چه چیزی تغییر کرد؟"></textarea></div>
+            <div class="ig"><label class="lbl">شرح فنی *</label><textarea class="ptarea" id="dev-techdesc" placeholder="چرا این تغییر لازم بود و چه بهبودی ایجاد می‌کند؟"></textarea></div>
+            <div class="ig"><label class="lbl">کد تغییر/جدید *</label><textarea class="ptarea" id="dev-code" style="min-height:160px;font-family:monospace;direction:ltr;text-align:left" placeholder="// کد خود را اینجا paste کنید"></textarea></div>
+            <div class="ig"><label class="lbl">GitHub پروفایل</label><input class="inp" id="dev-github" placeholder="https://github.com/username"></div>
+            <div class="ig"><label class="lbl">مستندات API (در صورت افزودن API)</label><textarea class="ptarea" id="dev-apidocs" style="min-height:80px" placeholder="Endpoint، پارامترها، نمونه پاسخ..."></textarea></div>
+            <div class="ig"><label class="lbl">یادداشت‌های توسعه</label><textarea class="ptarea" id="dev-notes" style="min-height:70px" placeholder="نکات اضافه برای تیم بررسی"></textarea></div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin:10px 0">
+              <input type="checkbox" id="dev-agree"> تأیید می‌کنم این کد مخرب نیست و برای بهبود Uliki ارسال می‌شود.
+            </label>
+            <button class="genbtn" onclick="submitDevChange()">📤 ارسال برای بررسی</button>
+          </div>
+        </div>
+
+        <div class="cpanel" id="dp-mine">
+          <div id="dev-mine-list" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+
+        <div class="cpanel" id="dp-review">
+          <div class="ccard">
+            <h3>✅ صف بررسی ارسال‌های توسعه‌دهندگان</h3>
+            <p class="csub">فقط متخصص کدنویسی، ادمین و رئیس هیئت‌مدیره — تصمیم روی سرور با نقش جلسه شما بررسی می‌شود</p>
+            <div id="dev-review-list" style="display:flex;flex-direction:column;gap:10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARENTAL CONTROLS -->
+      <div id="pg-parental" class="pg" style="display:none">
+        <h2 style="font-size:19px;font-weight:800;margin-bottom:5px">👨‍👩‍👧 کنترل والدین</h2>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">محدودیت‌های استفاده فرزندتان از Uliki را مدیریت کنید</p>
+        <div id="parental-locked-view" class="ccard" style="text-align:center;padding:34px 20px">
+          <div style="font-size:38px;margin-bottom:10px">🔒</div>
+          <p style="font-size:13px;color:var(--graydark);margin-bottom:16px" id="parental-lock-msg">برای مشاهده و تغییر تنظیمات، رمز والدین را وارد کنید</p>
+          <div style="max-width:260px;margin:0 auto;display:flex;gap:8px">
+            <input class="inp" type="password" id="parental-pin-inp" placeholder="رمز والدین" onkeydown="if(event.key==='Enter')unlockParental()">
+            <button class="btn btnp btnsm" onclick="unlockParental()">ورود</button>
+          </div>
+          <p style="font-size:11px;color:var(--gray);margin-top:10px" id="parental-setup-hint"></p>
+        </div>
+        <div id="parental-panel" style="display:none">
+          <div class="profgrid">
+            <div class="profsec">
+              <h4>⏱️ محدودیت زمانی</h4>
+              <div class="ig"><label class="lbl">حداکثر استفاده روزانه (دقیقه)</label><input class="inp" type="number" id="par-daily-min" value="120" min="0"></div>
+              <div class="ig"><label class="lbl">بازه مجاز استفاده</label><div style="display:flex;gap:8px;align-items:center"><input type="time" class="inp" id="par-from"><span>تا</span><input type="time" class="inp" id="par-to"></div></div>
+            </div>
+            <div class="profsec">
+              <h4>🔐 مجوزها</h4>
+              <div class="setitem"><span class="setlbl">چت متنی</span><div class="tog on" id="par-chat"></div></div>
+              <div class="setitem"><span class="setlbl">چت صوتی</span><div class="tog" id="par-voice"></div></div>
+              <div class="setitem"><span class="setlbl">افزودن دوست</span><div class="tog on" id="par-friend"></div></div>
+              <div class="setitem"><span class="setlbl">آپلود محتوا</span><div class="tog" id="par-upload"></div></div>
+              <div class="setitem"><span class="setlbl">خرید داخل پلتفرم</span><div class="tog" id="par-purchase"></div></div>
+            </div>
+            <div class="profsec">
+              <h4>🎮 دسترسی بازی</h4>
+              <div class="setitem"><span class="setlbl">Hugy</span><div class="tog on" id="par-hugy"></div></div>
+              <div class="setitem"><span class="setlbl">Uli</span><div class="tog on" id="par-uli"></div></div>
+              <div class="ig" style="margin-top:10px"><label class="lbl">حداکثر رده سنی محتوا</label><select class="inp" id="par-agerating"><option value="all">مناسب همه سنین</option><option value="7">۷+</option><option value="9" selected>۹+</option><option value="13">۱۳+</option></select></div>
+            </div>
+            <div class="profsec">
+              <h4>📊 مشاهده فعالیت</h4>
+              <div id="par-activity" style="font-size:12px;color:var(--graydark);line-height:2"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="btn btnp" onclick="saveParentalSettings()">💾 ذخیره تنظیمات</button>
+            <button class="btn btng" onclick="changeParentalPin()">🔑 تغییر رمز والدین</button>
+            <button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C;border:1px solid #FFCCCC" onclick="lockParental()">🔒 قفل کردن</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN DASHBOARD -->
+      <div id="pg-admin" class="pg" style="display:none">
+        <h2 style="font-size:19px;font-weight:800;margin-bottom:5px">🛡️ پنل مدیریت</h2>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">مدیریت نقش کاربران و مشاهده گزارش فعالیت — دسترسی و اعتبارسنجی کاملاً سمت سرور انجام می‌شود</p>
+        <div id="admin-denied" class="ccard" style="display:none;text-align:center;padding:30px">
+          <div style="font-size:34px;margin-bottom:8px">🔒</div>
+          <p style="font-size:13px;color:var(--graydark)">حساب شما دسترسی ادمین ندارد — این صفحه فقط برای Admin/Chairman قابل استفاده است.</p>
+        </div>
+        <div id="admin-content" style="display:none">
+          <div class="profgrid">
+            <div class="profsec">
+              <h4>👤 تغییر نقش کاربر</h4>
+              <div class="ig"><label class="lbl">ایمیل کاربر</label><input class="inp" id="admin-target-email" placeholder="user@example.com"></div>
+              <div class="ig"><label class="lbl">نقش جدید</label><select class="inp" id="admin-target-role">
+                <option value="user">کاربر عادی</option>
+                <option value="professional">کاربر حرفه‌ای</option>
+                <option value="developer">توسعه‌دهنده</option>
+                <option value="coding_specialist">متخصص کدنویسی</option>
+                <option value="admin">ادمین</option>
+                <option value="chairman">رئیس هیئت‌مدیره</option>
+              </select></div>
+              <button class="btn btnp btnsm" style="width:100%" onclick="setUserRole()">💾 اعمال نقش</button>
+              <p style="font-size:10px;color:var(--gray);margin-top:8px">توجه: فقط Chairman می‌تواند نقش Admin یا Chairman اختصاص دهد؛ Admin فقط نقش‌های پایین‌تر را می‌تواند تغییر دهد (سرور این محدودیت را اجرا می‌کند).</p>
+            </div>
+            <div class="profsec">
+              <h4>📤 صف بررسی ارسال‌های توسعه‌دهندگان</h4>
+              <p style="font-size:12px;color:var(--gray);margin-bottom:10px">همان صف موجود در محیط توسعه‌دهندگان</p>
+              <button class="btn btno btnsm" style="width:100%" onclick="nav('devenv');setTimeout(()=>{swDevEnv('review');loadAdminSubmissions();},100)">📋 باز کردن صف بررسی</button>
+            </div>
+            <div class="profsec" style="grid-column:1/-1">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h4 style="margin:0">📜 گزارش رخدادها (Audit Log)</h4>
+                <button class="btn btng btnsm" onclick="loadAuditLog()">🔄 بروزرسانی</button>
+              </div>
+              <div id="admin-audit-list" style="display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ABOUT US -->
       <div id="pg-about" class="pg" style="display:none">
         <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">ℹ️ درباره ما</h2>
@@ -1224,6 +1442,16 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
       <!-- HUGY (COMING SOON) -->
       <div id="pg-hugy" class="pg" style="display:none">
+        <div id="hugy-restricted-view" class="ccard" style="display:none;text-align:center;padding:40px 20px">
+          <div style="font-size:40px;margin-bottom:12px">🎮</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">Hugy فعلاً یک نسخه دموست</h3>
+          <p style="font-size:13px;color:var(--graydark);line-height:1.9;max-width:420px;margin:0 auto 14px">
+            تیم ما سخت در حال تلاش روی این بازی است، لطفاً صبور باشید 🙏<br>
+            در حال حاضر Hugy فقط برای کاربران VIP در دسترس است.
+          </p>
+          <button class="btn btnp btnsm" onclick="nav('plans')">👑 مشاهده پلن VIP</button>
+        </div>
+        <div id="hugy-game-view" style="display:none">
         <div class="ccard" style="padding:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <h2 style="font-size:16px;font-weight:800">🎮 Hugy <span class="betabdg">بتا</span></h2>
@@ -1241,10 +1469,21 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
           </div>
           <p style="font-size:10px;color:var(--gray);margin-top:8px">دایره‌ی پایین‌راست: راه رفتن Uli · 🎒 بالا‌راست: کیف · روی وسایل دوبار کلیک کن برای برداشتن</p>
         </div>
+        </div>
       </div>
 
       <!-- ULI (COMING SOON) -->
       <div id="pg-uli" class="pg" style="display:none">
+        <div id="uli-restricted-view" class="ccard" style="display:none;text-align:center;padding:40px 20px">
+          <div style="font-size:40px;margin-bottom:12px">🚧</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">Uli در حال توسعه است</h3>
+          <p style="font-size:13px;color:var(--graydark);line-height:1.9;max-width:420px;margin:0 auto 14px">
+            این بازی هنوز کامل نشده و فعلاً فقط برای کاربران حرفه‌ای (Professional)، VIP و نقش‌های بالاتر باز است.
+            این محدودیت روی سرور اعمال می‌شود، نه فقط در ظاهر صفحه.
+          </p>
+          <button class="btn btnp btnsm" onclick="nav('plans')">⭐ مشاهده پلن‌ها</button>
+        </div>
+        <div id="uli-game-view" style="display:none">
         <div class="ccard">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:8px">
             <h2 style="font-size:18px;font-weight:800">🩵 Uli <span class="betabdg">بتا</span></h2>
@@ -1280,6 +1519,7 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
             <button class="btn btnp btnsm" onclick="sayToUli()">بگو</button>
           </div>
           <div style="margin-top:12px;background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--graydark)" id="uli-status">Uli امروز حالش خوبه! 😊</div>
+        </div>
         </div>
       </div>
 
@@ -1697,7 +1937,8 @@ let S = {
   payTarget:null,
   feedPosts:[],
   feedComments:{},
-  trialUsed: 0
+  trialUsed: 0,
+  sessionToken:null, userRole:'user', voiceReplyOn:false
 };
 
 // ===== STORAGE =====
@@ -1779,6 +2020,66 @@ async function handleGoogleCredential(resp){
 }
 window.addEventListener('load',()=>{setTimeout(initGoogleAuth,300);});
 
+// نقش‌ها فقط برای نمایش/UI استفاده می‌شوند؛ اجرای واقعی دسترسی همیشه سمت سرور (Worker) چک می‌شود.
+const ROLE_RANK={user:0,professional:20,developer:40,coding_specialist:60,admin:80,chairman:100};
+function rankOf(role){return ROLE_RANK[role]??0;}
+const ROLE_LABELS={user:'کاربر عادی',professional:'کاربر حرفه‌ای',developer:'توسعه‌دهنده',coding_specialist:'متخصص کدنویسی',admin:'ادمین',chairman:'رئیس هیئت‌مدیره'};
+function applyRoleUI(){
+  const r=rankOf(S.userRole);
+  const adminNav=document.getElementById('snav-admin'); if(adminNav)adminNav.style.display=(r>=ROLE_RANK.admin)?'flex':'none';
+  const repoTab=document.getElementById('dt-repo'); if(repoTab)repoTab.style.display=(r>=ROLE_RANK.developer)?'inline-flex':'none';
+  const reviewTab=document.getElementById('dt-review'); if(reviewTab)reviewTab.style.display=(r>=ROLE_RANK.coding_specialist)?'inline-flex':'none';
+  const roleTag=document.getElementById('devenv-role-tag');
+  if(roleTag)roleTag.textContent='نقش شما: '+(ROLE_LABELS[S.userRole]||'کاربر عادی');
+}
+// دروازه واقعی Hugy: فقط VIP (یا ادمین/چیرمن برای QA) - تصمیم واقعی سمت سرور
+// گرفته می‌شود، حتی اگر کاربر مستقیماً به این صفحه هدایت شود.
+async function checkHugyAccessAndRender(){
+  const restricted=document.getElementById('hugy-restricted-view');
+  const gameView=document.getElementById('hugy-game-view');
+  restricted.style.display='none'; gameView.style.display='none';
+  if(!API_CONFIGURED){
+    toast('⚠️ بدون سرور، محدودیت واقعی Hugy قابل اجرا نیست (حالت دمو)','w');
+    gameView.style.display='block'; setTimeout(initHugyGame,50);
+    return;
+  }
+  try{
+    const r=await fetch(apiUrl('/game/hugy-access'),{headers:S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}});
+    const data=await r.json();
+    if(data.ok&&data.allowed){
+      gameView.style.display='block'; setTimeout(initHugyGame,50);
+    } else {
+      restricted.style.display='block';
+    }
+  }catch(e){
+    restricted.style.display='block';
+  }
+}
+
+// دروازه واقعی Uli: نمایش/مخفی‌کردن آیتم منو فقط ظاهری است؛ تصمیم واقعی همیشه
+// از /game/uli-access روی سرور گرفته می‌شود، حتی اگر کاربر مستقیماً URL را عوض کند.
+async function checkUliAccessAndRender(){
+  const restricted=document.getElementById('uli-restricted-view');
+  const gameView=document.getElementById('uli-game-view');
+  restricted.style.display='none'; gameView.style.display='none';
+  if(!API_CONFIGURED){
+    // حالت دمو بدون سرور: نمی‌توان واقعاً دسترسی را کنترل کرد؛ به‌صورت شفاف اعلام می‌شود
+    toast('⚠️ بدون سرور، محدودیت واقعی Uli قابل اجرا نیست (حالت دمو)','w');
+    gameView.style.display='block'; window._uliAsleep=false; renderUli();
+    return;
+  }
+  try{
+    const r=await fetch(apiUrl('/game/uli-access'),{headers:S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}});
+    const data=await r.json();
+    if(data.ok&&data.allowed){
+      gameView.style.display='block'; window._uliAsleep=false; renderUli();
+    } else {
+      restricted.style.display='block';
+    }
+  }catch(e){
+    restricted.style.display='block';
+  }
+}
 async function doLogin(){
   aclr();
   if(!capState.login){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
@@ -1787,11 +2088,28 @@ async function doLogin(){
   if(!em){aerr('ایمیل را وارد کنید');return;}
   if(!em.includes('@')){aerr('فرمت ایمیل صحیح نیست');return;}
   if(!ps){aerr('رمز عبور را وارد کنید');return;}
+
+  if(API_CONFIGURED){
+    // حالت واقعی: احراز هویت و هش رمز سمت سرور انجام می‌شود
+    try{
+      const r=await fetch(apiUrl('/auth/login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:ps})});
+      const data=await r.json();
+      if(!data.ok){aerr(data.error||'ورود ناموفق بود');return;}
+      S.sessionToken=data.token; S.userRole=data.role;
+      sv('session',{token:data.token,email:em,role:data.role});
+      const users=ld('users',{});
+      users[em]=users[em]||{name:data.name||em.split('@')[0],email:em};
+      sv('users',users);
+      await check2FAAndEnter(data.name||users[em].name,em);
+    }catch(e){aerr('خطا در ارتباط با سرور');}
+    return;
+  }
+
+  // حالت دمو (بدون سرور): فقط برای پیش‌نمایش محلی؛ در تولید واقعی همیشه API_CONFIGURED باید true باشد
   const users=ld('users',{});
   const u=users[em];
   if(u){
     if(u.password!==undefined){
-      // حساب قدیمی با رمز متن‌ساده — بررسی و مهاجرت خودکار به هش
       if(u.password!==ps){aerr('رمز عبور اشتباه است');return;}
       const salt=genSalt();
       u.salt=salt; u.passHash=await hashPassword(ps,salt); delete u.password;
@@ -1800,6 +2118,7 @@ async function doLogin(){
       const hash=await hashPassword(ps,u.salt||'');
       if(hash!==u.passHash){aerr('رمز عبور اشتباه است');return;}
     }
+    S.userRole='user';
     await check2FAAndEnter(u.name,em);
   } else {
     aerr('حساب پیدا نشد. ابتدا ثبت‌نام کنید.');
@@ -1816,12 +2135,29 @@ async function doReg(){
   if(!em||!em.includes('@')){aerr('ایمیل معتبر وارد کنید');return;}
   if(ps.length<8){aerr('رمز باید حداقل ۸ کاراکتر باشد');return;}
   if(ps2&&ps!==ps2){aerr('رمز و تکرار آن یکسان نیستند');return;}
+
+  if(API_CONFIGURED){
+    try{
+      const r=await fetch(apiUrl('/auth/register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:ps,name:nm})});
+      const data=await r.json();
+      if(!data.ok){aerr(data.error||'ثبت‌نام ناموفق بود');return;}
+      S.sessionToken=data.token; S.userRole=data.role;
+      sv('session',{token:data.token,email:em,role:data.role});
+      const users=ld('users',{});
+      users[em]={name:nm,email:em,plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
+      sv('users',users);
+      startWelcomeFlow(nm,em);
+    }catch(e){aerr('خطا در ارتباط با سرور');}
+    return;
+  }
+
   const users=ld('users',{});
   if(users[em]){aerr('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.');return;}
   const salt=genSalt();
   const passHash=await hashPassword(ps,salt);
   users[em]={name:nm,email:em,salt,passHash,plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
   sv('users',users);
+  S.userRole='user';
   saveSession(em);
   startWelcomeFlow(nm,em);
 }
@@ -2217,7 +2553,28 @@ function saveSession(email){
   sv('sessions',sessions);
 }
 function getFingerprint(){return btoa([navigator.userAgent,navigator.language,screen.width,screen.height].join('|')).slice(0,24);}
-function tryAutoLogin(){
+async function tryAutoLogin(){
+  // اول: تلاش برای بازیابی جلسه واقعی از سرور با توکن ذخیره‌شده
+  if(API_CONFIGURED){
+    const sess=ld('session',null);
+    if(sess&&sess.token){
+      try{
+        const r=await fetch(apiUrl('/auth/me'),{headers:{'Authorization':'Bearer '+sess.token}});
+        const data=await r.json();
+        if(data.ok){
+          S.sessionToken=sess.token; S.userRole=data.role;
+          const users=ld('users',{});
+          users[data.email]=users[data.email]||{name:data.name,email:data.email};
+          sv('users',users);
+          enterApp(data.name||users[data.email].name,data.email);
+          return true;
+        }
+      }catch(e){}
+      sv('session',null); // توکن نامعتبر/منقضی — پاکسازی
+    }
+    return false;
+  }
+  // حالت دمو بدون سرور
   try{
     const fp=getFingerprint();
     const sessions=ld('sessions',{});
@@ -2229,12 +2586,16 @@ function tryAutoLogin(){
     const cur=[navigator.userAgent,navigator.language,screen.width+'x'+screen.height];
     const saved=s.fp||[];
     const matches=cur.filter((v,i)=>saved[i]===v).length;
-    if(matches>=2){enterApp(u.name,u.email);return true;}
+    if(matches>=2){S.userRole='user';enterApp(u.name,u.email);return true;}
   }catch(e){}
   return false;
 }
 function doOut(){
-  S.user=null;
+  if(API_CONFIGURED&&S.sessionToken){
+    fetch(apiUrl('/auth/logout'),{method:'POST',headers:{'Authorization':'Bearer '+S.sessionToken}}).catch(()=>{});
+  }
+  S.user=null; S.sessionToken=null; S.userRole='user';
+  sv('session',null);
   document.getElementById('app').classList.remove('on');
   document.getElementById('app').style.display='none';
   document.getElementById('auth').style.display='flex';
@@ -2689,6 +3050,8 @@ function enterApp(name,email){
   loadAISettings(); updateStorageUsage(); refreshBusinessPanel(); loadConnectorSettings(); renderApiKeys(); renderActivityAnalytics();
   renderDashboard();
   syncUserToRanflr(users[email]);
+  syncWalletFromServer(); syncQuotaFromServer();
+  applyRoleUI();
   nav('home');
   // شروع تبلیغات بعد از ۵ دقیقه
   if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,300000);
@@ -2738,6 +3101,59 @@ function updateUI(){
   }
 }
 
+// ===== SERVER-AUTHORITATIVE WALLET & QUOTA =====
+// When API_CONFIGURED, the numbers shown in the UI are only a MIRROR of the
+// server's answer - every actual deduction/consumption call below hits the
+// Worker, which is the sole source of truth. Without API_CONFIGURED, the
+// old client-only counters remain as a clearly-degraded local demo mode.
+async function syncWalletFromServer(){
+  if(!API_CONFIGURED||!S.sessionToken)return;
+  try{
+    const r=await fetch(apiUrl('/wallet/balance'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(data.ok){S.wallet=data.wallet;updateUI();}
+  }catch(e){}
+}
+async function syncQuotaFromServer(){
+  if(!API_CONFIGURED||!S.sessionToken)return null;
+  try{
+    const r=await fetch(apiUrl('/quota/status'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(data.ok){
+      S.serverQuota=data.quota;
+      if(data.quota.text)S.msgs=data.quota.text.remaining;
+      const imgSum=(data.quota.image?.remaining||0)+(data.quota.video?.remaining||0)+(data.quota.music?.remaining||0);
+      if(data.quota.image)S.creates=data.quota.image.remaining;
+      updateUI();
+      return data.quota;
+    }
+  }catch(e){}
+  return null;
+}
+// resource: 'text'|'image'|'video'|'music'|'voice'|'translation'
+// Returns true if allowed to proceed (and already consumed server-side),
+// false if quota is exhausted or the server rejected the request.
+async function consumeQuota(resource){
+  if(!API_CONFIGURED||!S.sessionToken)return true; // demo mode - no server to enforce against
+  try{
+    const r=await fetch(apiUrl('/quota/consume'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({resource})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'سقف روزانه پر شده است','w');return false;}
+    return true;
+  }catch(e){toast('خطا در ارتباط با سرور سهمیه','w');return false;}
+}
+async function walletDeduct(kind,amount){
+  if(!API_CONFIGURED||!S.sessionToken)return true;
+  try{
+    const requestId=kind+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    const r=await fetch(apiUrl('/wallet/deduct'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({kind,amount,requestId})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'موجودی کافی نیست','w');return false;}
+    S.wallet=data.wallet; updateUI();
+    return true;
+  }catch(e){toast('خطا در ارتباط با کیف پول سرور','w');return false;}
+}
+
 // ===== NAV =====
 let sbOpen=true;
 function togSB(){
@@ -2782,9 +3198,13 @@ function nav(pg){
   if(pg==='aisettings'){loadAISettings();updateStorageUsage();refreshBusinessPanel();renderActivityAnalytics();}
   if(pg==='apikeys'){renderApiKeys();loadConnectorSettings();}
   if(pg==='dashboard')renderDashboard();
-  if(pg==='uli'){window._uliAsleep=false;renderUli();}
-  if(pg==='hugy'){setTimeout(initHugyGame,50);} else if(hugyState&&hugyState.running){stopHugyGame();}
+  if(pg==='uli'){checkUliAccessAndRender();}
+  if(pg==='hugy'){checkHugyAccessAndRender();} else if(hugyState&&hugyState.running){stopHugyGame();}
   if(pg==='rules')renderRulesContent();
+  if(pg==='news'&&!newsCache.length)loadNews(true);
+  if(pg==='devenv'){applyRoleUI();renderMySubmissions();}
+  if(pg==='admin')initAdminPage();
+  if(pg==='parental')initParentalPage();
   closeSBMobile();
 }
 function togNotif(){document.getElementById('npanel').classList.toggle('on');}
@@ -2814,16 +3234,30 @@ function startMsgReset(){
   msgResetTimer=setInterval(()=>{S.msgs=pl.msgs;updateUI();toast('✅ پیام‌های شما شارژ شد!','i');},3600000);
 }
 function stopMsgReset(){if(msgResetTimer){clearInterval(msgResetTimer);msgResetTimer=null;}}
-function chargeTokens(){
+async function chargeTokens(){
   const amt=parseInt(document.getElementById('charge-amount').value)||0;
   if(amt<=0){toast('مقدار را وارد کنید','w');return;}
+  if(API_CONFIGURED&&S.sessionToken){
+    try{
+      const r=await fetch(apiUrl('/wallet/convert'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({amount:amt})});
+      const data=await r.json();
+      if(!data.ok){toast(data.error||'خطا در تبدیل','w');return;}
+      S.wallet=data.wallet; updateUI();
+      const h=document.getElementById('wallet-history');
+      if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅ (تأیید سرور)</div>'+h.innerHTML;
+      toast('✅ '+amt+' توکن به کیف پول اضافه شد');
+      document.getElementById('charge-amount').value='';
+    }catch(e){toast('خطا در ارتباط با سرور','w');}
+    return;
+  }
+  // حالت دمو بدون سرور
   if(S.wallet.credits<amt){toast('کردیت کافی ندارید','w');return;}
   S.wallet.credits-=amt;
   S.wallet.tokens+=amt;
   sv('wallet_'+(S.user?.email||''),S.wallet);
   updateUI();
   const h=document.getElementById('wallet-history');
-  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅</div>'+h.innerHTML;
+  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅ (دمو محلی)</div>'+h.innerHTML;
   toast('✅ '+amt+' توکن به کیف پول اضافه شد');
   document.getElementById('charge-amount').value='';
 }
@@ -3218,6 +3652,8 @@ async function doSend(){
   if(S.cooldown.active){toast('لطفاً صبر کنید...','w');return;}
   if(S.msgs<=0){toast('محدودیت پیام! یک ساعت دیگر شارژ می‌شود','w');return;}
   if(isAIResting()){toast('🌙 طبق تنظیمات، AI در ساعت/روز استراحت است','w');return;}
+  if(isParentalChatBlocked()){toast('🔒 چت توسط کنترل والدین محدود شده است','w');return;}
+  if(!(await consumeQuota('text')))return; // سرور تصمیم نهایی در مورد سهمیه را می‌گیرد
   inp.value=''; inp.style.height='auto';
   S.msgs=Math.max(0,S.msgs-1); S.totMsgs++; updateUI();
   S.cooldown.count++;
@@ -3241,14 +3677,13 @@ async function doSend(){
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
     saveChatHistory();
+    if(S.voiceReplyOn)playAIVoice(reply);
     sv('stats_'+(S.user?.email||''),{totMsgs:S.totMsgs,totCreates:S.totCreates,totPosts:S.totPosts});
-    if(ld('voiceReplyOn',false))speakText(reply.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
   }catch(e){
     remTyping(tid);
     addMsg('❌ خطا در اتصال. دوباره تلاش کنید.','ai');
   }
 }
-let chatMsgTexts=[];
 function addMsg(txt,role,fmt=false){
   const msgs=document.getElementById('chat-msgs');
   const d=document.createElement('div');
@@ -3257,13 +3692,7 @@ function addMsg(txt,role,fmt=false){
   const t=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const disp=fmt?fmtMsg(txt):escHtml(txt).replace(/\n/g,'<br>');
   const ml=role==='ai'?'<span style="font-size:9px;opacity:0.5;display:block;margin-top:2px">'+(MODELS[S.selMod]?.n||'AI')+'</span>':'';
-  let speakBtn='';
-  if(role==='ai'){
-    const idx=chatMsgTexts.length;
-    chatMsgTexts.push(txt.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
-    speakBtn='<button onclick="speakText(chatMsgTexts['+idx+'])" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:12px;margin-top:4px" title="پخش صوتی">🔊</button>';
-  }
-  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+speakBtn+'</div></div>';
+  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+'</div></div>';
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
 let typc=0;
@@ -3371,6 +3800,8 @@ async function gen(type){
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
+  const quotaResource={image:'image',video:'video',music:'music',code:'text',text:'text'}[type]||'text';
+  if(!(await consumeQuota(quotaResource)))return; // سرور تصمیم نهایی سهمیه را می‌گیرد
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
@@ -3819,6 +4250,306 @@ async function sendSupport(){
   },700);
 }
 
+// ===== NEWS =====
+let newsCache=[];
+let newsState={cat:'',q:'',page:1,faOnly:false};
+async function loadNews(reset){
+  if(!API_CONFIGURED){document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
+  if(reset){newsState.page=1;newsCache=[];document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">در حال بارگذاری...</div>';}
+  newsState.faOnly=document.getElementById('news-fa-toggle')?.classList.contains('on')||false;
+  try{
+    const params=new URLSearchParams();
+    if(newsState.cat)params.set('category',newsState.cat);
+    if(newsState.q)params.set('q',newsState.q);
+    if(newsState.faOnly)params.set('lang','fa');
+    params.set('page',newsState.page);
+    const res=await fetch(apiUrl('/news?'+params.toString()));
+    const data=await res.json();
+    if(!data.ok){document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">'+escHtml(data.error||'خطا در دریافت اخبار')+'</div>';return;}
+    const items=data.articles||[];
+    newsCache=reset?items:newsCache.concat(items);
+    renderNews();
+    document.getElementById('news-more-btn').style.display=items.length?'inline-flex':'none';
+  }catch(e){
+    document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">خطا در ارتباط با سرور اخبار</div>';
+  }
+}
+function renderNews(){
+  const el=document.getElementById('news-list');
+  if(!newsCache.length){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">خبری یافت نشد</div>';return;}
+  el.innerHTML=newsCache.map(a=>{
+    const img=a.image_url?('<div style="width:100%;height:150px;border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--snow)"><img src="'+escHtml(a.image_url)+'" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'):'';
+    const time=a.pubDate?new Date(a.pubDate).toLocaleString('fa-IR'):'';
+    return '<div class="postcard">'+img+'<h4 style="font-size:14px;font-weight:800;margin-bottom:6px;line-height:1.6">'+escHtml(a.title||'')+'</h4><p style="font-size:12px;color:var(--graydark);line-height:1.8;margin-bottom:8px">'+escHtml((a.description||'').slice(0,220))+'</p><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--gray)"><span>📡 '+escHtml(a.source_id||a.source||'')+' · '+escHtml(time)+'</span><a href="'+escHtml(a.link||'#')+'" target="_blank" rel="noopener" class="btn btno btnsm" style="padding:4px 12px">مطالعه کامل ↗</a></div></div>';
+  }).join('');
+}
+function newsCat(btn,cat){
+  document.querySelectorAll('#news-cats .exfilt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  newsState.cat=cat; loadNews(true);
+}
+function newsSearchGo(){
+  newsState.q=document.getElementById('news-search').value.trim();
+  loadNews(true);
+}
+
+// ===== DEVELOPER ENVIRONMENT =====
+function swDevEnv(t){
+  document.querySelectorAll('#pg-devenv .ctab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('#pg-devenv .cpanel').forEach(x=>x.classList.remove('on'));
+  document.getElementById('dt-'+t).classList.add('on');
+  document.getElementById('dp-'+t).classList.add('on');
+}
+const STATUS_LABELS={pending:'در انتظار بررسی',approved:'✅ تأیید شده',rejected:'❌ رد شده'};
+function statusColor(s){return s==='approved'?'#27AE60':s==='rejected'?'#E74C3C':'#E67E22';}
+
+async function submitDevChange(){
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
+  if(!S.sessionToken){toast('برای ارسال باید وارد حساب شوید','w');return;}
+  const req=id=>document.getElementById(id)?.value?.trim()||'';
+  const fname=req('dev-fname'), lname=req('dev-lname');
+  const goal=req('dev-goal'), changedesc=req('dev-changedesc'), techdesc=req('dev-techdesc'), code=req('dev-code');
+  const agree=document.getElementById('dev-agree').checked;
+  if(!fname||!lname||!goal||!changedesc||!techdesc||!code){toast('لطفاً همه فیلدهای ستاره‌دار را پر کنید','w');return;}
+  if(!agree){toast('باید تأیید کنید این کد مخرب نیست','w');return;}
+  const payload={
+    fname,lname,goal,changedesc,techdesc,code:code.slice(0,20000),
+    country:req('dev-country'),province:req('dev-province'),city:req('dev-city'),
+    github:req('dev-github'),apidocs:req('dev-apidocs'),notes:req('dev-notes'),
+  };
+  try{
+    const r=await fetch(apiUrl('/dev/submit'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify(payload)});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'ارسال ناموفق بود','w');return;}
+    ['dev-fname','dev-lname','dev-country','dev-province','dev-city','dev-goal','dev-changedesc','dev-techdesc','dev-code','dev-github','dev-apidocs','dev-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('dev-agree').checked=false;
+    toast('✅ ارسال شد! شناسه: '+data.id);
+    swDevEnv('mine');
+    renderMySubmissions();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function renderMySubmissions(){
+  const el=document.getElementById('dev-mine-list');
+  if(!el)return;
+  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">برای مشاهده ارسال‌ها وارد حساب شوید</div>';return;}
+  el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/dev/submissions/mine'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">'+escHtml(data.error||'خطا')+'</div>';return;}
+    const list=data.submissions||[];
+    el.innerHTML=list.length?list.map(s=>'<div class="ccard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="font-size:13px">🆔 '+s.id.slice(0,8)+'</strong><span style="font-size:11px;padding:3px 10px;border-radius:50px;background:var(--snow);color:'+statusColor(s.status)+'">'+(STATUS_LABELS[s.status]||s.status)+'</span></div><div style="font-size:12px;color:var(--graydark);line-height:1.8"><strong>هدف:</strong> '+escHtml(s.goal)+'<br><strong>تاریخ:</strong> '+new Date(s.ts).toLocaleDateString('fa-IR')+(s.reviewComment?('<br><strong>نظر بازبین:</strong> '+escHtml(s.reviewComment)):'')+'</div></div>'):'<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز چیزی ارسال نکرده‌اید</div>';
+  }catch(e){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">خطا در ارتباط با سرور</div>';}
+}
+
+// ===== DEVELOPER ENVIRONMENT: LIVE GITHUB REPO BROWSER (role-gated server-side) =====
+let repoTreeCache=[];
+async function loadRepoTree(){
+  const el=document.getElementById('repo-tree');
+  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="padding:10px;color:var(--gray)">برای مشاهده کد باید وارد حساب شوید (نقش توسعه‌دهنده به بالا)</div>';return;}
+  el.innerHTML='<div style="padding:10px;color:var(--gray)">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/dev/repo-tree'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="padding:10px;color:var(--gray)">'+escHtml(data.error||'خطا در دسترسی به مخزن')+'</div>';return;}
+    repoTreeCache=data.files||[];
+    renderRepoTree(repoTreeCache);
+  }catch(e){el.innerHTML='<div style="padding:10px;color:var(--gray)">خطا در ارتباط با سرور</div>';}
+}
+function renderRepoTree(files){
+  const el=document.getElementById('repo-tree');
+  el.innerHTML=files.length?files.map(f=>'<div onclick="loadRepoFile(\''+escHtml(f.path).replace(/'/g,"\\'")+'\')" style="padding:4px 6px;cursor:pointer;border-radius:6px;font-size:11px" onmouseover="this.style.background=\'var(--gb)\'" onmouseout="this.style.background=\'\'">📄 '+escHtml(f.path)+'</div>').join(''):'<div style="padding:10px;color:var(--gray)">فایلی یافت نشد</div>';
+}
+function filterRepoTree(q){
+  const query=(q||'').toLowerCase();
+  renderRepoTree(repoTreeCache.filter(f=>f.path.toLowerCase().includes(query)));
+}
+async function loadRepoFile(path){
+  document.getElementById('repo-file-path').textContent=path;
+  const box=document.getElementById('repo-file-content');
+  box.textContent='در حال بارگذاری...';
+  document.getElementById('repo-file-copy').style.display='none';
+  try{
+    const r=await fetch(apiUrl('/dev/repo-file?path='+encodeURIComponent(path)),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){box.textContent='خطا: '+(data.error||'نامشخص');return;}
+    box.textContent=data.content;
+    document.getElementById('repo-file-copy').style.display='inline-flex';
+  }catch(e){box.textContent='خطا در ارتباط با سرور';}
+}
+
+// ===== DEVELOPER ENVIRONMENT: REVIEW QUEUE (Coding Specialist / Admin / Chairman) =====
+async function loadAdminSubmissions(){
+  const el=document.getElementById('dev-review-list');
+  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px">وارد حساب شوید</div>';return;}
+  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/dev/submissions/all'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'دسترسی کافی نیست')+'</div>';return;}
+    const list=data.submissions||[];
+    el.innerHTML=list.length?list.map(s=>`<div class="ccard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong style="font-size:13px">🆔 ${s.id.slice(0,8)} — ${escHtml(s.account)}</strong>
+        <span style="font-size:11px;padding:3px 10px;border-radius:50px;background:var(--snow);color:${statusColor(s.status)}">${STATUS_LABELS[s.status]||s.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--graydark);line-height:1.8;margin-bottom:8px">
+        <strong>هدف:</strong> ${escHtml(s.goal)}<br>
+        <strong>شرح:</strong> ${escHtml(s.changedesc).slice(0,200)}<br>
+        <strong>تاریخ:</strong> ${new Date(s.ts).toLocaleDateString('fa-IR')}
+      </div>
+      <pre style="max-height:140px;overflow:auto;background:#0d1117;color:#e6edf3;border-radius:8px;padding:10px;font-size:10px;direction:ltr;text-align:left;font-family:monospace;margin-bottom:8px">${escHtml(s.code).slice(0,3000)}</pre>
+      ${s.status==='pending'?`<div style="display:flex;gap:6px">
+        <input class="inp" id="rc-${s.id}" placeholder="نظر بازبینی (اختیاری)" style="flex:1;font-size:11px">
+        <button class="btn btnp btnsm" onclick="reviewSubmission('${s.id}','approve')">✅ تأیید</button>
+        <button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="reviewSubmission('${s.id}','reject')">❌ رد</button>
+      </div>`:`<div style="font-size:11px;color:var(--gray)">بازبین: ${escHtml(s.reviewer||'')} — ${s.reviewComment?escHtml(s.reviewComment):'بدون نظر'}</div>`}
+    </div>`).join(''):'<div style="color:var(--gray);font-size:12px">چیزی برای بررسی نیست</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+async function reviewSubmission(id,action){
+  const comment=document.getElementById('rc-'+id)?.value?.trim()||'';
+  try{
+    const r=await fetch(apiUrl('/dev/submissions/review'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({id,action,comment})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا','w');return;}
+    toast(action==='approve'?'✅ تأیید شد':'❌ رد شد');
+    loadAdminSubmissions();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+
+// ===== ADMIN DASHBOARD =====
+function initAdminPage(){
+  const allowed=rankOf(S.userRole)>=ROLE_RANK.admin;
+  document.getElementById('admin-denied').style.display=allowed?'none':'block';
+  document.getElementById('admin-content').style.display=allowed?'block':'none';
+  if(allowed)loadAuditLog();
+}
+async function setUserRole(){
+  if(!API_CONFIGURED||!S.sessionToken){toast('باید وارد حساب شوید','w');return;}
+  const targetEmail=document.getElementById('admin-target-email').value.trim();
+  const role=document.getElementById('admin-target-role').value;
+  if(!targetEmail){toast('ایمیل کاربر را وارد کنید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/admin/set-role'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({targetEmail,role})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا در تغییر نقش','w');return;}
+    toast('✅ نقش «'+(ROLE_LABELS[role]||role)+'» برای '+targetEmail+' اعمال شد');
+    document.getElementById('admin-target-email').value='';
+    loadAuditLog();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function loadAuditLog(){
+  const el=document.getElementById('admin-audit-list');
+  if(!el)return;
+  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px">وارد حساب شوید</div>';return;}
+  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/admin/audit-log'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'دسترسی کافی نیست')+'</div>';return;}
+    const list=data.entries||[];
+    el.innerHTML=list.length?list.map(e=>'<div style="background:var(--snow);border-radius:8px;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;gap:10px"><span><strong>'+escHtml(e.actor)+'</strong> — '+escHtml(e.action)+'</span><span style="color:var(--gray)">'+new Date(e.ts).toLocaleString('fa-IR')+'</span></div>').join(''):'<div style="color:var(--gray);font-size:12px">رخدادی ثبت نشده</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+
+// ===== PARENTAL CONTROLS =====
+function parentalKey(){return 'parental_'+(S.user?.email||'guest');}
+function initParentalPage(){
+  const rec=ld(parentalKey(),null);
+  const hint=document.getElementById('parental-setup-hint');
+  const msg=document.getElementById('parental-lock-msg');
+  document.getElementById('parental-panel').style.display='none';
+  document.getElementById('parental-locked-view').style.display='block';
+  document.getElementById('parental-pin-inp').value='';
+  if(!rec||!rec.pinHash){
+    msg.textContent='هنوز رمز والدین تنظیم نشده — یک رمز جدید انتخاب کنید';
+    hint.textContent='بعد از تنظیم رمز، این تنظیمات با آن رمز محافظت می‌شود';
+  } else {
+    msg.textContent='برای مشاهده و تغییر تنظیمات، رمز والدین را وارد کنید';
+    hint.textContent='';
+  }
+}
+async function unlockParental(){
+  const pin=document.getElementById('parental-pin-inp').value;
+  if(!pin||pin.length<4){toast('رمز حداقل ۴ رقم باشد','w');return;}
+  let rec=ld(parentalKey(),null);
+  if(!rec||!rec.pinHash){
+    const salt=genSalt();
+    rec={pinHash:await hashPassword(pin,salt),salt,settings:defaultParentalSettings()};
+    sv(parentalKey(),rec);
+    toast('✅ رمز والدین تنظیم شد');
+  } else {
+    const hash=await hashPassword(pin,rec.salt);
+    if(hash!==rec.pinHash){toast('رمز اشتباه است','w');return;}
+  }
+  document.getElementById('parental-locked-view').style.display='none';
+  document.getElementById('parental-panel').style.display='block';
+  loadParentalSettings();
+}
+function lockParental(){
+  document.getElementById('parental-panel').style.display='none';
+  document.getElementById('parental-locked-view').style.display='block';
+  document.getElementById('parental-pin-inp').value='';
+}
+function defaultParentalSettings(){
+  return {dailyMin:120,from:'',to:'',chat:true,voice:false,friend:true,upload:false,purchase:false,hugy:true,uli:true,agerating:'9'};
+}
+function loadParentalSettings(){
+  const rec=ld(parentalKey(),null); if(!rec)return;
+  const s=rec.settings||defaultParentalSettings();
+  document.getElementById('par-daily-min').value=s.dailyMin;
+  document.getElementById('par-from').value=s.from||'';
+  document.getElementById('par-to').value=s.to||'';
+  document.getElementById('par-agerating').value=s.agerating||'9';
+  [['par-chat','chat'],['par-voice','voice'],['par-friend','friend'],['par-upload','upload'],['par-purchase','purchase'],['par-hugy','hugy'],['par-uli','uli']].forEach(([id,key])=>{
+    const el=document.getElementById(id); if(el)el.classList.toggle('on',!!s[key]);
+  });
+  const act=document.getElementById('par-activity');
+  if(act){
+    act.innerHTML='پیام‌های امروز: '+(S.totMsgs||0)+'<br>محتوای تولیدشده: '+(S.totCreates||0)+'<br>پلن فعلی: '+S.plan;
+  }
+  document.querySelectorAll('#pg-parental .tog').forEach(t=>{
+    t.onclick=()=>t.classList.toggle('on');
+  });
+}
+function saveParentalSettings(){
+  const rec=ld(parentalKey(),null); if(!rec){toast('ابتدا رمز والدین را تنظیم کنید','w');return;}
+  const g=id=>document.getElementById(id)?.classList.contains('on')||false;
+  rec.settings={
+    dailyMin:parseInt(document.getElementById('par-daily-min').value)||0,
+    from:document.getElementById('par-from').value,
+    to:document.getElementById('par-to').value,
+    agerating:document.getElementById('par-agerating').value,
+    chat:g('par-chat'),voice:g('par-voice'),friend:g('par-friend'),
+    upload:g('par-upload'),purchase:g('par-purchase'),hugy:g('par-hugy'),uli:g('par-uli'),
+  };
+  sv(parentalKey(),rec);
+  toast('✅ تنظیمات والدین ذخیره شد');
+}
+async function changeParentalPin(){
+  const oldPin=prompt('رمز فعلی والدین را وارد کنید:'); if(!oldPin)return;
+  const rec=ld(parentalKey(),null); if(!rec)return;
+  const oldHash=await hashPassword(oldPin,rec.salt);
+  if(oldHash!==rec.pinHash){toast('رمز فعلی اشتباه است','w');return;}
+  const newPin=prompt('رمز جدید (حداقل ۴ رقم):'); if(!newPin||newPin.length<4){toast('رمز نامعتبر','w');return;}
+  const salt=genSalt();
+  rec.pinHash=await hashPassword(newPin,salt); rec.salt=salt;
+  sv(parentalKey(),rec);
+  toast('✅ رمز والدین تغییر کرد');
+}
+// اعمال محدودیت چت/صدا بر اساس تنظیمات والدین (در صورت فعال بودن)
+function isParentalChatBlocked(){
+  const rec=ld(parentalKey(),null);
+  if(!rec||!rec.settings)return false;
+  return rec.settings.chat===false;
+}
+function isParentalVoiceBlocked(){
+  const rec=ld(parentalKey(),null);
+  if(!rec||!rec.settings)return false;
+  return rec.settings.voice===false;
+}
+
 // ===== HELPERS =====
 function copyTxt(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.innerText||el.textContent).then(()=>toast('کپی شد! 📋'));}
 
@@ -3831,31 +4562,92 @@ let voiceWaveInt = null;
 let v1v1Rec = null;
 let v1v1Active = false;
 let v1v1Lang = 'fa-IR';
+let elevenMediaRecorder = null;
+let elevenChunks = [];
+let usingElevenSTT = false;
 
 function togVoicePanel() {
   const p = document.getElementById('voice-panel');
   if(p) p.classList.toggle('on');
-  const t=document.getElementById('voice-reply-toggle');
-  if(t) t.classList.toggle('on',ld('voiceReplyOn',false));
 }
 
 function setVoiceLang(lang) { voiceLang = lang; }
 
+// نقطه ورود دکمه میکروفون: اگر جلسه واقعی سرور موجود باشد از ElevenLabs
+// (تبدیل واقعی گفتار به متن سمت سرور) استفاده می‌شود؛ در غیر این صورت،
+// به‌صورت شفاف به تشخیص گفتار مرورگر برمی‌گردیم (بدون ادعای دروغ).
 function startVoiceRec() {
-  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    toast('مرورگر از صدا پشتیبانی نمی‌کند','w'); return;
-  }
+  if(isParentalVoiceBlocked()){toast('🔒 چت صوتی توسط کنترل والدین محدود شده است','w');return;}
   if(isVoiceRec) { stopVoiceRec(); return; }
+  if(API_CONFIGURED && S.sessionToken && navigator.mediaDevices && window.MediaRecorder) {
+    startElevenSTT();
+  } else if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    startBrowserVoiceRec();
+  } else {
+    toast('مرورگر یا سرور از تشخیص گفتار پشتیبانی نمی‌کند','w');
+  }
+}
+
+async function startElevenSTT() {
+  const btn = document.getElementById('voice-rec-btn');
+  const status = document.getElementById('voice-status');
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    elevenChunks = [];
+    const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
+    elevenMediaRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    elevenMediaRecorder.ondataavailable = e => { if(e.data.size > 0) elevenChunks.push(e.data); };
+    elevenMediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(elevenChunks, { type: elevenMediaRecorder.mimeType || 'audio/webm' });
+      await sendToElevenSTT(blob);
+    };
+    elevenMediaRecorder.start();
+    isVoiceRec = true; usingElevenSTT = true;
+    if(btn) { btn.innerHTML = '⏹️ توقف'; btn.style.background = '#E74C3C'; }
+    if(status) status.textContent = '🔴 در حال ضبط (ElevenLabs)...';
+    startVoiceWave('voice-wave');
+    // حداکثر ۳۰ ثانیه ضبط پیوسته - مطابق محدودیت "بدون آپلود صوت نامحدود"
+    clearTimeout(window._elevenMaxTimer);
+    window._elevenMaxTimer = setTimeout(() => { if(isVoiceRec) stopVoiceRec(); }, 30000);
+  } catch(e) {
+    toast('دسترسی به میکروفون رد شد یا در دسترس نیست','w');
+  }
+}
+
+async function sendToElevenSTT(blob) {
+  const status = document.getElementById('voice-status');
+  if(blob.size < 200) { toast('صدایی دریافت نشد','w'); if(status) status.textContent = 'آماده گوش دادن'; return; }
+  if(status) status.textContent = '⏳ در حال تبدیل گفتار به متن...';
+  if(!(await consumeQuota('voice'))) { if(status) status.textContent = 'آماده گوش دادن'; return; }
+  try {
+    const r = await fetch(apiUrl('/voice/stt'), { method:'POST', headers:{ 'Content-Type': blob.type || 'audio/webm', 'Authorization':'Bearer '+S.sessionToken }, body: blob });
+    const data = await r.json();
+    if(!data.ok) { toast(data.error || 'خطا در تبدیل گفتار به متن','w'); if(status) status.textContent = 'آماده گوش دادن'; return; }
+    const inp = document.getElementById('chat-inp');
+    const text = (data.text || '').trim();
+    if(inp) inp.value = text;
+    if(status) status.textContent = text ? ('📝 ' + text.slice(0,50)) : 'چیزی تشخیص داده نشد';
+    if(text) { togVoicePanel(); doSend(); } // ادامه طبیعی مکالمه صوتی: تشخیص -> ارسال خودکار
+  } catch(e) {
+    toast('خطا در ارتباط با سرور صدا','w');
+    if(status) status.textContent = 'آماده گوش دادن';
+  }
+}
+
+// نسخه قدیمی مرورگر - فقط زمانی استفاده می‌شود که سرور/جلسه واقعی در دسترس نباشد
+function startBrowserVoiceRec() {
   voiceRec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   voiceRec.lang = voiceLang;
   voiceRec.continuous = false;
   voiceRec.interimResults = true;
   const btn = document.getElementById('voice-rec-btn');
   const status = document.getElementById('voice-status');
+  usingElevenSTT = false;
   voiceRec.onstart = () => {
     isVoiceRec = true;
     if(btn) { btn.innerHTML = '⏹️ توقف'; btn.style.background = '#E74C3C'; }
-    if(status) status.textContent = '🔴 در حال ضبط...';
+    if(status) status.textContent = '🔴 در حال ضبط (مرورگر)...';
     startVoiceWave('voice-wave');
   };
   voiceRec.onresult = (e) => {
@@ -3874,11 +4666,14 @@ function startVoiceRec() {
 
 function stopVoiceRec() {
   isVoiceRec = false;
-  if(voiceRec) { try{voiceRec.stop();}catch{} }
+  clearTimeout(window._elevenMaxTimer);
+  if(usingElevenSTT && elevenMediaRecorder && elevenMediaRecorder.state !== 'inactive') {
+    elevenMediaRecorder.stop();
+  } else if(voiceRec) { try{voiceRec.stop();}catch{} }
   const btn = document.getElementById('voice-rec-btn');
   const status = document.getElementById('voice-status');
   if(btn) { btn.innerHTML = '🎤 شروع ضبط'; btn.style.background = ''; }
-  if(status) status.textContent = 'آماده گوش دادن';
+  if(status && !usingElevenSTT) status.textContent = 'آماده گوش دادن';
   stopVoiceWave('voice-wave');
 }
 
@@ -3964,40 +4759,53 @@ function stopVoice1v1() {
 }
 
 // ===== TEXT TO SPEECH =====
-function speakTextBrowserFallback(text) {
+// ===== ELEVENLABS VOICE REPLY (server-proxied, quota-gated) =====
+function toggleVoiceReply(){
+  S.voiceReplyOn=!S.voiceReplyOn;
+  const btn=document.getElementById('voice-reply-btn');
+  if(btn){btn.textContent=S.voiceReplyOn?'🔊':'🔇';btn.style.background=S.voiceReplyOn?'var(--sky)':'';}
+  toast(S.voiceReplyOn?'🔊 پاسخ‌های AI با صدا پخش می‌شوند':'🔇 پخش صوتی پاسخ‌ها خاموش شد');
+}
+async function playAIVoice(text){
+  const clean=text.replace(/```[\s\S]*?```/g,' کد ').replace(/[#*_`]/g,'').slice(0,800);
+  if(!clean.trim())return;
+  if(!API_CONFIGURED||!S.sessionToken){
+    // بدون سرور/جلسه واقعی، ElevenLabs در دسترس نیست؛ به‌جای تظاهر، صادقانه به TTS مرورگر برمی‌گردیم
+    speakText(clean);
+    return;
+  }
+  if(!(await consumeQuota('voice')))return; // سهمیه صدا هم سمت سرور چک می‌شود
+  try{
+    const r=await fetch(apiUrl('/voice/tts'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({text:clean})});
+    if(!r.ok){
+      const data=await r.json().catch(()=>({}));
+      toast(data.error||'سرویس صدای هوش‌مصنوعی در دسترس نیست — صدای مرورگر پخش می‌شود','w');
+      speakText(clean);
+      return;
+    }
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    audio.play().catch(()=>{});
+    audio.onended=()=>URL.revokeObjectURL(url);
+  }catch(e){
+    toast('خطا در پخش صدا — صدای مرورگر جایگزین شد','w');
+    speakText(clean);
+  }
+}
+
+function speakText(text) {
   if(!window.speechSynthesis) { toast('مرورگر از TTS پشتیبانی نمی‌کند','w'); return; }
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = v1v1Lang || voiceLang || 'fa-IR';
   utt.rate = 0.95;
   utt.pitch = 1;
+  // انتخاب صدای مناسب
   const voices = window.speechSynthesis.getVoices();
   const match = voices.find(v => v.lang.startsWith(utt.lang.slice(0,2)));
   if(match) utt.voice = match;
   window.speechSynthesis.speak(utt);
-}
-let _currentTTSAudio=null;
-async function speakText(text) {
-  if(!text||!text.trim())return;
-  if(!API_CONFIGURED){ speakTextBrowserFallback(text); return; }
-  try{
-    if(_currentTTSAudio){_currentTTSAudio.pause();_currentTTSAudio=null;}
-    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000)})});
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      if(res.status===503){speakTextBrowserFallback(text);return;} // سرویس صدا هنوز تنظیم نشده — بازگشت به صدای مرورگر
-      toast(err.error||'خطا در پخش صدا','w');
-      return;
-    }
-    const blob=await res.blob();
-    const url=URL.createObjectURL(blob);
-    const audio=new Audio(url);
-    _currentTTSAudio=audio;
-    audio.onended=()=>{URL.revokeObjectURL(url);if(_currentTTSAudio===audio)_currentTTSAudio=null;};
-    audio.play();
-  }catch(e){
-    speakTextBrowserFallback(text);
-  }
 }
 
 // ===== FILE UPLOAD =====
