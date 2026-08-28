@@ -399,6 +399,10 @@ function togCap(t){
         <div class="captcha-box" onclick="togCap('login')"><div class="captcha-check" id="cap-login-box"></div><span style="font-size:13px">من روبات نیستم</span><span style="margin-right:auto;font-size:18px">🤖</span></div>
         <button class="btn btnp" style="width:100%" onclick="doLogin()">ورود به Uliki</button>
         <p style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="openmod('forgot-modal')" style="font-size:12px;color:var(--accent)">رمز عبورت رو فراموش کردی؟</a></p>
+        <p style="text-align:center;margin-top:6px;display:flex;justify-content:center;gap:14px">
+          <a href="javascript:void(0)" onclick="openmod('code-login-modal')" style="font-size:12px;color:var(--accent)">📧 ورود با کد ایمیل</a>
+          <a href="javascript:void(0)" onclick="openmod('ceo-modal')" style="font-size:12px;color:var(--gray)">🛡️ ورود مدیریت</a>
+        </p>
         <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--gb)"></div><span style="font-size:11px;color:var(--gray)">یا</span><div style="flex:1;height:1px;background:var(--gb)"></div></div>
         <div id="gbtn-login" style="display:flex;justify-content:center"></div>
       </div>
@@ -1615,6 +1619,45 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
   </div>
 </div>
 
+<!-- ورود با کد ایمیل (بدون رمز عبور) -->
+<div class="moverlay" id="code-login-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('code-login-modal')">✕</button>
+    <h3>📧 ورود با کد ایمیل</h3>
+    <div id="cl-step1">
+      <p class="msub">به‌جای رمز عبور، یک کد ۶ رقمی به ایمیلت ارسال می‌شود</p>
+      <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="cl-email" placeholder="email@example.com"></div>
+      <button class="btn btnp" style="width:100%;margin-top:6px" onclick="sendLoginCode()">ارسال کد</button>
+    </div>
+    <div id="cl-step2" style="display:none">
+      <p class="msub">کد ارسال‌شده به ایمیلت را وارد کن (تا ۵ دقیقه معتبر است)</p>
+      <div class="ig"><label class="lbl">کد ورود</label><input class="inp" id="cl-code" placeholder="۶ رقم"></div>
+      <button class="btn btnp" style="width:100%;margin-top:6px" onclick="verifyLoginCode()">ورود</button>
+    </div>
+  </div>
+</div>
+
+<!-- تأیید هویت CEO — واقعی و سمت سرور، بدون شمارش‌معکوس/کلید ترکیبی/صفحه اتهام‌زننده -->
+<div class="moverlay" id="ceo-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('ceo-modal')">✕</button>
+    <h3>🛡️ ورود ویژه مدیریت</h3>
+    <p class="msub">این مسیر جداگانه‌ای برای ورود CEO/مدیریت است. تمام مراحل روی سرور بررسی و ثبت می‌شوند.</p>
+    <div id="ceo-step1">
+      <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="ceo-email" placeholder="email@example.com"></div>
+      <button class="btn btnp" style="width:100%" onclick="ceoCheckEmail()">ادامه</button>
+    </div>
+    <div id="ceo-step2" style="display:none">
+      <div class="ig"><label class="lbl">کد معرف</label><input class="inp" id="ceo-referral" placeholder="کد معرف را وارد کنید"></div>
+      <button class="btn btnp" style="width:100%" onclick="ceoVerifyReferral()">تأیید کد</button>
+    </div>
+    <div id="ceo-step3" style="display:none">
+      <div class="ig"><label class="lbl">رمز عبور / اعتبارنامه</label><input class="inp" type="password" id="ceo-credential" placeholder="رمز عبور حساب یا اعتبارنامه ویژه"></div>
+      <button class="btn btnp" style="width:100%" onclick="ceoLogin()">ورود</button>
+    </div>
+  </div>
+</div>
+
 <div class="moverlay" id="payhistory-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('payhistory-modal')">✕</button>
@@ -1814,7 +1857,7 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
 <script>
 // ===== CONFIG =====
-const WK = ''; // آدرس Cloudflare Worker خودتان را اینجا قرار دهید، مثلاً: 'https://your-worker.your-subdomain.workers.dev'
+const WK = 'https://uliki.amiralitanaomi2015.workers.dev'; // آدرس Worker واقعی شما - قبلاً خالی بود که باعث نشان قرمز "آدرس API تنظیم نشده" می‌شد
 const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
 const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
 const API_CONFIGURED = !!WK || USE_RELATIVE_API;
@@ -3004,20 +3047,102 @@ async function confirmResetCode(){
   const newPs=document.getElementById('fg-newpass').value;
   if(!code){toast('کد را وارد کنید','w');return;}
   if(newPs.length<8){toast('رمز جدید باید حداقل ۸ کاراکتر باشد','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده - بدون سرور نمی‌توان رمز را واقعاً تغییر داد','w');return;}
   try{
-    const r=await fetch(apiUrl('/auth/verify-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code})});
+    // نکته مهم: newPassword باید همینجا به سرور ارسال شود، وگرنه رمز واقعی
+    // (که سمت سرور با PBKDF2 هش شده) هیچ‌وقت واقعاً تغییر نمی‌کند.
+    const r=await fetch(apiUrl('/auth/verify-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,newPassword:newPs})});
     const data=await r.json();
     if(!data.ok){toast(data.error||'کد اشتباه یا منقضی‌شده است','w');return;}
-    const users=ld('users',{});
-    const u=users[em];
-    if(!u){toast('حساب پیدا نشد','w');return;}
-    const salt=genSalt();
-    u.salt=salt; u.passHash=await hashPassword(newPs,salt);
-    sv('users',users);
     closemod('forgot-modal');
     document.getElementById('forgot-step1').style.display='block';
     document.getElementById('forgot-step2').style.display='none';
     toast('✅ رمز عبور با موفقیت تغییر کرد — حالا وارد شوید');
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+
+// ===== ورود با کد ایمیل (بدون رمز عبور، از طریق /api/auth/send-code و /verify-code) =====
+async function sendLoginCode(){
+  const em=document.getElementById('cl-email').value.trim();
+  if(!em||!em.includes('@')){toast('ایمیل معتبر وارد کنید','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/send-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,purpose:'login'})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'ارسال کد ناموفق بود','w');return;}
+    document.getElementById('cl-step1').style.display='none';
+    document.getElementById('cl-step2').style.display='block';
+    toast('📧 اگر حسابی با این ایمیل وجود داشته باشد، کد ارسال شد');
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function verifyLoginCode(){
+  const em=document.getElementById('cl-email').value.trim();
+  const code=document.getElementById('cl-code').value.trim();
+  if(!code){toast('کد را وارد کنید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/verify-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,purpose:'login'})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
+    S.sessionToken=data.token; S.userRole=data.role;
+    sv('session',{token:data.token,email:em,role:data.role});
+    const users=ld('users',{});
+    users[em]=users[em]||{name:data.name||em.split('@')[0],email:em};
+    sv('users',users);
+    closemod('code-login-modal');
+    document.getElementById('cl-step1').style.display='block';
+    document.getElementById('cl-step2').style.display='none';
+    await check2FAAndEnter(data.name||users[em].name,em);
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+
+// ===== ورود ویژه CEO/مدیریت — واقعی و سمت سرور، بدون شمارش‌معکوس یا صفحه اتهام‌زننده =====
+let ceoTicket=null;
+async function ceoCheckEmail(){
+  const em=document.getElementById('ceo-email').value.trim();
+  if(!em||!em.includes('@')){toast('ایمیل معتبر وارد کنید','w');return;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/ceo/check-email'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا','w');return;}
+    if(!data.is_ceo_email){toast('این ایمیل دسترسی مدیریت ندارد','w');return;}
+    document.getElementById('ceo-step1').style.display='none';
+    document.getElementById('ceo-step2').style.display='block';
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function ceoVerifyReferral(){
+  const em=document.getElementById('ceo-email').value.trim();
+  const code=document.getElementById('ceo-referral').value.trim();
+  if(!code){toast('کد معرف را وارد کنید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/ceo/verify-referral'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
+    ceoTicket=data.ceoTicket;
+    document.getElementById('ceo-step2').style.display='none';
+    document.getElementById('ceo-step3').style.display='block';
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function ceoLogin(){
+  const em=document.getElementById('ceo-email').value.trim();
+  const credential=document.getElementById('ceo-credential').value;
+  if(!credential){toast('رمز/اعتبارنامه را وارد کنید','w');return;}
+  if(!ceoTicket){toast('ابتدا مراحل قبل را کامل کنید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/ceo/login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,ceoTicket,credential})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'ورود ناموفق بود','w');return;}
+    S.sessionToken=data.token; S.userRole=data.role;
+    sv('session',{token:data.token,email:em,role:data.role});
+    const users=ld('users',{});
+    users[em]=users[em]||{name:data.name||'CEO',email:em};
+    sv('users',users);
+    closemod('ceo-modal');
+    ceoTicket=null;
+    document.getElementById('ceo-step1').style.display='block';
+    document.getElementById('ceo-step2').style.display='none';
+    document.getElementById('ceo-step3').style.display='none';
+    await check2FAAndEnter(data.name||'CEO',em);
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 
