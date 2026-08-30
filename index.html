@@ -370,6 +370,7 @@ function switchAuthTab(tab,el){
   var rf=document.getElementById('regf');
   if(lf)lf.classList.toggle('on',tab==='login');
   if(rf)rf.classList.toggle('on',tab==='reg');
+  if(tab==='reg'&&typeof resetCeoLoginUI==='function')resetCeoLoginUI();
 }
 function openmod(id){var el=document.getElementById(id);if(el)el.classList.add('on');}
 function closemod(id){var el=document.getElementById(id);if(el)el.classList.remove('on');}
@@ -394,15 +395,16 @@ function togCap(t){
       </div>
       <div class="aerr" id="aerr"></div>
       <div id="loginf" class="aform on">
-        <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="text" id="lemail" placeholder="example@email.com"></div>
-        <div class="ig"><label class="lbl">رمز عبور</label><input class="inp" type="password" id="lpass" placeholder="••••••••"></div>
+        <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="text" id="lemail" placeholder="example@email.com" onblur="silentCeoCheck()"></div>
+        <div class="ig" id="login-normal-pass"><label class="lbl">رمز عبور</label><input class="inp" type="password" id="lpass" placeholder="••••••••"></div>
+        <!-- این بخش به‌صورت پیش‌فرض مخفی است و فقط زمانی ظاهر می‌شود که سرور (نه فرانت‌اند) ایمیل واردشده را با GMAIL_ULIKI_CEO مطابقت داده باشد -->
+        <div class="ig" id="login-ceo-referral" style="display:none"><label class="lbl">کد معرف</label><input class="inp" id="lceo-referral" placeholder="کد معرف را وارد کنید"></div>
+        <div class="ig" id="login-ceo-cred" style="display:none"><label class="lbl">رمز/اعتبارنامه ویژه</label><input class="inp" type="password" id="lceo-credential" placeholder="رمز عبور حساب یا اعتبارنامه ویژه"></div>
         <div class="captcha-box" onclick="togCap('login')"><div class="captcha-check" id="cap-login-box"></div><span style="font-size:13px">من روبات نیستم</span><span style="margin-right:auto;font-size:18px">🤖</span></div>
-        <button class="btn btnp" style="width:100%" onclick="doLogin()">ورود به Uliki</button>
+        <div id="login-turnstile" style="display:none;margin-bottom:12px"></div>
+        <button class="btn btnp" style="width:100%" id="login-submit-btn" onclick="doLogin()">ورود به Uliki</button>
         <p style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="openmod('forgot-modal')" style="font-size:12px;color:var(--accent)">رمز عبورت رو فراموش کردی؟</a></p>
-        <p style="text-align:center;margin-top:6px;display:flex;justify-content:center;gap:14px">
-          <a href="javascript:void(0)" onclick="openmod('code-login-modal')" style="font-size:12px;color:var(--accent)">📧 ورود با کد ایمیل</a>
-          <a href="javascript:void(0)" onclick="openmod('ceo-modal')" style="font-size:12px;color:var(--gray)">🛡️ ورود مدیریت</a>
-        </p>
+        <p style="text-align:center;margin-top:6px"><a href="javascript:void(0)" onclick="openmod('code-login-modal')" style="font-size:12px;color:var(--accent)">📧 ورود با کد ایمیل</a></p>
         <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--gb)"></div><span style="font-size:11px;color:var(--gray)">یا</span><div style="flex:1;height:1px;background:var(--gb)"></div></div>
         <div id="gbtn-login" style="display:flex;justify-content:center"></div>
       </div>
@@ -1638,26 +1640,6 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 </div>
 
 <!-- تأیید هویت CEO — واقعی و سمت سرور، بدون شمارش‌معکوس/کلید ترکیبی/صفحه اتهام‌زننده -->
-<div class="moverlay" id="ceo-modal">
-  <div class="modal">
-    <button class="mclose" onclick="closemod('ceo-modal')">✕</button>
-    <h3>🛡️ ورود ویژه مدیریت</h3>
-    <p class="msub">این مسیر جداگانه‌ای برای ورود CEO/مدیریت است. تمام مراحل روی سرور بررسی و ثبت می‌شوند.</p>
-    <div id="ceo-step1">
-      <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="ceo-email" placeholder="email@example.com"></div>
-      <button class="btn btnp" style="width:100%" onclick="ceoCheckEmail()">ادامه</button>
-    </div>
-    <div id="ceo-step2" style="display:none">
-      <div class="ig"><label class="lbl">کد معرف</label><input class="inp" id="ceo-referral" placeholder="کد معرف را وارد کنید"></div>
-      <button class="btn btnp" style="width:100%" onclick="ceoVerifyReferral()">تأیید کد</button>
-    </div>
-    <div id="ceo-step3" style="display:none">
-      <div class="ig"><label class="lbl">رمز عبور / اعتبارنامه</label><input class="inp" type="password" id="ceo-credential" placeholder="رمز عبور حساب یا اعتبارنامه ویژه"></div>
-      <button class="btn btnp" style="width:100%" onclick="ceoLogin()">ورود</button>
-    </div>
-  </div>
-</div>
-
 <div class="moverlay" id="payhistory-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('payhistory-modal')">✕</button>
@@ -2124,6 +2106,8 @@ async function checkUliAccessAndRender(){
   }
 }
 async function doLogin(){
+  if(ceoMode==='referral'){await ceoVerifyReferralInline();return;}
+  if(ceoMode==='credential'){await ceoLoginInline();return;}
   aclr();
   if(!capState.login){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
   const em=document.getElementById('lemail').value.trim();
@@ -3095,39 +3079,78 @@ async function verifyLoginCode(){
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 
-// ===== ورود ویژه CEO/مدیریت — واقعی و سمت سرور، بدون شمارش‌معکوس یا صفحه اتهام‌زننده =====
-let ceoTicket=null;
-async function ceoCheckEmail(){
-  const em=document.getElementById('ceo-email').value.trim();
-  if(!em||!em.includes('@')){toast('ایمیل معتبر وارد کنید','w');return;}
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
+// ===== ورود ویژه CEO/مدیریت — کاملاً بی‌سروصدا، سمت سرور، بدون لینک قابل‌کشف =====
+// هیچ‌جای رابط کاربری نمی‌گوید "این ورود مدیریت است". فقط وقتی کاربر ایمیلی
+// وارد می‌کند که سرور آن را با GMAIL_ULIKI_CEO یکسان تشخیص می‌دهد، فرم به‌آرامی
+// به مرحله بعد (کد معرف) تغییر می‌کند. برای بقیه کاربران هیچ تفاوتی دیده نمی‌شود.
+const TURNSTILE_SITE_KEY = ''; // Site Key از داشبورد Cloudflare Turnstile — این مقدار عمومی است و افشای آن مشکلی ندارد (بر خلاف Secret Key که فقط سمت Worker می‌ماند)
+let ceoTicket=null, ceoMode='none', turnstileToken=null, turnstileWidgetId=null;
+
+function resetCeoLoginUI(){
+  ceoMode='none'; ceoTicket=null; turnstileToken=null;
+  document.getElementById('login-normal-pass').style.display='block';
+  document.getElementById('login-ceo-referral').style.display='none';
+  document.getElementById('login-ceo-cred').style.display='none';
+  document.getElementById('login-turnstile').style.display='none';
+  document.getElementById('login-submit-btn').textContent='ورود به Uliki';
+}
+function loadTurnstileScript(cb){
+  if(window.turnstile){cb();return;}
+  if(document.getElementById('turnstile-script')){setTimeout(()=>loadTurnstileScript(cb),300);return;}
+  const s=document.createElement('script');
+  s.id='turnstile-script'; s.src='https://challenges.cloudflare.com/turnstile/v0/api.js'; s.async=true; s.defer=true;
+  s.onload=cb;
+  document.head.appendChild(s);
+}
+function renderTurnstile(){
+  const box=document.getElementById('login-turnstile');
+  if(!TURNSTILE_SITE_KEY){box.innerHTML='<p style="font-size:11px;color:var(--gray)">⚠️ Turnstile پیکربندی نشده (TURNSTILE_SITE_KEY خالی است)</p>';box.style.display='block';return;}
+  box.style.display='block';
+  loadTurnstileScript(()=>{
+    if(turnstileWidgetId!==null){try{window.turnstile.remove(turnstileWidgetId);}catch(e){}}
+    box.innerHTML='';
+    turnstileWidgetId=window.turnstile.render(box,{sitekey:TURNSTILE_SITE_KEY,callback:t=>{turnstileToken=t;}});
+  });
+}
+async function silentCeoCheck(){
+  const em=document.getElementById('lemail').value.trim();
+  if(!em||!em.includes('@')||!API_CONFIGURED){ if(ceoMode!=='none')resetCeoLoginUI(); return; }
   try{
     const r=await fetch(apiUrl('/api/auth/ceo/check-email'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});
     const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا','w');return;}
-    if(!data.is_ceo_email){toast('این ایمیل دسترسی مدیریت ندارد','w');return;}
-    document.getElementById('ceo-step1').style.display='none';
-    document.getElementById('ceo-step2').style.display='block';
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
+    if(data.ok&&data.is_ceo_email){
+      ceoMode='referral';
+      document.getElementById('login-normal-pass').style.display='none';
+      document.getElementById('login-ceo-referral').style.display='block';
+      document.getElementById('login-ceo-cred').style.display='none';
+      document.getElementById('login-submit-btn').textContent='تأیید کد معرف';
+      renderTurnstile();
+    } else if(ceoMode!=='none'){
+      resetCeoLoginUI();
+    }
+  }catch(e){ /* بی‌صدا شکست می‌خوریم - نباید به کاربر عادی چیزی درباره این مکانیزم نشان داده شود */ }
 }
-async function ceoVerifyReferral(){
-  const em=document.getElementById('ceo-email').value.trim();
-  const code=document.getElementById('ceo-referral').value.trim();
+async function ceoVerifyReferralInline(){
+  const em=document.getElementById('lemail').value.trim();
+  const code=document.getElementById('lceo-referral').value.trim();
   if(!code){toast('کد معرف را وارد کنید','w');return;}
+  if(TURNSTILE_SITE_KEY&&!turnstileToken){toast('لطفاً تیک Turnstile را تکمیل کنید','w');return;}
   try{
-    const r=await fetch(apiUrl('/api/auth/ceo/verify-referral'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code})});
+    const r=await fetch(apiUrl('/api/auth/ceo/verify-referral'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,turnstileToken})});
     const data=await r.json();
     if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
-    ceoTicket=data.ceoTicket;
-    document.getElementById('ceo-step2').style.display='none';
-    document.getElementById('ceo-step3').style.display='block';
+    ceoTicket=data.ceoTicket; ceoMode='credential';
+    document.getElementById('login-ceo-referral').style.display='none';
+    document.getElementById('login-ceo-cred').style.display='block';
+    document.getElementById('login-turnstile').style.display='none';
+    document.getElementById('login-submit-btn').textContent='ورود';
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
-async function ceoLogin(){
-  const em=document.getElementById('ceo-email').value.trim();
-  const credential=document.getElementById('ceo-credential').value;
+async function ceoLoginInline(){
+  const em=document.getElementById('lemail').value.trim();
+  const credential=document.getElementById('lceo-credential').value;
   if(!credential){toast('رمز/اعتبارنامه را وارد کنید','w');return;}
-  if(!ceoTicket){toast('ابتدا مراحل قبل را کامل کنید','w');return;}
+  if(!ceoTicket){toast('ابتدا کد معرف را تأیید کنید','w');return;}
   try{
     const r=await fetch(apiUrl('/api/auth/ceo/login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,ceoTicket,credential})});
     const data=await r.json();
@@ -3137,11 +3160,7 @@ async function ceoLogin(){
     const users=ld('users',{});
     users[em]=users[em]||{name:data.name||'CEO',email:em};
     sv('users',users);
-    closemod('ceo-modal');
-    ceoTicket=null;
-    document.getElementById('ceo-step1').style.display='block';
-    document.getElementById('ceo-step2').style.display='none';
-    document.getElementById('ceo-step3').style.display='none';
+    resetCeoLoginUI();
     await check2FAAndEnter(data.name||'CEO',em);
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
@@ -4213,17 +4232,21 @@ function dlOffice(){
 
 // ===== FEED =====
 let feedCache=[];
-async function genFeed(){
+let feedNextCursor=null;
+function authHeaders(){ return S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}; }
+
+async function genFeed(reset=true){
   const c=document.getElementById('feed-posts');
   if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
-  c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
+  if(reset){feedCache=[];feedNextCursor=null;c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';}
   try{
-    const res=await fetch(WK+'/feed');
+    const res=await fetch(apiUrl('/feed'+(feedNextCursor?('?cursor='+feedNextCursor):'')));
     const data=await res.json();
-    feedCache=data.posts||[];
+    if(!data.ok){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">'+escHtml(data.error||'خطا در بارگذاری فید')+'</div>';return;}
+    feedCache=reset?(data.posts||[]):feedCache.concat(data.posts||[]);
+    feedNextCursor=data.nextCursor;
     if(!feedCache.length){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز پستی منتشر نشده — اولین نفر باشید! 🚀</div>';return;}
-    c.innerHTML='';
-    feedCache.forEach((p,i)=>{c.innerHTML+=mkPost(p,i);});
+    c.innerHTML=feedCache.map((p,i)=>mkPost(p,i)).join('')+(feedNextCursor?'<div style="text-align:center;margin-top:10px"><button class="btn btno btnsm" onclick="genFeed(false)">بارگذاری بیشتر</button></div>':'');
     renderFeedSidebar();
     genExplore();
   }catch(e){
@@ -4242,21 +4265,43 @@ function renderFeedSidebar(){
   if(sugEl)sugEl.innerHTML=recentUsers.length?recentUsers.slice(0,5).map(p=>'<div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,'+p.col+','+p.col+'88)">'+escHtml(p.av)+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+escHtml(p.user)+'</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px" onclick="toggleFollow(this)">دنبال</button></div>').join(''):'<div style="color:var(--gray);font-size:12px">هنوز کسی منتشر نکرده</div>';
 }
 function mkPost(p,i){
-  const ageBadge=p.ageRating==='+18'?'<span class="postbdg" style="background:#FFE0E0;color:#C0392B">🔞 ۱۸+</span>':'';
+  const ageBadge=p.ageRating==='+18'||p.ageRating==='18'?'<span class="postbdg" style="background:#FFE0E0;color:#C0392B">🔞 ۱۸+</span>':'';
   const linkHtml=(p.link&&/^https?:\/\//i.test(p.link))?'<a href="'+escHtml(p.link)+'" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);display:block;margin-top:4px;word-break:break-all">🔗 '+escHtml(p.link)+'</a>':'';
-  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span>${ageBadge}</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${escHtml(p.cont)}${linkHtml}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button></div></div>`;
+  const canModerate=rankOf(S.userRole)>=ROLE_RANK.coding_specialist;
+  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span>${ageBadge}</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${escHtml(p.em||'')}</div><div class="postcont">${escHtml(p.cont)}${linkHtml}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button><button class="postact" onclick="reportPost('${escHtml(p.id)}')" title="گزارش">🚩</button>${canModerate?`<button class="postact" onclick="deletePost('${escHtml(p.id)}')" title="حذف (مدیریت)">🗑️</button>`:''}</div></div>`;
 }
 async function likePost(btn){
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای لایک باید وارد حساب شوید','w');return;}
   const id=btn.getAttribute('data-id');
   const liked=btn.getAttribute('data-liked')==='1';
   const delta=liked?-1:1;
   btn.setAttribute('data-liked',liked?'0':'1');
   btn.classList.toggle('liked',!liked);
   try{
-    const res=await fetch(WK+'/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
+    const res=await fetch(apiUrl('/feed/like'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id,delta})});
     const data=await res.json();
-    btn.innerHTML='❤️ '+(data.lk??0);
+    if(data.ok)btn.innerHTML='❤️ '+(data.lk??0);
+    else{btn.setAttribute('data-liked',liked?'1':'0');btn.classList.toggle('liked',liked);toast(data.error||'خطا','w');}
   }catch(e){}
+}
+async function reportPost(id){
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای گزارش باید وارد حساب شوید','w');return;}
+  const reason=prompt('دلیل گزارش این پست چیست؟ (اختیاری)')||'';
+  try{
+    const res=await fetch(apiUrl('/feed/report'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id,reason})});
+    const data=await res.json();
+    toast(data.ok?'✅ گزارش شما ثبت شد':(data.error||'خطا'),data.ok?'i':'w');
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function deletePost(id){
+  if(!confirm('این پست حذف شود؟'))return;
+  try{
+    const res=await fetch(apiUrl('/feed'),{method:'DELETE',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id})});
+    const data=await res.json();
+    if(!data.ok){toast(data.error||'خطا در حذف','w');return;}
+    toast('🗑️ پست حذف شد');
+    genFeed(true);
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 function savePost(btn){
   const saved=btn.getAttribute('data-saved')==='1';
@@ -4287,13 +4332,15 @@ function renderComments(){
   list.innerHTML=comments.length?comments.map(c=>'<div style="font-size:13px;background:var(--snow);border-radius:10px;padding:8px 12px;text-align:right"><strong>'+escHtml(c.user)+':</strong> '+escHtml(c.txt)+'</div>').join(''):'<div style="font-size:12px;color:var(--gray);text-align:center;padding:24px 0">هنوز نظری ثبت نشده — اولین نفر باشید!</div>';
 }
 async function addComment(){
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای ارسال نظر باید وارد حساب شوید','w');return;}
   const inp=document.getElementById('comment-inp');
   const txt=inp.value.trim();
   if(!txt||currentCommentPid===null)return;
   inp.value='';
   try{
-    const res=await fetch(WK+'/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
+    const res=await fetch(apiUrl('/feed/comment'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id:currentCommentPid,txt})});
     const data=await res.json();
+    if(!data.ok){toast(data.error||'خطا در ارسال نظر','w');return;}
     const post=feedCache.find(p=>p.id===currentCommentPid);
     if(post){post.comments=data.comments||[];post.cm=post.comments.length;}
     renderComments();
@@ -4313,20 +4360,21 @@ function toggleFollow(btn){
 function sharePost(){if(navigator.share){navigator.share({title:'Uliki AI',text:'یک محتوای AI ببینید!',url:location.href});}else{navigator.clipboard.writeText(location.href);toast('لینک کپی شد! 📋');}}
 function pubContent(type){S.pubtype=type;document.getElementById('pub-title').value='';document.getElementById('pub-desc').value='';openmod('pub-modal');}
 async function doPub(){
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای انتشار باید وارد حساب شوید','w');return;}
   const desc=document.getElementById('pub-desc').value||'';
   const ageRating=document.getElementById('pub-age').value;
   const link=document.getElementById('pub-link').value.trim();
   if(!ageRating){toast('رده سنی محتوا رو مشخص کنید','w');return;}
   if(link&&!/^https?:\/\//i.test(link)){toast('لینک باید با http:// یا https:// شروع بشه','w');return;}
   const ems={music:'🎵',code:'💻',video:'🎬',image:'🖼️',text:'📝'};
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   try{
-    await fetch(apiUrl('/feed'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      user:S.user?.name||'کاربر',av:(S.user?.name||'U').charAt(0).toUpperCase(),col:'#4FA8D5',
+    const res=await fetch(apiUrl('/feed'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({
       type:S.pubtype,em:ems[S.pubtype]||'✨',cont:desc||'محتوای AI',tags:['#Uliki',ageRating],bdg:'AI Content',
       ageRating,link
     })});
-    S.totPosts++;updateUI();genFeed();closemod('pub-modal');toast('📤 منتشر شد!');
+    const data=await res.json();
+    if(!data.ok){toast(data.error||'خطا در انتشار','w');return;}
+    S.totPosts++;updateUI();genFeed(true);closemod('pub-modal');toast('📤 منتشر شد!');
   }catch(e){toast('خطا در انتشار','w');}
 }
 
