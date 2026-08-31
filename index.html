@@ -1346,15 +1346,47 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
       <!-- ADMIN DASHBOARD -->
       <div id="pg-admin" class="pg" style="display:none">
         <h2 style="font-size:19px;font-weight:800;margin-bottom:5px">🛡️ پنل مدیریت</h2>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">مدیریت نقش کاربران و مشاهده گزارش فعالیت — دسترسی و اعتبارسنجی کاملاً سمت سرور انجام می‌شود</p>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">دسترسی و اعتبارسنجی همه‌ی اقدامات این صفحه کاملاً سمت سرور بررسی می‌شود — نمایش این صفحه فقط ظاهری است</p>
         <div id="admin-denied" class="ccard" style="display:none;text-align:center;padding:30px">
           <div style="font-size:34px;margin-bottom:8px">🔒</div>
           <p style="font-size:13px;color:var(--graydark)">حساب شما دسترسی ادمین ندارد — این صفحه فقط برای Admin/Chairman قابل استفاده است.</p>
         </div>
         <div id="admin-content" style="display:none">
-          <div class="profgrid">
-            <div class="profsec">
-              <h4>👤 تغییر نقش کاربر</h4>
+          <div class="ctabs">
+            <button class="ctab on" id="at-overview" onclick="swAdmin('overview')">📊 نمای کلی</button>
+            <button class="ctab" id="at-users" onclick="swAdmin('users')">👥 کاربران</button>
+            <button class="ctab" id="at-notif" onclick="swAdmin('notif');loadScheduledNotifications()">🔔 اعلان‌ها</button>
+            <button class="ctab" id="at-audit" onclick="swAdmin('audit');loadAuditLog()">📜 گزارش رخدادها</button>
+          </div>
+
+          <!-- OVERVIEW -->
+          <div class="cpanel on" id="ap-overview">
+            <div class="ccard">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h3 style="margin:0">📊 وضعیت پلتفرم</h3>
+                <button class="btn btng btnsm" onclick="loadPlatformStatus()">🔄 بروزرسانی</button>
+              </div>
+              <div id="admin-status-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px"></div>
+            </div>
+            <div class="ccard">
+              <h3>📤 صف بررسی ارسال‌های توسعه‌دهندگان</h3>
+              <p class="csub">همان صف موجود در محیط توسعه‌دهندگان</p>
+              <button class="btn btno btnsm" onclick="nav('devenv');setTimeout(()=>{swDevEnv('review');loadAdminSubmissions();},100)">📋 باز کردن صف بررسی</button>
+            </div>
+          </div>
+
+          <!-- USERS -->
+          <div class="cpanel" id="ap-users">
+            <div class="ccard">
+              <h3>🔍 جستجوی کاربر</h3>
+              <div style="display:flex;gap:8px;margin-bottom:10px">
+                <input class="inp" id="admin-search-email" placeholder="ایمیل کاربر" style="flex:1">
+                <button class="btn btnp btnsm" onclick="adminLookupUser()">جستجو</button>
+              </div>
+              <div id="admin-user-result"></div>
+            </div>
+            <div class="ccard">
+              <h3>🎚️ تغییر نقش کاربر</h3>
               <div class="ig"><label class="lbl">ایمیل کاربر</label><input class="inp" id="admin-target-email" placeholder="user@example.com"></div>
               <div class="ig"><label class="lbl">نقش جدید</label><select class="inp" id="admin-target-role">
                 <option value="user">کاربر عادی</option>
@@ -1367,17 +1399,44 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
               <button class="btn btnp btnsm" style="width:100%" onclick="setUserRole()">💾 اعمال نقش</button>
               <p style="font-size:10px;color:var(--gray);margin-top:8px">توجه: فقط Chairman می‌تواند نقش Admin یا Chairman اختصاص دهد؛ Admin فقط نقش‌های پایین‌تر را می‌تواند تغییر دهد (سرور این محدودیت را اجرا می‌کند).</p>
             </div>
-            <div class="profsec">
-              <h4>📤 صف بررسی ارسال‌های توسعه‌دهندگان</h4>
-              <p style="font-size:12px;color:var(--gray);margin-bottom:10px">همان صف موجود در محیط توسعه‌دهندگان</p>
-              <button class="btn btno btnsm" style="width:100%" onclick="nav('devenv');setTimeout(()=>{swDevEnv('review');loadAdminSubmissions();},100)">📋 باز کردن صف بررسی</button>
+          </div>
+
+          <!-- NOTIFICATIONS -->
+          <div class="cpanel" id="ap-notif">
+            <div class="ccard">
+              <h3>📢 ارسال اعلان</h3>
+              <div class="ig"><label class="lbl">عنوان</label><input class="inp" id="notif-title" placeholder="عنوان اعلان"></div>
+              <div class="ig"><label class="lbl">متن</label><textarea class="ptarea" id="notif-message" style="min-height:70px" placeholder="متن اعلان"></textarea></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="ig"><label class="lbl">مخاطب</label><select class="inp" id="notif-audience" onchange="onNotifAudienceChange()">
+                  <option value="all">همه کاربران</option>
+                  <option value="role">بر اساس نقش</option>
+                  <option value="user">یک کاربر خاص</option>
+                </select></div>
+                <div class="ig"><label class="lbl">اولویت</label><select class="inp" id="notif-priority"><option value="normal">عادی</option><option value="low">کم</option><option value="high">فوری</option></select></div>
+              </div>
+              <div class="ig" id="notif-role-wrap" style="display:none"><label class="lbl">نقش هدف</label><select class="inp" id="notif-role"><option value="user">کاربر عادی</option><option value="professional">حرفه‌ای</option><option value="developer">توسعه‌دهنده</option><option value="coding_specialist">متخصص کدنویسی</option></select></div>
+              <div class="ig" id="notif-email-wrap" style="display:none"><label class="lbl">ایمیل کاربر هدف</label><input class="inp" id="notif-email" placeholder="user@example.com"></div>
+              <div class="ig"><label class="lbl">زمان ارسال (خالی = همین حالا)</label><input class="inp" type="datetime-local" id="notif-schedule"></div>
+              <button class="genbtn" onclick="createNotification()">📢 ارسال / زمان‌بندی</button>
             </div>
-            <div class="profsec" style="grid-column:1/-1">
+            <div class="ccard">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <h4 style="margin:0">📜 گزارش رخدادها (Audit Log)</h4>
+                <h3 style="margin:0">⏳ اعلان‌های زمان‌بندی‌شده</h3>
+                <button class="btn btng btnsm" onclick="loadScheduledNotifications()">🔄 بروزرسانی</button>
+              </div>
+              <div id="admin-scheduled-list" style="display:flex;flex-direction:column;gap:8px"></div>
+            </div>
+          </div>
+
+          <!-- AUDIT -->
+          <div class="cpanel" id="ap-audit">
+            <div class="ccard">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h3 style="margin:0">📜 گزارش رخدادها (Audit Log)</h3>
                 <button class="btn btng btnsm" onclick="loadAuditLog()">🔄 بروزرسانی</button>
               </div>
-              <div id="admin-audit-list" style="display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto"></div>
+              <div id="admin-audit-list" style="display:flex;flex-direction:column;gap:6px;max-height:500px;overflow-y:auto"></div>
             </div>
           </div>
         </div>
@@ -2020,10 +2079,18 @@ async function hashPassword(pw,salt){
 // ===== ورود با گوگل =====
 function initGoogleAuth(){
   if(!GOOGLE_CLIENT_ID||typeof google==='undefined'||!google.accounts)return;
-  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
-  const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
-  const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
-  const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
+  try{
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
+    const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
+    const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
+    const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
+  }catch(e){
+    // این کتابخانه گاهی وقتی دامنه فعلی در «Authorized JavaScript origins» تنظیمات
+    // OAuth Client در Google Cloud Console ثبت نشده، همین‌جا داخل کد خودش خطا می‌دهد.
+    // نمی‌گذاریم این خطا بقیه صفحه را بخواباند - فقط دکمه گوگل مخفی می‌ماند.
+    console.log('google_signin_init_failed', e?.message);
+    ['gbtn-login','gbtn-reg'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<p style="font-size:11px;color:var(--gray);text-align:center">ورود با گوگل موقتاً در دسترس نیست</p>';});
+  }
 }
 async function handleGoogleCredential(resp){
   if(!API_CONFIGURED){aerr('آدرس API تنظیم نشده');return;}
@@ -3198,9 +3265,9 @@ function enterApp(name,email){
   applyRoleUI();
   nav('home');
   // شروع تبلیغات بعد از ۵ دقیقه
-  if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,300000);
-  // nudge بعد از ۳۰ ثانیه
-  setTimeout(showNudge,30000);
+  if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,90000); // شروع بعد از ۹۰ ثانیه به‌جای ۵ دقیقه
+  // nudge بعد از ۲۰ ثانیه
+  setTimeout(showNudge,20000);
 }
 function applyPlan(p){
   S.plan=p;
@@ -3517,12 +3584,12 @@ function buyTrialToken(){
   toast('✅ ۳ توکن آزمایشی دریافت شد! ('+(3-used-1)+' بار دیگر رایگان)');
 }
 
-// ===== ADS =====
+// ===== ADS ===== (فراوانی تبلیغات برای حساب‌های رایگان افزایش یافت — پلن‌های پولی همچنان کاملاً بدون تبلیغ هستند)
 let adTimer=null, adInterval=null, adCountdown=null;
 function startAds(){
   if(PLAN_LIMITS[S.plan].noAd)return;
   showAd();
-  adInterval=setInterval(()=>{if(!PLAN_LIMITS[S.plan].noAd)showAd();},300000);
+  adInterval=setInterval(()=>{if(!PLAN_LIMITS[S.plan].noAd)showAd();},180000); // هر ۳ دقیقه به‌جای ۵ دقیقه
 }
 function stopAdTimer(){if(adInterval){clearInterval(adInterval);adInterval=null;}if(adCountdown){clearInterval(adCountdown);adCountdown=null;}}
 let adIdx=0;
@@ -3544,7 +3611,7 @@ function showAd(){
 function closeAd(){document.getElementById('ad-overlay').classList.remove('on');if(adCountdown){clearInterval(adCountdown);adCountdown=null;}}
 
 // ===== NUDGE =====
-const NUDGES=['با Pro تبلیغات را برای همیشه ببندید! — ۱۵۰,۰۰۰ تومان','پیام‌های نامحدود با Plus! — ۲۱۰,۰۰۰ تومان','مدل AI اختصاصی با VIP! — ۳۰۰,۰۰۰ تومان','Office AI بدون محدودیت با Pro!','Lip Sync در پلن‌های پولی فعال است!'];
+const NUDGES=['با Pro تبلیغات را برای همیشه ببندید! — ۱۵۰,۰۰۰ تومان','پیام‌های نامحدود با Plus! — ۲۱۰,۰۰۰ تومان','مدل AI اختصاصی با VIP! — ۳۰۰,۰۰۰ تومان','Office AI بدون محدودیت با Pro!','Lip Sync در پلن‌های پولی فعال است!','با ارتقا، دیگر هیچ تبلیغی نمی‌بینید 🚀','کیف پول بزرگ‌تر و سهمیه بیشتر با پلن‌های پولی!'];
 let nudgeIdx=0;
 function showNudge(){
   if(PLAN_LIMITS[S.plan].noAd)return;
@@ -3552,7 +3619,7 @@ function showNudge(){
   nudgeIdx++;
   document.getElementById('nudge').classList.add('on');
   setTimeout(closeNudge,8000);
-  setTimeout(showNudge,120000);
+  setTimeout(showNudge,75000); // هر ۷۵ ثانیه به‌جای ۱۲۰ ثانیه
 }
 function closeNudge(){document.getElementById('nudge').classList.remove('on');}
 
@@ -4596,7 +4663,115 @@ function initAdminPage(){
   const allowed=rankOf(S.userRole)>=ROLE_RANK.admin;
   document.getElementById('admin-denied').style.display=allowed?'none':'block';
   document.getElementById('admin-content').style.display=allowed?'block':'none';
-  if(allowed)loadAuditLog();
+  if(allowed)loadPlatformStatus();
+}
+function swAdmin(tab){
+  document.querySelectorAll('#pg-admin .ctab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('#pg-admin .cpanel').forEach(x=>x.classList.remove('on'));
+  document.getElementById('at-'+tab).classList.add('on');
+  document.getElementById('ap-'+tab).classList.add('on');
+}
+async function loadPlatformStatus(){
+  const el=document.getElementById('admin-status-grid');
+  if(!el)return;
+  el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
+  if(!API_CONFIGURED){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">آدرس API تنظیم نشده</div>';return;}
+  try{
+    const r=await fetch(apiUrl('/api/status'));
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">خطا در دریافت وضعیت</div>';return;}
+    const dot=v=>'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(v?'#27AE60':'#E74C3C')+';margin-left:6px"></span>';
+    const rows=[];
+    Object.entries(data.providers||{}).forEach(([k,v])=>rows.push({l:k,v}));
+    Object.entries(data.kv||{}).forEach(([k,v])=>rows.push({l:k,v}));
+    rows.push({l:'chairman bootstrap شده',v:data.bootstrapped});
+    el.innerHTML=rows.map(r=>'<div style="background:var(--snow);border-radius:10px;padding:10px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center"><span>'+r.l+'</span>'+dot(r.v)+'</div>').join('');
+  }catch(e){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+async function adminLookupUser(){
+  const email=document.getElementById('admin-search-email').value.trim();
+  const el=document.getElementById('admin-user-result');
+  if(!email){toast('ایمیل را وارد کنید','w');return;}
+  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال جستجو...</div>';
+  try{
+    const r=await fetch(apiUrl('/admin/user-lookup?email='+encodeURIComponent(email)),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'یافت نشد')+'</div>';return;}
+    const u=data.user;
+    el.innerHTML=`<div class="ccard" style="margin-top:10px;padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>${escHtml(u.name||'')}</strong>
+        <span style="font-size:11px;padding:3px 10px;border-radius:50px;background:${u.suspended?'#FFE0E0':'var(--snow)'};color:${u.suspended?'#C0392B':'var(--accent2)'}">${u.suspended?'مسدود':'فعال'}</span>
+      </div>
+      <div style="font-size:12px;color:var(--graydark);line-height:2">
+        نقش: ${ROLE_LABELS[u.role]||u.role}<br>
+        عضویت: ${u.joined?new Date(u.joined).toLocaleDateString('fa-IR'):'—'}<br>
+        بسته خوش‌آمدگویی تا: ${u.welcomeUntil?new Date(u.welcomeUntil).toLocaleDateString('fa-IR'):'—'}<br>
+        کیف پول: ${data.wallet?.tokens??0} توکن، ${data.wallet?.credits??0} کردیت
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        ${u.suspended
+          ? `<button class="btn btnp btnsm" onclick="adminSetSuspend('${escHtml(email)}',false)">✅ رفع مسدودی</button>`
+          : `<button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="adminSetSuspend('${escHtml(email)}',true)">🚫 مسدود کردن</button>`}
+      </div>
+    </div>`;
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+async function adminSetSuspend(email,suspended){
+  let reason='';
+  if(suspended)reason=prompt('دلیل مسدودسازی (اختیاری):')||'';
+  try{
+    const r=await fetch(apiUrl('/admin/user-suspend'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({email,suspended,reason})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا','w');return;}
+    toast(suspended?'🚫 حساب مسدود شد':'✅ مسدودی برداشته شد');
+    adminLookupUser();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+function onNotifAudienceChange(){
+  const v=document.getElementById('notif-audience').value;
+  document.getElementById('notif-role-wrap').style.display=v==='role'?'block':'none';
+  document.getElementById('notif-email-wrap').style.display=v==='user'?'block':'none';
+}
+async function createNotification(){
+  const title=document.getElementById('notif-title').value.trim();
+  const message=document.getElementById('notif-message').value.trim();
+  const audience=document.getElementById('notif-audience').value;
+  const priority=document.getElementById('notif-priority').value;
+  const scheduledAt=document.getElementById('notif-schedule').value;
+  if(!title||!message){toast('عنوان و متن را وارد کنید','w');return;}
+  const body={title,message,audience,priority};
+  if(audience==='role')body.targetRole=document.getElementById('notif-role').value;
+  if(audience==='user')body.targetEmail=document.getElementById('notif-email').value.trim();
+  if(scheduledAt)body.scheduledAt=new Date(scheduledAt).toISOString();
+  try{
+    const r=await fetch(apiUrl('/admin/notifications/create'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify(body)});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا در ارسال','w');return;}
+    toast(data.status==='sent'?'✅ اعلان ارسال شد':'⏳ اعلان زمان‌بندی شد');
+    document.getElementById('notif-title').value=''; document.getElementById('notif-message').value=''; document.getElementById('notif-schedule').value='';
+    loadScheduledNotifications();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function loadScheduledNotifications(){
+  const el=document.getElementById('admin-scheduled-list');
+  if(!el)return;
+  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/admin/notifications/list'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'خطا')+'</div>';return;}
+    const list=data.scheduled||[];
+    el.innerHTML=list.length?list.map(n=>`<div style="background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px"><div style="display:flex;justify-content:space-between"><strong>${escHtml(n.title)}</strong><button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C;padding:2px 8px" onclick="cancelNotification('${n.id}')">لغو</button></div><div style="color:var(--gray);margin-top:4px">${n.audience==='all'?'همه کاربران':n.audience==='role'?('نقش: '+(ROLE_LABELS[n.targetRole]||n.targetRole)):('کاربر: '+escHtml(n.targetEmail))} · موعد: ${n.dueAt?new Date(n.dueAt).toLocaleString('fa-IR'):'—'}</div></div>`).join(''):'<div style="color:var(--gray);font-size:12px">اعلان زمان‌بندی‌شده‌ای وجود ندارد</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+async function cancelNotification(id){
+  try{
+    const r=await fetch(apiUrl('/admin/notifications/cancel'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({id})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا','w');return;}
+    toast('لغو شد'); loadScheduledNotifications();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 async function setUserRole(){
   if(!API_CONFIGURED||!S.sessionToken){toast('باید وارد حساب شوید','w');return;}
@@ -4609,7 +4784,6 @@ async function setUserRole(){
     if(!data.ok){toast(data.error||'خطا در تغییر نقش','w');return;}
     toast('✅ نقش «'+(ROLE_LABELS[role]||role)+'» برای '+targetEmail+' اعمال شد');
     document.getElementById('admin-target-email').value='';
-    loadAuditLog();
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 async function loadAuditLog(){
