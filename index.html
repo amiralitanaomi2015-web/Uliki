@@ -1046,6 +1046,7 @@ function togCap(t){
             <div class="setitem"><span class="setlbl">📊 تحلیل داده</span><div class="tog" id="plg-analyze" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">💻 اجرای کد</span><div class="tog" id="plg-exec" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🎨 تولید تصویر حین چت</span><div class="tog on" id="plg-inlineimg" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
+            <div class="setitem"><span class="setlbl">🧠 بهبود خودکار پیام با ZCODE قبل از ارسال</span><div class="tog" id="plg-zcode" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🔔 یادآوری هوشمند</span><div class="tog" id="plg-remind" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <p style="font-size:10px;color:var(--gray);margin-top:10px;line-height:1.7">توجه: «جستجوی وب»، «تحلیل داده» و «اجرای کد» فعلاً فقط رفتار پاسخ‌دهی متنی AI رو تنظیم می‌کنن (نه اجرای واقعی جدا‌سندباکس یا جستجوی زنده اینترنت).</p>
           </div>
@@ -2745,6 +2746,7 @@ function saveAISettings(){
     plgAnalyze:document.getElementById('plg-analyze')?.classList.contains('on')||false,
     plgExec:document.getElementById('plg-exec')?.classList.contains('on')||false,
     plgInlineImg:document.getElementById('plg-inlineimg')?.classList.contains('on')||false,
+    plgZcode:document.getElementById('plg-zcode')?.classList.contains('on')||false,
     plgRemind:document.getElementById('plg-remind')?.classList.contains('on')||false,
     restFrom:document.getElementById('ais-rest-from')?.value||'00:00',
     restTo:document.getElementById('ais-rest-to')?.value||'00:00',
@@ -2771,7 +2773,7 @@ function loadAISettings(){
   if(document.getElementById('ais-level'))document.getElementById('ais-level').value=d.level||'متوسط';
   if(document.getElementById('ais-style'))document.getElementById('ais-style').value=d.style||'دوستانه';
   if(document.getElementById('ais-lang'))document.getElementById('ais-lang').value=d.lang||'فارسی';
-  ['plgSearch:plg-search','plgAnalyze:plg-analyze','plgExec:plg-exec','plgInlineImg:plg-inlineimg','plgRemind:plg-remind'].forEach(pair=>{
+  ['plgSearch:plg-search','plgAnalyze:plg-analyze','plgExec:plg-exec','plgInlineImg:plg-inlineimg','plgRemind:plg-remind','plgZcode:plg-zcode'].forEach(pair=>{
     const [k,id]=pair.split(':'); const el=document.getElementById(id);
     if(el)el.classList.toggle('on',!!d[k]);
   });
@@ -3881,7 +3883,7 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature,enhanceWithZcode:!!aiSet?.plgZcode})});
     const data=await res.json();
     remTyping(tid);
     const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
