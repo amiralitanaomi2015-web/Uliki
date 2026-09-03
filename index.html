@@ -3886,7 +3886,15 @@ async function doSend(){
     const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature,enhanceWithZcode:!!aiSet?.plgZcode})});
     const data=await res.json();
     remTyping(tid);
-    const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
+    if(!res.ok||data.ok===false||!data.content?.[0]?.text){
+      // قبلاً این حالت به‌جای خطا، متن ثابت "خطا در دریافت پاسخ" را به‌عنوان
+      // پاسخ واقعی AI نمایش می‌داد. حالا دلیل واقعی خطا (از سرور) نشان داده می‌شود.
+      const reason=data.error||('کد وضعیت '+res.status);
+      addMsg('❌ '+reason,'ai');
+      S.msgs=Math.min(S.msgs+1,999); updateUI(); // پیامی که واقعاً پاسخ نگرفت، سهمیه مصرف نکند
+      return;
+    }
+    const reply=data.content[0].text;
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
     saveChatHistory();
@@ -3927,7 +3935,10 @@ async function callAI(msgs,sys,modKey){
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
-  return data.content?.[0]?.text||'خطا';
+  if(!res.ok||data.ok===false||!data.content?.[0]?.text){
+    return '❌ '+(data.error||('کد وضعیت '+res.status));
+  }
+  return data.content[0].text;
 }
 
 async function callOpenRouter(messages,system,model){
