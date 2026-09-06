@@ -543,11 +543,16 @@ function togCap(t){
               <div class="chat-info"><h4 id="chatname">Uliki AI</h4><span><span class="odot"></span>آنلاین</span></div>
               <button class="voicebtn" style="margin-right:8px" title="تنظیمات هوش مصنوعی" onclick="nav('aisettings')">⚙️</button>
               <div style="margin-right:auto;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+                <div class="mod-sels" id="provider-sels">
+                  <button class="modsel on" id="prov-groq" onclick="selProvider('groq',this)">GROQ</button>
+                  <button class="modsel" id="prov-deepseek" onclick="selProvider('deepseek',this)">DeepSeek</button>
+                  <button class="modsel" id="prov-zcode" onclick="selProvider('zcode',this)">🔒 ZCODE</button>
+                </div>
                 <div class="ai-sels">
                   <button class="aisel on" id="ai-luolaf" onclick="selAI('luolaf',this)">🧠 Luolaf</button>
                   <button class="aisel" id="ai-uliki" onclick="selAI('uliki',this)">⚡ Uliki</button>
                 </div>
-                <div class="mod-sels">
+                <div class="mod-sels" id="persona-sels">
                   <button class="modsel on" id="mod-luolaf3" onclick="selMod('luolaf3',this)">Luolaf.3</button>
                   <button class="modsel" id="mod-uliki2" onclick="selMod('uliki2',this)">Uliki.2</button>
                   <button class="modsel" id="mod-uliki3" onclick="selMod('uliki3',this)">Uliki.3</button>
@@ -932,7 +937,7 @@ function togCap(t){
       <!-- OFFICE -->
       <div id="pg-office" class="pg" style="display:none">
         <h2 style="font-size:19px;font-weight:800;margin-bottom:6px">📄 Office AI</h2>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Word، Excel و PowerPoint حرفه‌ای</p>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Word، Excel و PowerPoint حرفه‌ای — متن با DeepSeek، تصویر با FLUX ساخته می‌شود</p>
         <div class="office-tabs">
           <button class="office-tab on" id="ot-word" onclick="swOffice('word')">📝 Word</button>
           <button class="office-tab" id="ot-excel" onclick="swOffice('excel')">📊 Excel</button>
@@ -947,6 +952,9 @@ function togCap(t){
             <button class="btn btno btnsm" type="button" onclick="document.getElementById('office-upload').click()">انتخاب فایل پایه</button>
             <span id="office-upload-name" style="font-size:11px;color:var(--gray);margin-right:8px"></span>
           </div>
+          <label id="office-img-wrap" style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:10px">
+            <input type="checkbox" id="office-add-image"> 🖼️ افزودن یک تصویر مرتبط با FLUX (Alpha)
+          </label>
           <button class="genbtn" id="gbtn-office" onclick="genOffice()">✨ ساخت با AI</button>
         </div>
         <div class="resbox" id="res-office" style="display:none">
@@ -957,6 +965,7 @@ function togCap(t){
               <button class="btn btnp btnsm" onclick="dlOffice()">⬇️ دانلود فایل</button>
             </div>
           </div>
+          <div id="office-img-preview" style="display:none;margin-bottom:10px"></div>
           <textarea id="office-out" style="width:100%;white-space:pre-wrap;font-size:13px;line-height:1.8;max-height:400px;min-height:200px;overflow-y:auto;border:1px solid var(--gb);border-radius:10px;padding:12px;font-family:inherit"></textarea>
         </div>
       </div>
@@ -2023,7 +2032,7 @@ let S = {
   feedPosts:[],
   feedComments:{},
   trialUsed: 0,
-  sessionToken:null, userRole:'user', voiceReplyOn:false
+  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq'
 };
 
 // ===== STORAGE =====
@@ -3753,9 +3762,19 @@ function selAI(ai,btn){
 }
 function selMod(m,btn){
   S.selMod=m;
-  document.querySelectorAll('.modsel').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#persona-sels .modsel').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   document.getElementById('modlbl').textContent=MODELS[m]?.n||m;
+}
+function selProvider(p,btn){
+  if(p==='zcode'&&rankOf(S.userRole)<ROLE_RANK.professional&&!['Pro','Plus','VIP'].includes(S.plan)){
+    // این فقط یک هشدار زودهنگام برای تجربه کاربری بهتر است، نه مرز امنیتی —
+    // مرز واقعی همیشه سمت سرور در handleChat بررسی می‌شود، حتی اگر این پیام رد شود.
+    toast('🔒 مدل ZCODE ویژه حساب‌های حرفه‌ای/VIP است — سرور هم این را بررسی می‌کند','w');
+  }
+  S.selProvider=p;
+  document.querySelectorAll('#provider-sels .modsel').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
 }
 function selMode(btn,m){
   S.aiMode=m;
@@ -3866,7 +3885,6 @@ async function doSend(){
   if(S.msgs<=0){toast('محدودیت پیام! یک ساعت دیگر شارژ می‌شود','w');return;}
   if(isAIResting()){toast('🌙 طبق تنظیمات، AI در ساعت/روز استراحت است','w');return;}
   if(isParentalChatBlocked()){toast('🔒 چت توسط کنترل والدین محدود شده است','w');return;}
-  if(!(await consumeQuota('text')))return; // سرور تصمیم نهایی در مورد سهمیه را می‌گیرد
   inp.value=''; inp.style.height='auto';
   S.msgs=Math.max(0,S.msgs-1); S.totMsgs++; updateUI();
   S.cooldown.count++;
@@ -3883,7 +3901,7 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature,enhanceWithZcode:!!aiSet?.plgZcode})});
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:S.selProvider||getAIProvider(),model:getModelId(S.selMod),temperature,enhanceWithZcode:!!aiSet?.plgZcode})});
     const data=await res.json();
     remTyping(tid);
     if(!res.ok||data.ok===false||!data.content?.[0]?.text){
@@ -3933,7 +3951,7 @@ async function callAI(msgs,sys,modKey){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
+  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
   if(!res.ok||data.ok===false||!data.content?.[0]?.text){
     return '❌ '+(data.error||('کد وضعیت '+res.status));
@@ -4230,6 +4248,8 @@ function swOffice(t){
   document.getElementById('office-type').value=t;
   const ph={word:'مثال: گزارش فروش ماهانه...',excel:'مثال: جدول درآمد و هزینه...',ppt:'مثال: ارائه برای سرمایه‌گذاران...'};
   document.getElementById('office-prompt').placeholder=ph[t]||'';
+  document.getElementById('office-img-wrap').style.display=(t==='excel')?'none':'flex';
+  if(t==='excel')document.getElementById('office-add-image').checked=false;
 }
 let officeUploadedContent='';
 function handleOfficeUpload(input){
@@ -4245,19 +4265,54 @@ function handleOfficeUpload(input){
   };
   reader.readAsText(file);
 }
+// متن Office همیشه صراحتاً از DeepSeek می‌آید (نه مسیریابی خودکار بر اساس پرسونا/پلن که در بقیه چت استفاده می‌شود)
+async function callDeepSeekDirect(messages,system){
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return null;}
+  try{
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages,system,max_tokens:2000,model_key:'deepseek',model:'deepseek-chat',temperature:0.6})});
+    const data=await res.json();
+    if(!res.ok||data.ok===false||!data.content?.[0]?.text){
+      toast('❌ '+(data.error||('کد وضعیت '+res.status)),'w');
+      return null;
+    }
+    return data.content[0].text;
+  }catch(e){toast('خطا در ارتباط با سرور','w');return null;}
+}
+async function genOfficeImage(topic){
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای ساخت تصویر باید وارد حساب شوید','w');return null;}
+  try{
+    const res=await fetch(apiUrl('/generate/image-alpha'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt:topic})});
+    const data=await res.json();
+    if(!data.ok){toast('❌ تصویر: '+(data.error||'خطا'),'w');return null;}
+    return data.imageUrl;
+  }catch(e){toast('خطا در ساخت تصویر','w');return null;}
+}
 async function genOffice(){
   const type=document.getElementById('office-type').value;
   const prompt=document.getElementById('office-prompt').value.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
+  const wantImage=document.getElementById('office-add-image').checked&&type!=='excel';
   const btn=document.getElementById('gbtn-office');
   btn.innerHTML='<div class="spin"></div> در حال ساخت...'; btn.disabled=true;
+  document.getElementById('office-img-preview').style.display='none';
+  window._officeData={type,imageUrl:null};
   try{
     const baseCtx=officeUploadedContent?('\n\n[محتوای پایه برای استفاده/ادامه/ویرایش]:\n'+officeUploadedContent):'';
     const pmap={word:'یک سند Word حرفه‌ای بنویس:\n'+prompt+baseCtx+'\nشامل: عنوان، مقدمه، بدنه اصلی، نتیجه‌گیری.',excel:'یک جدول Excel بساز:\n'+prompt+baseCtx+'\nهر ردیف با | جدا شود. ردیف اول هدر باشد.',ppt:'یک ارائه PowerPoint بساز:\n'+prompt+baseCtx+'\nبرای هر اسلاید: SLIDE: [عنوان] | [محتوا]'};
-    const txt=await callAI([{role:'user',content:pmap[type]||prompt}],'تو نویسنده حرفه‌ای اسناد هستی.',S.createMod||'luolaf3');
+
+    const textPromise=callDeepSeekDirect([{role:'user',content:pmap[type]||prompt}],'تو نویسنده حرفه‌ای اسناد هستی.');
+    const imagePromise=wantImage?genOfficeImage(prompt+', professional document illustration, high quality'):Promise.resolve(null);
+    const [txt,imageUrl]=await Promise.all([textPromise,imagePromise]);
+
+    if(!txt){btn.innerHTML='✨ ساخت با AI'; btn.disabled=false;return;} // خطای واقعی قبلاً toast شده - چیزی به‌جای پاسخ ساختگی نشان داده نمی‌شود
     document.getElementById('office-out').value=txt;
     document.getElementById('res-office').style.display='block';
-    window._officeData={type};
+    window._officeData={type,imageUrl};
+    if(imageUrl){
+      const pv=document.getElementById('office-img-preview');
+      pv.style.display='block';
+      pv.innerHTML='<img src="'+escHtml(imageUrl)+'" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--gb)">';
+    }
     genContentPrompt(prompt,'res-office');
   } catch(e){toast('خطا در اتصال','w');}
   btn.innerHTML='✨ ساخت با AI'; btn.disabled=false;
@@ -4283,7 +4338,7 @@ function parsePptSlides(txt){
 }
 function dlOffice(){
   if(!window._officeData){toast('ابتدا محتوا بسازید','w');return;}
-  const {type}=window._officeData;
+  const {type,imageUrl}=window._officeData;
   const txt=document.getElementById('office-out').value;
   if(!txt.trim()){toast('محتوا خالیه','w');return;}
   if(type==='excel'){
@@ -4295,16 +4350,22 @@ function dlOffice(){
     const pptx=new PptxGenJS();
     pptx.defineLayout({name:'ULIKI',width:10,height:5.63});
     pptx.layout='ULIKI';
-    parsePptSlides(txt).forEach(s=>{
+    const slides=parsePptSlides(txt);
+    slides.forEach((s,i)=>{
       const slide=pptx.addSlide();
       slide.background={color:'FFFFFF'};
-      slide.addText(s.title,{x:0.5,y:0.35,w:9,h:1,fontSize:26,bold:true,color:'1A3A5C',align:'right',rtlMode:true,fontFace:'Arial'});
-      slide.addText(s.body,{x:0.5,y:1.4,w:9,h:3.9,fontSize:15,color:'333333',align:'right',rtlMode:true,fontFace:'Arial',valign:'top'});
+      const hasImgHere=imageUrl&&i===0; // تصویر روی اسلاید اول قرار می‌گیرد
+      slide.addText(s.title,{x:0.5,y:0.35,w:hasImgHere?5.5:9,h:1,fontSize:26,bold:true,color:'1A3A5C',align:'right',rtlMode:true,fontFace:'Arial'});
+      slide.addText(s.body,{x:0.5,y:1.4,w:hasImgHere?5.5:9,h:3.9,fontSize:15,color:'333333',align:'right',rtlMode:true,fontFace:'Arial',valign:'top'});
+      if(hasImgHere){
+        try{slide.addImage({path:imageUrl,x:6.2,y:0.5,w:3.1,h:3.1});}catch(e){/* اگر لود تصویر از URL با خطا مواجه شد، اسلاید بدون تصویر تولید می‌شود نه اینکه کل فایل خراب شود */}
+      }
     });
     pptx.writeFile({fileName:'uliki.pptx'});
     toast('✅ فایل دانلود شد!');
   } else {
-    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}</style></head><body>'+txt.replace(/\n/g,'<br>')+'</body></html>';
+    const imgTag=imageUrl?('<img src="'+imageUrl+'" style="max-width:100%;border-radius:10px;margin-bottom:20px">'):'';
+    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}</style></head><body>'+imgTag+txt.replace(/\n/g,'<br>')+'</body></html>';
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'application/msword'}));a.download='uliki.doc';a.click();
     toast('✅ فایل دانلود شد!');
   }
