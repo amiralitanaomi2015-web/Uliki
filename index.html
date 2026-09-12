@@ -743,9 +743,13 @@ function togCap(t){
 
         <!-- VIDEO -->
         <div class="cpanel" id="cp-video">
-          <div class="warn-banner"><div class="wi">⚠️</div><div><div class="warn-banner-t">در حال توسعه — تیم LuoLaf</div><div class="warn-banner-s">این بخش فعلاً مخصوص سناریونویسی و تصاویر صحنه است.</div></div></div>
           <div class="ccard">
-            <h3>🎬 ساخت ویدیو</h3><p class="csub">AI صحنه‌ها را توصیف و تصویر می‌سازد</p>
+            <h3>🎬 ساخت ویدیو</h3><p class="csub" id="video-tier-desc">AI صحنه‌ها را توصیف و تصویر می‌سازد (سناریو + تصاویر صحنه)</p>
+            <div class="ig"><label class="lbl">نسخه</label><div class="chips" id="video-tier-chips">
+              <button class="chip on" onclick="selVideoTier('script',this)">📝 سناریو + تصاویر صحنه</button>
+              <button class="chip" onclick="selVideoTier('luma',this)">🎬 ویدیوی واقعی با Luma (حرفه‌ای/VIP)</button>
+            </div></div>
+            <div class="warn-banner" id="video-script-banner"><div class="wi">⚠️</div><div><div class="warn-banner-t">در حال توسعه — تیم LuoLaf</div><div class="warn-banner-s">این بخش فعلاً مخصوص سناریونویسی و تصاویر صحنه است.</div></div></div>
             <div class="ig"><label class="lbl">توضیف ویدیو</label><textarea class="ptarea" id="video-p" placeholder="مثال: ویدیو انیمیشنی درباره سفر فضایی..."></textarea></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div class="ig"><label class="lbl">سبک</label><select class="sel"><option>انیمیشن</option><option>واقع‌گرایانه</option><option>سینمایی</option></select></div>
@@ -2037,7 +2041,7 @@ let S = {
   feedPosts:[],
   feedComments:{},
   trialUsed: 0,
-  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq', imageTier:'beta'
+  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq', imageTier:'beta', videoTier:'script'
 };
 
 // ===== STORAGE =====
@@ -4050,17 +4054,26 @@ function selImageTier(tier,btn){
   document.getElementById('image-tier-desc').textContent=tier==='alpha'?'تصاویر با کیفیت بالا با FLUX AI':'تصاویر واقعی با Pollinations AI — رایگان';
   document.getElementById('image-beta-note').style.display=tier==='alpha'?'none':'block';
 }
+function selVideoTier(tier,btn){
+  S.videoTier=tier;
+  document.querySelectorAll('#video-tier-chips .chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('video-tier-desc').textContent=tier==='luma'?'ویدیوی واقعی تولیدشده با Luma AI — ویژه حساب‌های حرفه‌ای/VIP':'AI صحنه‌ها را توصیف و تصویر می‌سازد (سناریو + تصاویر صحنه)';
+  document.getElementById('video-script-banner').style.display=tier==='luma'?'none':'flex';
+}
 async function gen(type){
   if(S.creates<=0){toast('محدودیت تولید!','w');setTimeout(()=>nav('plans'),1500);return;}
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
   const isAlphaImage=(type==='image'&&S.imageTier==='alpha');
+  const isRealVideo=(type==='video'&&S.videoTier==='luma');
   const quotaResource={image:'image',video:'video',music:'music',code:'text',text:'text'}[type]||'text';
-  // برای Alpha/FLUX سهمیه را از قبل مصرف نمی‌کنیم — خود handleGenerateImageAlpha
-  // این کار را فقط بعد از موفقیت واقعی انجام می‌دهد (روی همان شمارنده)؛ مصرف
-  // دوباره اینجا باعث می‌شد هر تصویر Alpha دو واحد سهمیه مصرف کند.
-  if(!isAlphaImage&&!(await consumeQuota(quotaResource)))return;
+  // برای Alpha/FLUX و ویدیوی واقعی Luma سهمیه را از قبل مصرف نمی‌کنیم — خود
+  // هندلر سرور (handleGenerateImageAlpha / handleGenerateVideo) این کار را
+  // فقط بعد از موفقیت واقعی روی همان شمارنده انجام می‌دهد؛ مصرف دوباره اینجا
+  // باعث می‌شد هر تولید موفق، دو واحد سهمیه مصرف کند.
+  if(!isAlphaImage&&!isRealVideo&&!(await consumeQuota(quotaResource)))return;
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
@@ -4068,7 +4081,22 @@ async function gen(type){
   S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
-    if(isAlphaImage){
+    if(isRealVideo){
+      if(!API_CONFIGURED||!S.sessionToken){toast('برای ساخت ویدیوی واقعی با Luma باید وارد حساب شوید','w');if(btn){btn.innerHTML='🎬 ساخت ویدیو';btn.disabled=false;}return;}
+      // handleGenerateVideo سمت سرور به‌صورت همزمان تا پایان کار Luma صبر می‌کند
+      // و یک پاسخ نهایی برمی‌گرداند (نه یک job id برای poll جداگانه) — این دقیقاً
+      // همان قرارداد فعلی بک‌اند است، نه یک فرمت جدید ابداعی.
+      const res=await fetch(apiUrl('/generate/video'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt})});
+      const data=await res.json();
+      if(!res.ok||!data.ok||!data.videoUrl){
+        document.getElementById('video-out').innerHTML='<div style="color:#E74C3C;padding:14px;font-size:13px">❌ '+escHtml(data.error||('کد وضعیت '+res.status))+'</div>';
+        rb.classList.add('on');
+      } else {
+        document.getElementById('video-out').innerHTML='<video controls style="width:100%;border-radius:12px;display:block" src="'+escHtml(data.videoUrl)+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+escHtml(data.videoUrl)+'" target="_blank" download>⬇️ دانلود</a><button class="btn btng btnsm" onclick="pubContent(\'video\')">📤 انتشار</button></div>';
+        rb.classList.add('on');
+        toast('✅ ویدیو با Luma ساخته شد!');
+      }
+    } else if(isAlphaImage){
       if(!API_CONFIGURED||!S.sessionToken){toast('برای استفاده از Alpha/FLUX باید وارد حساب شوید','w');if(btn){btn.innerHTML='🖼️ ساخت تصویر';btn.disabled=false;}return;}
       const res=await fetch(apiUrl('/generate/image-alpha'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt})});
       const data=await res.json();
