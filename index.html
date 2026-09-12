@@ -759,7 +759,12 @@ function togCap(t){
         <!-- IMAGE -->
         <div class="cpanel" id="cp-image">
           <div class="ccard">
-            <h3>🖼️ ساخت تصویر</h3><p class="csub">تصاویر واقعی با Pollinations AI — رایگان</p>
+            <h3>🖼️ ساخت تصویر</h3><p class="csub" id="image-tier-desc">تصاویر واقعی با Pollinations AI — رایگان</p>
+            <div class="ig"><label class="lbl">نسخه</label><div class="chips" id="image-tier-chips">
+              <button class="chip on" onclick="selImageTier('beta',this)">🆓 Beta (Pollinations)</button>
+              <button class="chip" onclick="selImageTier('alpha',this)">⭐ Alpha (FLUX)</button>
+            </div>
+            <p id="image-beta-note" style="font-size:11px;color:var(--gray);margin-top:6px">توجه داشته باشید نسخه بتا کیفیت کمتری را برای تولید عکس ارائه می‌دهد. پیشنهاد می‌شود از نسخه پیشرفته یعنی آلفا استفاده کنید.</p></div>
             <div class="ig"><label class="lbl">توضیف تصویر</label><textarea class="ptarea" id="image-p" placeholder="مثال: منظره کوهستانی برفی در سحرگاه..."></textarea></div>
             <div class="ig"><label class="lbl">سبک</label><div class="chips">
               <button class="chip on" onclick="selChip(this)">🖼️ رئالیستی</button>
@@ -1055,7 +1060,7 @@ function togCap(t){
             <div class="setitem"><span class="setlbl">📊 تحلیل داده</span><div class="tog" id="plg-analyze" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">💻 اجرای کد</span><div class="tog" id="plg-exec" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🎨 تولید تصویر حین چت</span><div class="tog on" id="plg-inlineimg" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
-            <div class="setitem"><span class="setlbl">🧠 بهبود خودکار پیام با ZCODE قبل از ارسال</span><div class="tog" id="plg-zcode" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
+            <div class="setitem"><span class="setlbl">🧠 بهبود خودکار پیام با ZCODE قبل از ارسال (ویژه حساب‌های حرفه‌ای/VIP)</span><div class="tog" id="plg-zcode" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🔔 یادآوری هوشمند</span><div class="tog" id="plg-remind" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <p style="font-size:10px;color:var(--gray);margin-top:10px;line-height:1.7">توجه: «جستجوی وب»، «تحلیل داده» و «اجرای کد» فعلاً فقط رفتار پاسخ‌دهی متنی AI رو تنظیم می‌کنن (نه اجرای واقعی جدا‌سندباکس یا جستجوی زنده اینترنت).</p>
           </div>
@@ -2032,7 +2037,7 @@ let S = {
   feedPosts:[],
   feedComments:{},
   trialUsed: 0,
-  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq'
+  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq', imageTier:'beta'
 };
 
 // ===== STORAGE =====
@@ -3948,13 +3953,14 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 // ===== CALL AI =====
 async function callAI(msgs,sys,modKey){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return null;}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
   if(!res.ok||data.ok===false||!data.content?.[0]?.text){
-    return '❌ '+(data.error||('کد وضعیت '+res.status));
+    toast('❌ '+(data.error||('کد وضعیت '+res.status)),'w');
+    return null;
   }
   return data.content[0].text;
 }
@@ -4037,13 +4043,24 @@ function selCMod(m,btn){
   const labels={luolaf3:'Llama 3.3 — دقیق',uliki2:'Mixtral — سریع',uliki3:'Gemma2 — خلاق'};
   document.getElementById('cmodlbl').textContent=labels[m]||'';
 }
+function selImageTier(tier,btn){
+  S.imageTier=tier;
+  document.querySelectorAll('#image-tier-chips .chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('image-tier-desc').textContent=tier==='alpha'?'تصاویر با کیفیت بالا با FLUX AI':'تصاویر واقعی با Pollinations AI — رایگان';
+  document.getElementById('image-beta-note').style.display=tier==='alpha'?'none':'block';
+}
 async function gen(type){
   if(S.creates<=0){toast('محدودیت تولید!','w');setTimeout(()=>nav('plans'),1500);return;}
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
+  const isAlphaImage=(type==='image'&&S.imageTier==='alpha');
   const quotaResource={image:'image',video:'video',music:'music',code:'text',text:'text'}[type]||'text';
-  if(!(await consumeQuota(quotaResource)))return; // سرور تصمیم نهایی سهمیه را می‌گیرد
+  // برای Alpha/FLUX سهمیه را از قبل مصرف نمی‌کنیم — خود handleGenerateImageAlpha
+  // این کار را فقط بعد از موفقیت واقعی انجام می‌دهد (روی همان شمارنده)؛ مصرف
+  // دوباره اینجا باعث می‌شد هر تصویر Alpha دو واحد سهمیه مصرف کند.
+  if(!isAlphaImage&&!(await consumeQuota(quotaResource)))return;
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
@@ -4051,9 +4068,22 @@ async function gen(type){
   S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
-    if(type==='image'){
+    if(isAlphaImage){
+      if(!API_CONFIGURED||!S.sessionToken){toast('برای استفاده از Alpha/FLUX باید وارد حساب شوید','w');if(btn){btn.innerHTML='🖼️ ساخت تصویر';btn.disabled=false;}return;}
+      const res=await fetch(apiUrl('/generate/image-alpha'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt})});
+      const data=await res.json();
+      if(!data.ok){
+        document.getElementById('image-out').innerHTML='<div style="color:#E74C3C;padding:14px;font-size:13px">❌ '+escHtml(data.error||('کد وضعیت '+res.status))+'</div>';
+        rb.classList.add('on');
+      } else {
+        document.getElementById('image-out').innerHTML='<img src="'+escHtml(data.imageUrl)+'" style="width:100%;border-radius:12px;display:block"><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+escHtml(data.imageUrl)+'" target="_blank" download>⬇️ دانلود</a><button class="btn btng btnsm" onclick="pubContent(\'image\')">📤 انتشار</button></div>';
+        rb.classList.add('on');
+        toast('✅ تصویر با FLUX ساخته شد!');
+      }
+    } else if(type==='image'){
       const style=document.querySelector('#cp-image .chip.on')?.textContent?.trim()||'رئالیستی';
       const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 50 words, style:'+style+'): "'+prompt+'"'}],'',mk);
+      if(!ep){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const seed=Math.floor(Math.random()*99999);
       const imgUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(ep)+'?width=512&height=512&seed='+seed+'&nologo=true';
       document.getElementById('image-out').innerHTML='<div style="margin-bottom:10px"><div style="height:4px;background:var(--snow);border-radius:2px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));animation:imgld 15s linear forwards;border-radius:2px"></div></div></div><div id="img-con" style="border-radius:12px;overflow:hidden;background:var(--snow);min-height:260px;display:flex;align-items:center;justify-content:center;font-size:44px">🎨</div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btnp btnsm" id="dl-img-btn" data-url="'+imgUrl+'" onclick=\"window.open(this.dataset.url,\'_blank\')\">🔗 مشاهده</button><button class="btn btng btnsm" onclick=\"pubContent(\'image\')\">📤 انتشار</button></div>';
@@ -4070,12 +4100,14 @@ async function gen(type){
       const lang=document.querySelector('#cp-code .chips:first-of-type .chip.on')?.textContent?.trim()||'Python';
       const req=document.querySelector('#cp-code .chips:last-of-type .chip.on')?.textContent?.trim()||'نوشتن';
       const txt=await callAI([{role:'user',content:'زبان: '+lang+'\nنوع: '+req+'\nدرخواست: '+prompt+'\nکد کامل با کامنت فارسی بنویس.'}],'تو برنامه‌نویس حرفه‌ای هستی.',mk);
+      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       document.getElementById('code-out').innerHTML=fmtMsg(txt);
       rb.classList.add('on');
       genContentPrompt(lang+': '+prompt,'res-code');
     } else if(type==='text'){
       const ct=document.querySelector('#cp-text .chip.on')?.textContent?.trim()||'مقاله';
       const txt=await callAI([{role:'user',content:'نوع: '+ct+'\nموضوع: '+prompt+'\nیک '+ct+' حرفه‌ای به فارسی بنویس.'}],'',mk);
+      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       document.getElementById('text-out').innerHTML=fmtMsg(txt);
       rb.classList.add('on');
       genContentPrompt(ct+': '+prompt,'res-text');
@@ -4086,6 +4118,7 @@ async function gen(type){
       const dmap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120};
       const tsec=dmap[dur]||60;
       const txt=await callAI([{role:'user',content:'آهنگ کامل بساز:\nموضوع: '+prompt+'\nسبک: '+genre+'\nحال: '+mood+'\nمدت: '+dur+'\nفرمت:\nBPM: [عدد]\nعنوان: [عنوان]\nمتن:\n[ورس ۱]\n[کورس]\n[ورس ۲]'}],'تو آهنگساز حرفه‌ای هستی.',mk);
+      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const bpmM=txt.match(/BPM:\s*(\d+)/); const bpm=parseInt(bpmM?.[1])||90;
       const gname=genre.replace(/[^؀-ۿ\s]/g,'').trim();
       document.getElementById('music-out').innerHTML='<div style="background:#fff;border-radius:12px;padding:16px;border:1px solid var(--gb);font-size:13px;line-height:2;margin-bottom:12px">'+txt.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</div><div id="mplayer-box"></div>';
@@ -4094,6 +4127,7 @@ async function gen(type){
       genContentPrompt(genre+' موزیک: '+prompt,'res-music');
     } else if(type==='video'){
       const txt=await callAI([{role:'user',content:'اسکریپت ویدیو:\nموضوع: '+prompt+'\nفرمت:\nTITLE: [عنوان]\nSCENE_1: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_2: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_3: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_4: [توضیف انگلیسی] | [توضیف فارسی]\nMUSIC: [سبک]\nNARRATION: [روایت]'}],'',mk);
+      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const lines=txt.split('\n');
       let title='ویدیو AI',music='',narr=''; const scenes=[];
       for(const ln of lines){
@@ -4149,13 +4183,14 @@ async function genLipSync(){
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
     // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
+    if(!API_CONFIGURED||!S.sessionToken){toast('برای Lip Sync باید وارد حساب شوید','w');btn.innerHTML='🎭 ساخت ویدیو Lip Sync';btn.disabled=false;return;}
     const res=await fetch(WK+'/lipsync',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json',...authHeaders()},
       body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
     });
     const data=await res.json();
-    if(data.id){
+    if(res.ok&&data.id){
       // polling برای نتیجه
       document.getElementById('lipsync-out').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray)"><div class="spin" style="border-color:var(--graymd);border-top-color:var(--accent);width:30px;height:30px;margin:0 auto 12px"></div>در حال پردازش ویدیو... (۱-۲ دقیقه)</div>';
       document.getElementById('res-lipsync').classList.add('on');
@@ -4172,7 +4207,7 @@ async function genLipSync(){
 async function pollDID(id,attempt=0){
   if(attempt>30)return;
   try{
-    const res=await fetch(WK+'/lipsync/'+id);
+    const res=await fetch(WK+'/lipsync/'+id,{headers:authHeaders()});
     const data=await res.json();
     if(data.status==='done'&&data.result_url){
       document.getElementById('lipsync-out').innerHTML='<video controls style="width:100%;border-radius:12px" src="'+data.result_url+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+data.result_url+'" download target="_blank">⬇️ دانلود</a><button class="btn btng btnsm" onclick=\"pubContent(\'video\')\">📤 انتشار</button></div>';
@@ -5154,6 +5189,7 @@ function startV1v1Rec() {
       const reply = await callAI([{role:'user', content:txt}],
         'تو یک دستیار صوتی هوشمند هستی. پاسخ کوتاه، واضح و دوستانه بده. زبان پاسخ مطابق زبان کاربر باشد.',
         S.selMod || 'luolaf3');
+      if(!reply){ if(resp) resp.textContent = '❌ خطا در دریافت پاسخ'; return; }
       if(resp) resp.textContent = reply;
       speakText(reply);
     } catch(e) {
