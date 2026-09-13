@@ -437,7 +437,7 @@ function togCap(t){
       <button class="theme-toggle" id="themebtn" onclick="toggleTheme()" title="حالت شب/روز">🌙</button>
       <div style="position:relative">
         <button class="nbell" onclick="togNotif()">🔔<span class="ndot"></span></button>
-        <div class="npanel" id="npanel"><h4>اعلان‌ها</h4><div class="nitem"><div class="nic">🤖</div><div class="ntxt"><strong>تولید محتوا کامل شد</strong></div></div><div class="nitem"><div class="nic">❤️</div><div class="ntxt"><strong>Sara به پست شما لایک داد</strong></div></div></div>
+        <div class="npanel" id="npanel"><h4>اعلان‌ها</h4><div id="npanel-list"><div style="color:var(--gray);font-size:12px;padding:10px 0">در حال بارگذاری...</div></div></div>
       </div>
       <div class="wallet-pill" onclick="nav('wallet')">🪙<span id="wt">3</span> | 💎<span id="wc">3</span></div>
       <span class="planbdg" onclick="nav('plans')" id="planbdg">Rax</span>
@@ -3281,7 +3281,7 @@ function enterApp(name,email){
   loadAISettings(); updateStorageUsage(); refreshBusinessPanel(); loadConnectorSettings(); renderApiKeys(); renderActivityAnalytics();
   renderDashboard();
   syncUserToRanflr(users[email]);
-  syncWalletFromServer(); syncQuotaFromServer();
+  syncWalletFromServer(); syncQuotaFromServer(); loadNotificationsMine();
   applyRoleUI();
   nav('home');
   // شروع تبلیغات بعد از ۵ دقیقه
@@ -3438,7 +3438,31 @@ function nav(pg){
   if(pg==='parental')initParentalPage();
   closeSBMobile();
 }
-function togNotif(){document.getElementById('npanel').classList.toggle('on');}
+function togNotif(){
+  const p=document.getElementById('npanel');
+  const opening=!p.classList.contains('on');
+  p.classList.toggle('on');
+  if(opening)loadNotificationsMine();
+}
+async function loadNotificationsMine(){
+  const el=document.getElementById('npanel-list');
+  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px;padding:10px 0">برای مشاهده اعلان‌ها وارد حساب شوید</div>';return;}
+  try{
+    const r=await fetch(apiUrl('/notifications/mine'),{headers:authHeaders()});
+    const data=await r.json();
+    const list=data.notifications||[];
+    el.innerHTML=list.length?list.map(n=>`<div class="nitem" style="cursor:pointer" onclick="markNotifRead('${n.id}',this)"><div class="nic">${n.priority==='high'?'🔴':n.priority==='low'?'🔵':'🔔'}</div><div class="ntxt"><strong>${escHtml(n.title)}</strong><br><span style="font-weight:400;color:var(--gray)">${escHtml(n.message)}</span>${n.read?'':' <span style="color:var(--accent);font-size:9px">● جدید</span>'}</div></div>`).join(''):'<div style="color:var(--gray);font-size:12px;padding:10px 0">اعلانی ندارید</div>';
+    updateNotifBadge(list);
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px;padding:10px 0">خطا در بارگذاری اعلان‌ها</div>';}
+}
+async function markNotifRead(id,el){
+  if(el)el.querySelector('span[style*=accent]')?.remove();
+  try{ await fetch(apiUrl('/notifications/mark-read'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id})}); }catch(e){}
+}
+function updateNotifBadge(list){
+  const dot=document.querySelector('.nbell .ndot');
+  if(dot)dot.style.display=list.some(n=>!n.read)?'block':'none';
+}
 document.addEventListener('click',e=>{
   if(!e.target.closest('.nbell')&&!e.target.closest('.npanel'))document.getElementById('npanel').classList.remove('on');
 });
@@ -3447,15 +3471,23 @@ document.addEventListener('click',e=>{
 let walletTimer=null, msgResetTimer=null;
 function startWalletTimer(){
   stopWalletTimer();
-  const pl=PLAN_LIMITS[S.plan];
-  if(pl.wRate>=999)return;
-  walletTimer=setInterval(()=>{
-    const max=pl.wallet;
-    if(S.wallet.tokens<max)S.wallet.tokens=Math.min(max,S.wallet.tokens+pl.wRate);
-    if(S.wallet.credits<max)S.wallet.credits=Math.min(max,S.wallet.credits+pl.wRate);
-    sv('wallet_'+(S.user?.email||''),S.wallet);
-    updateUI();
-  },3600000);
+  // قبلاً هر ساعت مقدار جعلی به کیف پول محلی اضافه می‌کرد (بدون تأیید سرور) —
+  // این تداخل مستقیم با کیف پول واقعی سمت سرور داشت. حالا فقط یک‌بار در روز
+  // از endpoint واقعی و امن سرور (/wallet/daily-claim) درخواست می‌شود.
+  claimDailyCredits();
+  walletTimer=setInterval(claimDailyCredits,3600000); // هر ساعت چک می‌شود، اما سرور خودش مانع دریافت بیش از یک‌بار در روز می‌شود
+}
+async function claimDailyCredits(){
+  if(!API_CONFIGURED||!S.sessionToken)return;
+  try{
+    const r=await fetch(apiUrl('/wallet/daily-claim'),{method:'POST',headers:authHeaders()});
+    const data=await r.json();
+    if(data.ok&&data.granted>0){
+      S.wallet=data.wallet; updateUI();
+      toast('🎁 '+data.granted+' کردیت روزانه دریافت شد');
+    }
+    // اگر data.ok===false (مثلاً «امروز قبلاً دریافت کرده‌اید») به‌صورت بی‌صدا رد می‌شویم - این حالت عادی است، نه خطا
+  }catch(e){}
 }
 function stopWalletTimer(){if(walletTimer){clearInterval(walletTimer);walletTimer=null;}}
 function startMsgReset(){
@@ -3574,21 +3606,21 @@ function copyTokenCode(){
   const code=document.getElementById('token-code').textContent;
   navigator.clipboard.writeText(code).then(()=>toast('📋 کد کپی شد!'));
 }
-function redeemToken(){
+async function redeemToken(){
   const code=document.getElementById('redeem-code').value.trim().toUpperCase();
   if(!code.startsWith('ULK-')){toast('کد معتبر نیست','w');return;}
-  // تعیین نوع توکن از کد
-  const parts=code.split('-');
-  const typeMap={NRM:5,BAS:10,TEM:20,PRO:35,VIP:50};
-  const tokens=typeMap[parts[1]]||5;
-  S.wallet.tokens+=tokens;
-  sv('wallet_'+(S.user?.email||''),S.wallet);
-  updateUI();
-  closemod('redeem-modal');
-  toast('✅ '+tokens+' توکن به کیف پول اضافه شد 🪙');
-  document.getElementById('redeem-code').value='';
-  const h=document.getElementById('wallet-history');
-  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — فعال‌سازی توکن '+code.slice(0,12)+'... ('+tokens+' توکن) ✅</div>'+h.innerHTML;
+  if(!API_CONFIGURED||!S.sessionToken){toast('برای فعال‌سازی کد باید وارد حساب شوید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/token/redeem'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({code})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
+    S.wallet=data.wallet; updateUI();
+    closemod('redeem-modal');
+    toast('✅ '+data.tokens+' توکن به کیف پول اضافه شد 🪙 (تأیید سرور)');
+    document.getElementById('redeem-code').value='';
+    const h=document.getElementById('wallet-history');
+    if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — فعال‌سازی توکن '+code.slice(0,12)+'... ('+data.tokens+' توکن) ✅</div>'+h.innerHTML;
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 function buyTrialToken(){
   const used=ld('trial_'+(S.user?.email||''),0);
