@@ -370,7 +370,6 @@ function switchAuthTab(tab,el){
   var rf=document.getElementById('regf');
   if(lf)lf.classList.toggle('on',tab==='login');
   if(rf)rf.classList.toggle('on',tab==='reg');
-  if(tab==='reg'&&typeof resetCeoLoginUI==='function')resetCeoLoginUI();
 }
 function openmod(id){var el=document.getElementById(id);if(el)el.classList.add('on');}
 function closemod(id){var el=document.getElementById(id);if(el)el.classList.remove('on');}
@@ -395,16 +394,11 @@ function togCap(t){
       </div>
       <div class="aerr" id="aerr"></div>
       <div id="loginf" class="aform on">
-        <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="text" id="lemail" placeholder="example@email.com" onblur="silentCeoCheck()"></div>
-        <div class="ig" id="login-normal-pass"><label class="lbl">رمز عبور</label><input class="inp" type="password" id="lpass" placeholder="••••••••"></div>
-        <!-- این بخش به‌صورت پیش‌فرض مخفی است و فقط زمانی ظاهر می‌شود که سرور (نه فرانت‌اند) ایمیل واردشده را با GMAIL_ULIKI_CEO مطابقت داده باشد -->
-        <div class="ig" id="login-ceo-referral" style="display:none"><label class="lbl">کد معرف</label><input class="inp" id="lceo-referral" placeholder="کد معرف را وارد کنید"></div>
-        <div class="ig" id="login-ceo-cred" style="display:none"><label class="lbl">رمز/اعتبارنامه ویژه</label><input class="inp" type="password" id="lceo-credential" placeholder="رمز عبور حساب یا اعتبارنامه ویژه"></div>
+        <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="text" id="lemail" placeholder="example@email.com"></div>
+        <div class="ig"><label class="lbl">رمز عبور</label><input class="inp" type="password" id="lpass" placeholder="••••••••"></div>
         <div class="captcha-box" onclick="togCap('login')"><div class="captcha-check" id="cap-login-box"></div><span style="font-size:13px">من روبات نیستم</span><span style="margin-right:auto;font-size:18px">🤖</span></div>
-        <div id="login-turnstile" style="display:none;margin-bottom:12px"></div>
-        <button class="btn btnp" style="width:100%" id="login-submit-btn" onclick="doLogin()">ورود به Uliki</button>
+        <button class="btn btnp" style="width:100%" onclick="doLogin()">ورود به Uliki</button>
         <p style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="openmod('forgot-modal')" style="font-size:12px;color:var(--accent)">رمز عبورت رو فراموش کردی؟</a></p>
-        <p style="text-align:center;margin-top:6px"><a href="javascript:void(0)" onclick="openmod('code-login-modal')" style="font-size:12px;color:var(--accent)">📧 ورود با کد ایمیل</a></p>
         <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--gb)"></div><span style="font-size:11px;color:var(--gray)">یا</span><div style="flex:1;height:1px;background:var(--gb)"></div></div>
         <div id="gbtn-login" style="display:flex;justify-content:center"></div>
       </div>
@@ -437,7 +431,7 @@ function togCap(t){
       <button class="theme-toggle" id="themebtn" onclick="toggleTheme()" title="حالت شب/روز">🌙</button>
       <div style="position:relative">
         <button class="nbell" onclick="togNotif()">🔔<span class="ndot"></span></button>
-        <div class="npanel" id="npanel"><h4>اعلان‌ها</h4><div id="npanel-list"><div style="color:var(--gray);font-size:12px;padding:10px 0">در حال بارگذاری...</div></div></div>
+        <div class="npanel" id="npanel"><h4>اعلان‌ها</h4><div class="nitem"><div class="nic">🤖</div><div class="ntxt"><strong>تولید محتوا کامل شد</strong></div></div><div class="nitem"><div class="nic">❤️</div><div class="ntxt"><strong>Sara به پست شما لایک داد</strong></div></div></div>
       </div>
       <div class="wallet-pill" onclick="nav('wallet')">🪙<span id="wt">3</span> | 💎<span id="wc">3</span></div>
       <span class="planbdg" onclick="nav('plans')" id="planbdg">Rax</span>
@@ -464,12 +458,6 @@ function togCap(t){
         <div class="sbi" id="snav-wallet" onclick="nav('wallet')"><div class="sbic">💰</div>ولت</div>
         <div class="sbi" id="snav-projects" onclick="nav('projects');renderProjects()"><div class="sbic">📁</div>پروژه‌ها</div>
         <div class="sbi" id="snav-support" onclick="nav('support')"><div class="sbic">🎧</div>پشتیبانی</div>
-        <div class="sbi" id="snav-news" onclick="nav('news')"><div class="sbic">📰</div>اخبار</div>
-      </div>
-      <div class="sb-sec">
-        <div class="sb-lbl">توسعه‌دهندگان</div>
-        <div class="sbi" id="snav-devenv" onclick="nav('devenv')"><div class="sbic">🛠️</div>محیط توسعه‌دهندگان</div>
-        <div class="sbi" id="snav-admin" onclick="nav('admin')" style="display:none"><div class="sbic">🛡️</div>پنل مدیریت</div>
       </div>
       <div class="sb-sec">
         <div class="sb-lbl">بازی‌های آنلاین</div>
@@ -485,7 +473,6 @@ function togCap(t){
         <div class="sbi" id="snav-plans" onclick="nav('plans')"><div class="sbic">⭐</div>پلن‌ها</div>
         <div class="sbi" id="snav-dashboard" onclick="nav('dashboard')"><div class="sbic">📋</div>پنل کاربری</div>
         <div class="sbi" id="snav-profile" onclick="nav('profile')"><div class="sbic">👤</div>پروفایل</div>
-        <div class="sbi" id="snav-parental" onclick="nav('parental')"><div class="sbic">👨‍👩‍👧</div>کنترل والدین</div>
         <div class="sbi" onclick="doOut()"><div class="sbic">🚪</div>خروج</div>
       </div>
     </aside>
@@ -543,16 +530,11 @@ function togCap(t){
               <div class="chat-info"><h4 id="chatname">Uliki AI</h4><span><span class="odot"></span>آنلاین</span></div>
               <button class="voicebtn" style="margin-right:8px" title="تنظیمات هوش مصنوعی" onclick="nav('aisettings')">⚙️</button>
               <div style="margin-right:auto;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-                <div class="mod-sels" id="provider-sels">
-                  <button class="modsel on" id="prov-groq" onclick="selProvider('groq',this)">GROQ</button>
-                  <button class="modsel" id="prov-deepseek" onclick="selProvider('deepseek',this)">DeepSeek</button>
-                  <button class="modsel" id="prov-zcode" onclick="selProvider('zcode',this)">🔒 ZCODE</button>
-                </div>
                 <div class="ai-sels">
                   <button class="aisel on" id="ai-luolaf" onclick="selAI('luolaf',this)">🧠 Luolaf</button>
                   <button class="aisel" id="ai-uliki" onclick="selAI('uliki',this)">⚡ Uliki</button>
                 </div>
-                <div class="mod-sels" id="persona-sels">
+                <div class="mod-sels">
                   <button class="modsel on" id="mod-luolaf3" onclick="selMod('luolaf3',this)">Luolaf.3</button>
                   <button class="modsel" id="mod-uliki2" onclick="selMod('uliki2',this)">Uliki.2</button>
                   <button class="modsel" id="mod-uliki3" onclick="selMod('uliki3',this)">Uliki.3</button>
@@ -632,6 +614,10 @@ function togCap(t){
                   </div>
                   <div id="voice-status" style="font-size:12px;color:var(--gray);margin-bottom:10px">آماده گوش دادن</div>
                   <button onclick="startVoiceRec()" id="voice-rec-btn" class="btn btnp btnsm">🎤 شروع ضبط</button>
+                  <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:12px;cursor:pointer">
+                    <span>🔊 پاسخ صوتی هوش مصنوعی</span>
+                    <div class="tog" id="voice-reply-toggle" onclick="this.classList.toggle('on');sv('voiceReplyOn',this.classList.contains('on'))"></div>
+                  </label>
                 </div>
               </div>
               <!-- Upload Preview -->
@@ -656,7 +642,6 @@ function togCap(t){
                   <input type="file" id="folder-upload" webkitdirectory directory multiple style="display:none" onchange="handleUpload(this)">
                 </label>
                 <button class="voicebtn" id="voicebtn" onclick="togVoicePanel()" title="ورودی صوتی">🎤</button>
-                <button class="voicebtn" id="voice-reply-btn" onclick="toggleVoiceReply()" title="پخش پاسخ با صدای هوش‌مصنوعی (ElevenLabs)">🔇</button>
                 <button class="sendbtn" id="sendbtn" onclick="doSend()">➤</button>
               </div>
               <div style="display:flex;justify-content:space-between;margin-top:5px">
@@ -743,13 +728,9 @@ function togCap(t){
 
         <!-- VIDEO -->
         <div class="cpanel" id="cp-video">
+          <div class="warn-banner"><div class="wi">⚠️</div><div><div class="warn-banner-t">در حال توسعه — تیم LuoLaf</div><div class="warn-banner-s">این بخش فعلاً مخصوص سناریونویسی و تصاویر صحنه است.</div></div></div>
           <div class="ccard">
-            <h3>🎬 ساخت ویدیو</h3><p class="csub" id="video-tier-desc">AI صحنه‌ها را توصیف و تصویر می‌سازد (سناریو + تصاویر صحنه)</p>
-            <div class="ig"><label class="lbl">نسخه</label><div class="chips" id="video-tier-chips">
-              <button class="chip on" onclick="selVideoTier('script',this)">📝 سناریو + تصاویر صحنه</button>
-              <button class="chip" onclick="selVideoTier('luma',this)">🎬 ویدیوی واقعی با Luma (حرفه‌ای/VIP)</button>
-            </div></div>
-            <div class="warn-banner" id="video-script-banner"><div class="wi">⚠️</div><div><div class="warn-banner-t">در حال توسعه — تیم LuoLaf</div><div class="warn-banner-s">این بخش فعلاً مخصوص سناریونویسی و تصاویر صحنه است.</div></div></div>
+            <h3>🎬 ساخت ویدیو</h3><p class="csub">AI صحنه‌ها را توصیف و تصویر می‌سازد</p>
             <div class="ig"><label class="lbl">توضیف ویدیو</label><textarea class="ptarea" id="video-p" placeholder="مثال: ویدیو انیمیشنی درباره سفر فضایی..."></textarea></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div class="ig"><label class="lbl">سبک</label><select class="sel"><option>انیمیشن</option><option>واقع‌گرایانه</option><option>سینمایی</option></select></div>
@@ -763,12 +744,7 @@ function togCap(t){
         <!-- IMAGE -->
         <div class="cpanel" id="cp-image">
           <div class="ccard">
-            <h3>🖼️ ساخت تصویر</h3><p class="csub" id="image-tier-desc">تصاویر واقعی با Pollinations AI — رایگان</p>
-            <div class="ig"><label class="lbl">نسخه</label><div class="chips" id="image-tier-chips">
-              <button class="chip on" onclick="selImageTier('beta',this)">🆓 Beta (Pollinations)</button>
-              <button class="chip" onclick="selImageTier('alpha',this)">⭐ Alpha (FLUX)</button>
-            </div>
-            <p id="image-beta-note" style="font-size:11px;color:var(--gray);margin-top:6px">توجه داشته باشید نسخه بتا کیفیت کمتری را برای تولید عکس ارائه می‌دهد. پیشنهاد می‌شود از نسخه پیشرفته یعنی آلفا استفاده کنید.</p></div>
+            <h3>🖼️ ساخت تصویر</h3><p class="csub">تصاویر واقعی با Pollinations AI — رایگان</p>
             <div class="ig"><label class="lbl">توضیف تصویر</label><textarea class="ptarea" id="image-p" placeholder="مثال: منظره کوهستانی برفی در سحرگاه..."></textarea></div>
             <div class="ig"><label class="lbl">سبک</label><div class="chips">
               <button class="chip on" onclick="selChip(this)">🖼️ رئالیستی</button>
@@ -946,7 +922,7 @@ function togCap(t){
       <!-- OFFICE -->
       <div id="pg-office" class="pg" style="display:none">
         <h2 style="font-size:19px;font-weight:800;margin-bottom:6px">📄 Office AI</h2>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Word، Excel و PowerPoint حرفه‌ای — متن با DeepSeek، تصویر با FLUX ساخته می‌شود</p>
+        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Word، Excel و PowerPoint حرفه‌ای</p>
         <div class="office-tabs">
           <button class="office-tab on" id="ot-word" onclick="swOffice('word')">📝 Word</button>
           <button class="office-tab" id="ot-excel" onclick="swOffice('excel')">📊 Excel</button>
@@ -961,9 +937,6 @@ function togCap(t){
             <button class="btn btno btnsm" type="button" onclick="document.getElementById('office-upload').click()">انتخاب فایل پایه</button>
             <span id="office-upload-name" style="font-size:11px;color:var(--gray);margin-right:8px"></span>
           </div>
-          <label id="office-img-wrap" style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:10px">
-            <input type="checkbox" id="office-add-image"> 🖼️ افزودن یک تصویر مرتبط با FLUX (Alpha)
-          </label>
           <button class="genbtn" id="gbtn-office" onclick="genOffice()">✨ ساخت با AI</button>
         </div>
         <div class="resbox" id="res-office" style="display:none">
@@ -974,7 +947,6 @@ function togCap(t){
               <button class="btn btnp btnsm" onclick="dlOffice()">⬇️ دانلود فایل</button>
             </div>
           </div>
-          <div id="office-img-preview" style="display:none;margin-bottom:10px"></div>
           <textarea id="office-out" style="width:100%;white-space:pre-wrap;font-size:13px;line-height:1.8;max-height:400px;min-height:200px;overflow-y:auto;border:1px solid var(--gb);border-radius:10px;padding:12px;font-family:inherit"></textarea>
         </div>
       </div>
@@ -1064,7 +1036,6 @@ function togCap(t){
             <div class="setitem"><span class="setlbl">📊 تحلیل داده</span><div class="tog" id="plg-analyze" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">💻 اجرای کد</span><div class="tog" id="plg-exec" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🎨 تولید تصویر حین چت</span><div class="tog on" id="plg-inlineimg" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
-            <div class="setitem"><span class="setlbl">🧠 بهبود خودکار پیام با ZCODE قبل از ارسال (ویژه حساب‌های حرفه‌ای/VIP)</span><div class="tog" id="plg-zcode" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <div class="setitem"><span class="setlbl">🔔 یادآوری هوشمند</span><div class="tog" id="plg-remind" onclick="this.classList.toggle('on');saveAISettings()"></div></div>
             <p style="font-size:10px;color:var(--gray);margin-top:10px;line-height:1.7">توجه: «جستجوی وب»، «تحلیل داده» و «اجرای کد» فعلاً فقط رفتار پاسخ‌دهی متنی AI رو تنظیم می‌کنن (نه اجرای واقعی جدا‌سندباکس یا جستجوی زنده اینترنت).</p>
           </div>
@@ -1188,315 +1159,6 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
         </div>
       </div>
 
-      <!-- NEWS -->
-      <div id="pg-news" class="pg" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
-          <h2 style="font-size:19px;font-weight:800">📰 اخبار</h2>
-          <button class="btn btng btnsm" onclick="loadNews(true)">🔄 بروزرسانی</button>
-        </div>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:14px">آخرین اخبار — از طریق NewsData.io</p>
-        <div class="nav-search" style="max-width:none;margin-bottom:12px">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="news-search" placeholder="جستجو در اخبار..." onkeydown="if(event.key==='Enter'){newsSearchGo()}">
-        </div>
-        <div class="exfilts" id="news-cats">
-          <button class="exfilt on" onclick="newsCat(this,'')">همه</button>
-          <button class="exfilt" onclick="newsCat(this,'technology')">فناوری</button>
-          <button class="exfilt" onclick="newsCat(this,'business')">اقتصاد</button>
-          <button class="exfilt" onclick="newsCat(this,'science')">علم</button>
-          <button class="exfilt" onclick="newsCat(this,'world')">جهان</button>
-          <button class="exfilt" onclick="newsCat(this,'sports')">ورزش</button>
-        </div>
-        <label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:14px;cursor:pointer">
-          <div class="tog" id="news-fa-toggle" onclick="this.classList.toggle('on');loadNews(true)"></div>
-          فقط اخبار فارسی‌زبان
-        </label>
-        <div id="news-list" style="display:flex;flex-direction:column;gap:12px"></div>
-        <div style="text-align:center;margin-top:16px">
-          <button class="btn btno btnsm" id="news-more-btn" onclick="loadNews(false)" style="display:none">بارگذاری بیشتر</button>
-        </div>
-      </div>
-
-      <!-- DEVELOPER ENVIRONMENT -->
-      <div id="pg-devenv" class="pg" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:5px">
-          <h2 style="font-size:19px;font-weight:800">🛠️ محیط توسعه‌دهندگان</h2>
-          <span id="devenv-role-tag" style="font-size:11px;background:var(--snow);color:var(--accent2);padding:4px 12px;border-radius:50px;font-weight:700">نقش شما: کاربر عادی</span>
-        </div>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">به توسعه Uliki کمک کنید — کد را بررسی، اصلاح یا بهبود دهید و برای تیم ارسال کنید</p>
-        <div class="warn-banner">
-          <div class="wi">ℹ️</div>
-          <div>
-            <div class="warn-banner-t">فرآیند بررسی</div>
-            <div class="warn-banner-s">ارسال شما مستقیم روی نسخه اصلی اعمال نمی‌شود. تیم لیولاف/متخصصان کدنویسی ابتدا آن را بررسی و تست می‌کنند و در صورت تأیید در نسخه بعدی منتشر می‌شود.</div>
-          </div>
-        </div>
-        <div class="ctabs">
-          <button class="ctab on" id="dt-repo" onclick="swDevEnv('repo');loadRepoTree()" style="display:none">📦 مرورگر کد (زنده)</button>
-          <button class="ctab" id="dt-submit" onclick="swDevEnv('submit')">📤 ارسال تغییرات</button>
-          <button class="ctab" id="dt-mine" onclick="swDevEnv('mine');renderMySubmissions()">📋 ارسال‌های من</button>
-          <button class="ctab" id="dt-review" onclick="swDevEnv('review');loadAdminSubmissions()" style="display:none">✅ بررسی ارسال‌ها</button>
-        </div>
-
-        <div class="cpanel" id="dp-repo">
-          <div class="ccard">
-            <h3>📦 مخزن رسمی Uliki</h3>
-            <p class="csub">دسترسی مستقیم گیت‌هاب + مرورگر فایل زنده (ویژه نقش توسعه‌دهنده به بالا، سمت سرور بررسی می‌شود)</p>
-            <div style="background:var(--snow);border-radius:10px;padding:12px 14px;font-family:monospace;font-size:12px;direction:ltr;text-align:left;overflow-x:auto;margin-bottom:12px">github.com/amiralitanaomi2015-web/Uliki</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-              <a class="btn btnp btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki" target="_blank">🔗 مشاهده مخزن</a>
-              <a class="btn btno btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki/archive/refs/heads/main.zip" target="_blank">⬇️ دانلود کد (main.zip)</a>
-              <a class="btn btno btnsm" href="https://github.com/amiralitanaomi2015-web/Uliki/issues" target="_blank">🐞 گزارش باگ (Issues)</a>
-              <button class="btn btng btnsm" onclick="loadRepoTree()">🔄 بارگذاری ساختار فایل‌ها</button>
-            </div>
-            <div style="display:grid;grid-template-columns:260px 1fr;gap:12px;min-height:280px">
-              <div>
-                <input class="inp" id="repo-file-search" placeholder="جستجوی فایل..." style="margin-bottom:8px;font-size:12px" oninput="filterRepoTree(this.value)">
-                <div id="repo-tree" style="max-height:360px;overflow-y:auto;background:var(--snow);border-radius:10px;padding:8px;font-size:12px;direction:ltr;text-align:left"></div>
-              </div>
-              <div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                  <strong style="font-size:12px" id="repo-file-path">فایلی انتخاب نشده</strong>
-                  <button class="btn btng btnsm" onclick="copyTxt('repo-file-content')" style="display:none" id="repo-file-copy">📋 کپی</button>
-                </div>
-                <pre id="repo-file-content" style="max-height:360px;overflow:auto;background:#0d1117;color:#e6edf3;border-radius:10px;padding:14px;font-size:11px;line-height:1.7;direction:ltr;text-align:left;font-family:monospace">یک فایل را از لیست کنار انتخاب کنید</pre>
-              </div>
-            </div>
-          </div>
-          <div class="ccard">
-            <h3>🔀 گردش‌کار توسعه پیشنهادی</h3>
-            <div style="font-size:12px;line-height:2.3;color:var(--graydark)">
-              <div>۱. مخزن را فورک یا دانلود کنید (یا مستقیم از مرورگر بالا فایل‌ها را بررسی کنید).</div>
-              <div>۲. یک برنچ جدید بسازید (<code style="direction:ltr;display:inline-block">feature/*</code> یا <code style="direction:ltr;display:inline-block">bugfix/*</code>).</div>
-              <div>۳. تغییرات را اعمال و به‌صورت محلی تست کنید.</div>
-              <div>۴. از فرم «ارسال تغییرات» برای ثبت درخواست بررسی استفاده کنید.</div>
-              <div>۵. یک متخصص کدنویسی یا ادمین تغییرات را بررسی، تست و تأیید/رد می‌کند.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cpanel on" id="dp-submit">
-          <div class="ccard">
-            <h3>📤 فرم ارسال توسعه‌دهنده</h3>
-            <p class="csub">اطلاعات را کامل پر کنید — موارد ستاره‌دار الزامی است. حساب و ایمیل شما به‌صورت خودکار از جلسه فعلی ثبت می‌شود.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-              <div class="ig"><label class="lbl">نام *</label><input class="inp" id="dev-fname" placeholder="نام"></div>
-              <div class="ig"><label class="lbl">نام خانوادگی *</label><input class="inp" id="dev-lname" placeholder="نام خانوادگی"></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-              <div class="ig"><label class="lbl">کشور</label><input class="inp" id="dev-country" placeholder="ایران"></div>
-              <div class="ig"><label class="lbl">استان</label><input class="inp" id="dev-province" placeholder="اختیاری"></div>
-              <div class="ig"><label class="lbl">شهر</label><input class="inp" id="dev-city" placeholder="اختیاری"></div>
-            </div>
-            <div class="ig"><label class="lbl">هدف توسعه *</label><input class="inp" id="dev-goal" placeholder="مثلاً: رفع باگ، افزودن قابلیت، بهینه‌سازی..."></div>
-            <div class="ig"><label class="lbl">شرح دقیق تغییر *</label><textarea class="ptarea" id="dev-changedesc" placeholder="دقیقاً چه چیزی تغییر کرد؟"></textarea></div>
-            <div class="ig"><label class="lbl">شرح فنی *</label><textarea class="ptarea" id="dev-techdesc" placeholder="چرا این تغییر لازم بود و چه بهبودی ایجاد می‌کند؟"></textarea></div>
-            <div class="ig"><label class="lbl">کد تغییر/جدید *</label><textarea class="ptarea" id="dev-code" style="min-height:160px;font-family:monospace;direction:ltr;text-align:left" placeholder="// کد خود را اینجا paste کنید"></textarea></div>
-            <div class="ig"><label class="lbl">GitHub پروفایل</label><input class="inp" id="dev-github" placeholder="https://github.com/username"></div>
-            <div class="ig"><label class="lbl">مستندات API (در صورت افزودن API)</label><textarea class="ptarea" id="dev-apidocs" style="min-height:80px" placeholder="Endpoint، پارامترها، نمونه پاسخ..."></textarea></div>
-            <div class="ig"><label class="lbl">یادداشت‌های توسعه</label><textarea class="ptarea" id="dev-notes" style="min-height:70px" placeholder="نکات اضافه برای تیم بررسی"></textarea></div>
-            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin:10px 0">
-              <input type="checkbox" id="dev-agree"> تأیید می‌کنم این کد مخرب نیست و برای بهبود Uliki ارسال می‌شود.
-            </label>
-            <button class="genbtn" onclick="submitDevChange()">📤 ارسال برای بررسی</button>
-          </div>
-        </div>
-
-        <div class="cpanel" id="dp-mine">
-          <div id="dev-mine-list" style="display:flex;flex-direction:column;gap:10px"></div>
-        </div>
-
-        <div class="cpanel" id="dp-review">
-          <div class="ccard">
-            <h3>✅ صف بررسی ارسال‌های توسعه‌دهندگان</h3>
-            <p class="csub">فقط متخصص کدنویسی، ادمین و رئیس هیئت‌مدیره — تصمیم روی سرور با نقش جلسه شما بررسی می‌شود</p>
-            <div id="dev-review-list" style="display:flex;flex-direction:column;gap:10px"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PARENTAL CONTROLS -->
-      <div id="pg-parental" class="pg" style="display:none">
-        <h2 style="font-size:19px;font-weight:800;margin-bottom:5px">👨‍👩‍👧 کنترل والدین</h2>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">محدودیت‌های استفاده فرزندتان از Uliki را مدیریت کنید</p>
-        <div id="parental-locked-view" class="ccard" style="text-align:center;padding:34px 20px">
-          <div style="font-size:38px;margin-bottom:10px">🔒</div>
-          <p style="font-size:13px;color:var(--graydark);margin-bottom:16px" id="parental-lock-msg">برای مشاهده و تغییر تنظیمات، رمز والدین را وارد کنید</p>
-          <div style="max-width:260px;margin:0 auto;display:flex;gap:8px">
-            <input class="inp" type="password" id="parental-pin-inp" placeholder="رمز والدین" onkeydown="if(event.key==='Enter')unlockParental()">
-            <button class="btn btnp btnsm" onclick="unlockParental()">ورود</button>
-          </div>
-          <p style="font-size:11px;color:var(--gray);margin-top:10px" id="parental-setup-hint"></p>
-        </div>
-        <div id="parental-panel" style="display:none">
-          <div class="profgrid">
-            <div class="profsec">
-              <h4>⏱️ محدودیت زمانی</h4>
-              <div class="ig"><label class="lbl">حداکثر استفاده روزانه (دقیقه)</label><input class="inp" type="number" id="par-daily-min" value="120" min="0"></div>
-              <div class="ig"><label class="lbl">بازه مجاز استفاده</label><div style="display:flex;gap:8px;align-items:center"><input type="time" class="inp" id="par-from"><span>تا</span><input type="time" class="inp" id="par-to"></div></div>
-            </div>
-            <div class="profsec">
-              <h4>🔐 مجوزها</h4>
-              <div class="setitem"><span class="setlbl">چت متنی</span><div class="tog on" id="par-chat"></div></div>
-              <div class="setitem"><span class="setlbl">چت صوتی</span><div class="tog" id="par-voice"></div></div>
-              <div class="setitem"><span class="setlbl">افزودن دوست</span><div class="tog on" id="par-friend"></div></div>
-              <div class="setitem"><span class="setlbl">آپلود محتوا</span><div class="tog" id="par-upload"></div></div>
-              <div class="setitem"><span class="setlbl">خرید داخل پلتفرم</span><div class="tog" id="par-purchase"></div></div>
-            </div>
-            <div class="profsec">
-              <h4>🎮 دسترسی بازی</h4>
-              <div class="setitem"><span class="setlbl">Hugy</span><div class="tog on" id="par-hugy"></div></div>
-              <div class="setitem"><span class="setlbl">Uli</span><div class="tog on" id="par-uli"></div></div>
-              <div class="ig" style="margin-top:10px"><label class="lbl">حداکثر رده سنی محتوا</label><select class="inp" id="par-agerating"><option value="all">مناسب همه سنین</option><option value="7">۷+</option><option value="9" selected>۹+</option><option value="13">۱۳+</option></select></div>
-            </div>
-            <div class="profsec">
-              <h4>📊 مشاهده فعالیت</h4>
-              <div id="par-activity" style="font-size:12px;color:var(--graydark);line-height:2"></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:14px">
-            <button class="btn btnp" onclick="saveParentalSettings()">💾 ذخیره تنظیمات</button>
-            <button class="btn btng" onclick="changeParentalPin()">🔑 تغییر رمز والدین</button>
-            <button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C;border:1px solid #FFCCCC" onclick="lockParental()">🔒 قفل کردن</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ADMIN DASHBOARD -->
-      <div id="pg-admin" class="pg" style="display:none">
-        <h2 style="font-size:19px;font-weight:800;margin-bottom:5px">🛡️ پنل مدیریت</h2>
-        <p style="color:var(--gray);font-size:13px;margin-bottom:16px">دسترسی و اعتبارسنجی همه‌ی اقدامات این صفحه کاملاً سمت سرور بررسی می‌شود — نمایش این صفحه فقط ظاهری است</p>
-        <div id="admin-denied" class="ccard" style="display:none;text-align:center;padding:30px">
-          <div style="font-size:34px;margin-bottom:8px">🔒</div>
-          <p style="font-size:13px;color:var(--graydark)">حساب شما دسترسی ادمین ندارد — این صفحه فقط برای Admin/Chairman قابل استفاده است.</p>
-        </div>
-        <div id="admin-content" style="display:none">
-          <div class="ctabs">
-            <button class="ctab on" id="at-overview" onclick="swAdmin('overview')">📊 نمای کلی</button>
-            <button class="ctab" id="at-users" onclick="swAdmin('users')">👥 کاربران</button>
-            <button class="ctab" id="at-notif" onclick="swAdmin('notif');loadScheduledNotifications()">🔔 اعلان‌ها</button>
-            <button class="ctab" id="at-wallet" onclick="swAdmin('wallet');loadTokenCodes()">💰 کیف‌پول و توکن</button>
-            <button class="ctab" id="at-audit" onclick="swAdmin('audit');loadAuditLog()">📜 گزارش رخدادها</button>
-          </div>
-
-          <!-- OVERVIEW -->
-          <div class="cpanel on" id="ap-overview">
-            <div class="ccard">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <h3 style="margin:0">📊 وضعیت پلتفرم</h3>
-                <button class="btn btng btnsm" onclick="loadPlatformStatus()">🔄 بروزرسانی</button>
-              </div>
-              <div id="admin-status-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px"></div>
-            </div>
-            <div class="ccard">
-              <h3>📤 صف بررسی ارسال‌های توسعه‌دهندگان</h3>
-              <p class="csub">همان صف موجود در محیط توسعه‌دهندگان</p>
-              <button class="btn btno btnsm" onclick="nav('devenv');setTimeout(()=>{swDevEnv('review');loadAdminSubmissions();},100)">📋 باز کردن صف بررسی</button>
-            </div>
-          </div>
-
-          <!-- USERS -->
-          <div class="cpanel" id="ap-users">
-            <div class="ccard">
-              <h3>🔍 جستجوی کاربر</h3>
-              <div style="display:flex;gap:8px;margin-bottom:10px">
-                <input class="inp" id="admin-search-email" placeholder="ایمیل کاربر" style="flex:1">
-                <button class="btn btnp btnsm" onclick="adminLookupUser()">جستجو</button>
-              </div>
-              <div id="admin-user-result"></div>
-            </div>
-            <div class="ccard">
-              <h3>🎚️ تغییر نقش کاربر</h3>
-              <div class="ig"><label class="lbl">ایمیل کاربر</label><input class="inp" id="admin-target-email" placeholder="user@example.com"></div>
-              <div class="ig"><label class="lbl">نقش جدید</label><select class="inp" id="admin-target-role">
-                <option value="user">کاربر عادی</option>
-                <option value="professional">کاربر حرفه‌ای</option>
-                <option value="developer">توسعه‌دهنده</option>
-                <option value="coding_specialist">متخصص کدنویسی</option>
-                <option value="admin">ادمین</option>
-                <option value="chairman">رئیس هیئت‌مدیره</option>
-              </select></div>
-              <button class="btn btnp btnsm" style="width:100%" onclick="setUserRole()">💾 اعمال نقش</button>
-              <p style="font-size:10px;color:var(--gray);margin-top:8px">توجه: فقط Chairman می‌تواند نقش Admin یا Chairman اختصاص دهد؛ Admin فقط نقش‌های پایین‌تر را می‌تواند تغییر دهد (سرور این محدودیت را اجرا می‌کند).</p>
-            </div>
-          </div>
-
-          <!-- NOTIFICATIONS -->
-          <div class="cpanel" id="ap-notif">
-            <div class="ccard">
-              <h3>📢 ارسال اعلان</h3>
-              <div class="ig"><label class="lbl">عنوان</label><input class="inp" id="notif-title" placeholder="عنوان اعلان"></div>
-              <div class="ig"><label class="lbl">متن</label><textarea class="ptarea" id="notif-message" style="min-height:70px" placeholder="متن اعلان"></textarea></div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="ig"><label class="lbl">مخاطب</label><select class="inp" id="notif-audience" onchange="onNotifAudienceChange()">
-                  <option value="all">همه کاربران</option>
-                  <option value="role">بر اساس نقش</option>
-                  <option value="user">یک کاربر خاص</option>
-                </select></div>
-                <div class="ig"><label class="lbl">اولویت</label><select class="inp" id="notif-priority"><option value="normal">عادی</option><option value="low">کم</option><option value="high">فوری</option></select></div>
-              </div>
-              <div class="ig" id="notif-role-wrap" style="display:none"><label class="lbl">نقش هدف</label><select class="inp" id="notif-role"><option value="user">کاربر عادی</option><option value="professional">حرفه‌ای</option><option value="developer">توسعه‌دهنده</option><option value="coding_specialist">متخصص کدنویسی</option></select></div>
-              <div class="ig" id="notif-email-wrap" style="display:none"><label class="lbl">ایمیل کاربر هدف</label><input class="inp" id="notif-email" placeholder="user@example.com"></div>
-              <div class="ig"><label class="lbl">زمان ارسال (خالی = همین حالا)</label><input class="inp" type="datetime-local" id="notif-schedule"></div>
-              <button class="genbtn" onclick="createNotification()">📢 ارسال / زمان‌بندی</button>
-            </div>
-            <div class="ccard">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <h3 style="margin:0">⏳ اعلان‌های زمان‌بندی‌شده</h3>
-                <button class="btn btng btnsm" onclick="loadScheduledNotifications()">🔄 بروزرسانی</button>
-              </div>
-              <div id="admin-scheduled-list" style="display:flex;flex-direction:column;gap:8px"></div>
-            </div>
-          </div>
-
-          <!-- WALLET / TOKEN -->
-          <div class="cpanel" id="ap-wallet">
-            <div class="ccard">
-              <h3>🎟️ صدور کد توکن قابل استفاده</h3>
-              <p class="csub">کد به‌صورت تصادفی و امن سمت سرور ساخته می‌شود — مقدار توکن را شما مشخص می‌کنید، نه کاربر</p>
-              <div class="ig"><label class="lbl">مقدار توکن</label><input class="inp" type="number" id="tc-amount" placeholder="مثلاً 50" min="1" max="10000"></div>
-              <div class="ig"><label class="lbl">یادداشت (اختیاری)</label><input class="inp" id="tc-note" placeholder="مثلاً: جبران خرید سفارش #123"></div>
-              <button class="genbtn" onclick="issueTokenCode()">🎟️ صدور کد جدید</button>
-              <div id="tc-new-code-box" style="display:none;margin-top:12px;background:var(--snow);border-radius:10px;padding:14px;text-align:center">
-                <div style="font-size:11px;color:var(--gray);margin-bottom:6px">این کد فقط همین یک‌بار نمایش داده می‌شود — الان کپی کنید</div>
-                <div id="tc-new-code" style="font-family:monospace;font-size:16px;font-weight:800;letter-spacing:2px"></div>
-                <button class="btn btng btnsm" style="margin-top:8px" onclick="copyTxt('tc-new-code')">📋 کپی</button>
-              </div>
-            </div>
-            <div class="ccard">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <h3 style="margin:0">📋 کدهای صادرشده</h3>
-                <button class="btn btng btnsm" onclick="loadTokenCodes()">🔄 بروزرسانی</button>
-              </div>
-              <div id="tc-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto"></div>
-            </div>
-            <div class="ccard">
-              <h3>💳 تأیید خرید / افزودن دستی به کیف‌پول</h3>
-              <p class="csub">برای خریدهای تأییدشده دستی (مثلاً بعد از بررسی رسید پرداخت)</p>
-              <div class="ig"><label class="lbl">ایمیل کاربر</label><input class="inp" id="wc-email" placeholder="user@example.com"></div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div class="ig"><label class="lbl">نوع</label><select class="inp" id="wc-kind"><option value="credits">کردیت</option><option value="tokens">توکن</option></select></div>
-                <div class="ig"><label class="lbl">مقدار</label><input class="inp" type="number" id="wc-amount" min="1"></div>
-              </div>
-              <div class="ig"><label class="lbl">دلیل / شماره سفارش (برای جلوگیری از افزودن تکراری)</label><input class="inp" id="wc-reason" placeholder="مثلاً: سفارش #123"></div>
-              <button class="genbtn" onclick="approveWalletCredit()">💳 تأیید و افزودن به کیف‌پول</button>
-              <div id="wc-result" style="margin-top:10px;font-size:12px"></div>
-            </div>
-          </div>
-
-          <!-- AUDIT -->
-          <div class="cpanel" id="ap-audit">
-            <div class="ccard">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <h3 style="margin:0">📜 گزارش رخدادها (Audit Log)</h3>
-                <button class="btn btng btnsm" onclick="loadAuditLog()">🔄 بروزرسانی</button>
-              </div>
-              <div id="admin-audit-list" style="display:flex;flex-direction:column;gap:6px;max-height:500px;overflow-y:auto"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- ABOUT US -->
       <div id="pg-about" class="pg" style="display:none">
         <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">ℹ️ درباره ما</h2>
@@ -1562,16 +1224,6 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
       <!-- HUGY (COMING SOON) -->
       <div id="pg-hugy" class="pg" style="display:none">
-        <div id="hugy-restricted-view" class="ccard" style="display:none;text-align:center;padding:40px 20px">
-          <div style="font-size:40px;margin-bottom:12px">🎮</div>
-          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">Hugy فعلاً یک نسخه دموست</h3>
-          <p style="font-size:13px;color:var(--graydark);line-height:1.9;max-width:420px;margin:0 auto 14px">
-            تیم ما سخت در حال تلاش روی این بازی است، لطفاً صبور باشید 🙏<br>
-            در حال حاضر Hugy فقط برای کاربران VIP در دسترس است.
-          </p>
-          <button class="btn btnp btnsm" onclick="nav('plans')">👑 مشاهده پلن VIP</button>
-        </div>
-        <div id="hugy-game-view" style="display:none">
         <div class="ccard" style="padding:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <h2 style="font-size:16px;font-weight:800">🎮 Hugy <span class="betabdg">بتا</span></h2>
@@ -1589,21 +1241,10 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
           </div>
           <p style="font-size:10px;color:var(--gray);margin-top:8px">دایره‌ی پایین‌راست: راه رفتن Uli · 🎒 بالا‌راست: کیف · روی وسایل دوبار کلیک کن برای برداشتن</p>
         </div>
-        </div>
       </div>
 
       <!-- ULI (COMING SOON) -->
       <div id="pg-uli" class="pg" style="display:none">
-        <div id="uli-restricted-view" class="ccard" style="display:none;text-align:center;padding:40px 20px">
-          <div style="font-size:40px;margin-bottom:12px">🚧</div>
-          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">Uli در حال توسعه است</h3>
-          <p style="font-size:13px;color:var(--graydark);line-height:1.9;max-width:420px;margin:0 auto 14px">
-            این بازی هنوز کامل نشده و فعلاً فقط برای کاربران حرفه‌ای (Professional)، VIP و نقش‌های بالاتر باز است.
-            این محدودیت روی سرور اعمال می‌شود، نه فقط در ظاهر صفحه.
-          </p>
-          <button class="btn btnp btnsm" onclick="nav('plans')">⭐ مشاهده پلن‌ها</button>
-        </div>
-        <div id="uli-game-view" style="display:none">
         <div class="ccard">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:8px">
             <h2 style="font-size:18px;font-weight:800">🩵 Uli <span class="betabdg">بتا</span></h2>
@@ -1640,7 +1281,6 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
           </div>
           <div style="margin-top:12px;background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--graydark)" id="uli-status">Uli امروز حالش خوبه! 😊</div>
         </div>
-        </div>
       </div>
 
     </main>
@@ -1676,6 +1316,80 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
     <div id="uli-closet-list" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
   </div>
 </div>
+
+<!-- ADMIN / BOSS PANEL -->
+<div id="adminApp" class="scr" style="display:none;background:#0F1720;min-height:100vh;color:#fff">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#141F2B;border-bottom:1px solid #22303D">
+    <div style="font-weight:800;font-size:15px">👑 پنل مدیریت Uliki <span id="admin-role-badge" style="font-size:10px;background:#4FA8D5;padding:2px 10px;border-radius:50px;margin-right:8px"></span></div>
+    <button class="btn btnsm" style="background:#E74C3C;color:#fff;border:none" onclick="adminLogout()">خروج</button>
+  </div>
+  <div style="display:flex;min-height:calc(100vh - 54px)">
+    <div style="width:200px;background:#141F2B;padding:16px 10px;flex-shrink:0">
+      <div style="font-size:11px;color:#7C93A8;margin:6px 10px">کنترل</div>
+      <div class="admin-nav-item on" onclick="adminNav('users',this)">👥 کاربران</div>
+      <div class="admin-nav-item" onclick="adminNav('purchases',this)">💳 خریدها</div>
+      <div class="admin-nav-item" onclick="adminNav('announce',this)">📢 اعلان‌ها</div>
+      <div class="admin-nav-item" onclick="adminNav('sections',this)">🚫 بخش‌های مسدود</div>
+      <div class="admin-nav-item" onclick="adminNav('status',this)">📊 وضعیت</div>
+      <div style="font-size:11px;color:#7C93A8;margin:14px 10px 6px">تنظیمات</div>
+      <div class="admin-nav-item" onclick="adminNav('roles',this)">🎖️ نقش‌ها</div>
+      <div class="admin-nav-item" onclick="adminNav('lock',this)">🔒 قفل پلتفرم</div>
+    </div>
+    <div style="flex:1;padding:24px;overflow-y:auto">
+      <div id="admin-panel-users">
+        <h3 style="margin-bottom:14px">👥 مدیریت کاربران</h3>
+        <div id="admin-users-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div id="admin-panel-purchases" style="display:none">
+        <h3 style="margin-bottom:14px">💳 رسیدگی به خریدها</h3>
+        <div id="admin-purchases-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div id="admin-panel-announce" style="display:none">
+        <h3 style="margin-bottom:14px">📢 ارسال اعلان</h3>
+        <textarea class="inp" id="admin-announce-text" placeholder="متن اعلان..." style="width:100%;min-height:80px;margin-bottom:10px"></textarea>
+        <input class="inp" id="admin-announce-emails" placeholder="ایمیل‌های خاص با کاما جدا (خالی = همه کاربران)" style="width:100%;margin-bottom:10px">
+        <label style="display:block;font-size:12px;margin-bottom:6px">زمان‌بندی ارسال (اختیاری):</label>
+        <input class="inp" type="datetime-local" id="admin-announce-time" style="width:100%;margin-bottom:10px">
+        <button class="btn btnp" onclick="adminSendAnnounce()">ارسال</button>
+        <h4 style="margin:20px 0 10px">⏰ اعلان‌های زمان‌بندی‌شده</h4>
+        <div id="admin-scheduled-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div id="admin-panel-sections" style="display:none">
+        <h3 style="margin-bottom:14px">🚫 مسدودسازی بخش‌ها</h3>
+        <p style="font-size:12px;color:#7C93A8;margin-bottom:14px">بخش‌های مسدود برای کاربر معمولی غیرقابل‌دسترسن؛ کاربر حرفه‌ای/VIP/ادمین همچنان دسترسی دارن</p>
+        <div id="admin-sections-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div id="admin-panel-status" style="display:none">
+        <h3 style="margin-bottom:14px">📊 وضعیت پلتفرم</h3>
+        <div id="admin-status-box" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px"></div>
+      </div>
+      <div id="admin-panel-roles" style="display:none">
+        <h3 style="margin-bottom:14px">🎖️ تخصیص نقش</h3>
+        <input class="inp" id="admin-role-email" placeholder="ایمیل کاربر" style="width:100%;margin-bottom:10px">
+        <select class="inp" id="admin-role-select" style="width:100%;margin-bottom:10px">
+          <option value="user">کاربر عادی</option>
+          <option value="pro_user">کاربر حرفه‌ای</option>
+          <option value="developer">دولوپر</option>
+          <option value="code_specialist">متخصص کدنویسی</option>
+          <option value="admin">ادمین</option>
+        </select>
+        <button class="btn btnp" onclick="adminSetRole()">اعمال نقش</button>
+      </div>
+      <div id="admin-panel-lock" style="display:none">
+        <h3 style="margin-bottom:14px">🔒 قفل کل پلتفرم</h3>
+        <p style="font-size:12px;color:#7C93A8;margin-bottom:14px">وقتی قفل باشه، فقط ادمین/رئیس می‌تونن وارد بشن</p>
+        <button class="btn btnp" id="admin-lock-btn" onclick="adminTogglePlatformLock()">در حال بارگذاری...</button>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+.admin-nav-item{padding:10px 12px;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:2px;color:#C4D3E0}
+.admin-nav-item:hover{background:#1C2A38}
+.admin-nav-item.on{background:#2D8FBF;color:#fff}
+.admin-row{background:#141F2B;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.blockedbdg{background:#E74C3C;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:50px;margin-right:6px}
+</style>
 
 <div class="moverlay" id="welcome-modal">
   <div class="modal" style="background:#fff;color:#111;max-width:520px">
@@ -1717,6 +1431,16 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
   </div>
 </div>
 
+<div class="moverlay" id="verify-email-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closemod('verify-email-modal')">✕</button>
+    <h3>📧 تأیید ایمیل</h3>
+    <p class="msub">کد ۶ رقمی ارسال‌شده به <strong id="verify-email-addr"></strong> رو وارد کن</p>
+    <div class="ig"><label class="lbl">کد تأیید</label><input class="inp" id="verify-email-code" placeholder="۶ رقم" maxlength="6"></div>
+    <button class="btn btnp" style="width:100%;margin-top:6px" onclick="confirmRegVerify()">تأیید و ادامه</button>
+    <p style="text-align:center;margin-top:10px"><a href="javascript:void(0)" onclick="resendRegCode()" style="font-size:12px;color:var(--accent)">کد رو دریافت نکردی؟ دوباره بفرست</a></p>
+  </div>
+</div>
 <div class="moverlay" id="forgot-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('forgot-modal')">✕</button>
@@ -1735,25 +1459,6 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
   </div>
 </div>
 
-<!-- ورود با کد ایمیل (بدون رمز عبور) -->
-<div class="moverlay" id="code-login-modal">
-  <div class="modal">
-    <button class="mclose" onclick="closemod('code-login-modal')">✕</button>
-    <h3>📧 ورود با کد ایمیل</h3>
-    <div id="cl-step1">
-      <p class="msub">به‌جای رمز عبور، یک کد ۶ رقمی به ایمیلت ارسال می‌شود</p>
-      <div class="ig"><label class="lbl">ایمیل</label><input class="inp" type="email" id="cl-email" placeholder="email@example.com"></div>
-      <button class="btn btnp" style="width:100%;margin-top:6px" onclick="sendLoginCode()">ارسال کد</button>
-    </div>
-    <div id="cl-step2" style="display:none">
-      <p class="msub">کد ارسال‌شده به ایمیلت را وارد کن (تا ۵ دقیقه معتبر است)</p>
-      <div class="ig"><label class="lbl">کد ورود</label><input class="inp" id="cl-code" placeholder="۶ رقم"></div>
-      <button class="btn btnp" style="width:100%;margin-top:6px" onclick="verifyLoginCode()">ورود</button>
-    </div>
-  </div>
-</div>
-
-<!-- تأیید هویت CEO — واقعی و سمت سرور، بدون شمارش‌معکوس/کلید ترکیبی/صفحه اتهام‌زننده -->
 <div class="moverlay" id="payhistory-modal">
   <div class="modal">
     <button class="mclose" onclick="closemod('payhistory-modal')">✕</button>
@@ -1953,7 +1658,7 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
 <script>
 // ===== CONFIG =====
-const WK = 'https://uliki.amiralitanaomi2015.workers.dev'; // آدرس Worker واقعی شما - قبلاً خالی بود که باعث نشان قرمز "آدرس API تنظیم نشده" می‌شد
+const WK = 'https://uliki.amiralitanaomi2015.workers.dev'; // آدرس Worker شما
 const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
 const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
 const API_CONFIGURED = !!WK || USE_RELATIVE_API;
@@ -2076,8 +1781,7 @@ let S = {
   payTarget:null,
   feedPosts:[],
   feedComments:{},
-  trialUsed: 0,
-  sessionToken:null, userRole:'user', voiceReplyOn:false, selProvider:'groq', imageTier:'beta', videoTier:'script'
+  trialUsed: 0
 };
 
 // ===== STORAGE =====
@@ -2134,18 +1838,10 @@ async function hashPassword(pw,salt){
 // ===== ورود با گوگل =====
 function initGoogleAuth(){
   if(!GOOGLE_CLIENT_ID||typeof google==='undefined'||!google.accounts)return;
-  try{
-    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
-    const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
-    const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
-    const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
-  }catch(e){
-    // این کتابخانه گاهی وقتی دامنه فعلی در «Authorized JavaScript origins» تنظیمات
-    // OAuth Client در Google Cloud Console ثبت نشده، همین‌جا داخل کد خودش خطا می‌دهد.
-    // نمی‌گذاریم این خطا بقیه صفحه را بخواباند - فقط دکمه گوگل مخفی می‌ماند.
-    console.log('google_signin_init_failed', e?.message);
-    ['gbtn-login','gbtn-reg'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<p style="font-size:11px;color:var(--gray);text-align:center">ورود با گوگل موقتاً در دسترس نیست</p>';});
-  }
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
+  const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
+  const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
+  const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
 }
 async function handleGoogleCredential(resp){
   if(!API_CONFIGURED){aerr('آدرس API تنظیم نشده');return;}
@@ -2167,98 +1863,37 @@ async function handleGoogleCredential(resp){
 }
 window.addEventListener('load',()=>{setTimeout(initGoogleAuth,300);});
 
-// نقش‌ها فقط برای نمایش/UI استفاده می‌شوند؛ اجرای واقعی دسترسی همیشه سمت سرور (Worker) چک می‌شود.
-const ROLE_RANK={user:0,professional:20,developer:40,coding_specialist:60,admin:80,chairman:100};
-function rankOf(role){return ROLE_RANK[role]??0;}
-const ROLE_LABELS={user:'کاربر عادی',professional:'کاربر حرفه‌ای',developer:'توسعه‌دهنده',coding_specialist:'متخصص کدنویسی',admin:'ادمین',chairman:'رئیس هیئت‌مدیره'};
-function applyRoleUI(){
-  const r=rankOf(S.userRole);
-  const adminNav=document.getElementById('snav-admin'); if(adminNav)adminNav.style.display=(r>=ROLE_RANK.admin)?'flex':'none';
-  const repoTab=document.getElementById('dt-repo'); if(repoTab)repoTab.style.display=(r>=ROLE_RANK.developer)?'inline-flex':'none';
-  const reviewTab=document.getElementById('dt-review'); if(reviewTab)reviewTab.style.display=(r>=ROLE_RANK.coding_specialist)?'inline-flex':'none';
-  const roleTag=document.getElementById('devenv-role-tag');
-  if(roleTag)roleTag.textContent='نقش شما: '+(ROLE_LABELS[S.userRole]||'کاربر عادی');
-}
-// دروازه واقعی Hugy: فقط VIP (یا ادمین/چیرمن برای QA) - تصمیم واقعی سمت سرور
-// گرفته می‌شود، حتی اگر کاربر مستقیماً به این صفحه هدایت شود.
-async function checkHugyAccessAndRender(){
-  const restricted=document.getElementById('hugy-restricted-view');
-  const gameView=document.getElementById('hugy-game-view');
-  restricted.style.display='none'; gameView.style.display='none';
-  if(!API_CONFIGURED){
-    toast('⚠️ بدون سرور، محدودیت واقعی Hugy قابل اجرا نیست (حالت دمو)','w');
-    gameView.style.display='block'; setTimeout(initHugyGame,50);
-    return;
-  }
-  try{
-    const r=await fetch(apiUrl('/game/hugy-access'),{headers:S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}});
-    const data=await r.json();
-    if(data.ok&&data.allowed){
-      gameView.style.display='block'; setTimeout(initHugyGame,50);
-    } else {
-      restricted.style.display='block';
-    }
-  }catch(e){
-    restricted.style.display='block';
-  }
-}
-
-// دروازه واقعی Uli: نمایش/مخفی‌کردن آیتم منو فقط ظاهری است؛ تصمیم واقعی همیشه
-// از /game/uli-access روی سرور گرفته می‌شود، حتی اگر کاربر مستقیماً URL را عوض کند.
-async function checkUliAccessAndRender(){
-  const restricted=document.getElementById('uli-restricted-view');
-  const gameView=document.getElementById('uli-game-view');
-  restricted.style.display='none'; gameView.style.display='none';
-  if(!API_CONFIGURED){
-    // حالت دمو بدون سرور: نمی‌توان واقعاً دسترسی را کنترل کرد؛ به‌صورت شفاف اعلام می‌شود
-    toast('⚠️ بدون سرور، محدودیت واقعی Uli قابل اجرا نیست (حالت دمو)','w');
-    gameView.style.display='block'; window._uliAsleep=false; renderUli();
-    return;
-  }
-  try{
-    const r=await fetch(apiUrl('/game/uli-access'),{headers:S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}});
-    const data=await r.json();
-    if(data.ok&&data.allowed){
-      gameView.style.display='block'; window._uliAsleep=false; renderUli();
-    } else {
-      restricted.style.display='block';
-    }
-  }catch(e){
-    restricted.style.display='block';
-  }
-}
 async function doLogin(){
-  if(ceoMode==='referral'){await ceoVerifyReferralInline();return;}
-  if(ceoMode==='credential'){await ceoLoginInline();return;}
   aclr();
   if(!capState.login){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
   const em=document.getElementById('lemail').value.trim();
   const ps=document.getElementById('lpass').value;
   if(!em){aerr('ایمیل را وارد کنید');return;}
-  if(!em.includes('@')){aerr('فرمت ایمیل صحیح نیست');return;}
   if(!ps){aerr('رمز عبور را وارد کنید');return;}
-
   if(API_CONFIGURED){
-    // حالت واقعی: احراز هویت و هش رمز سمت سرور انجام می‌شود
     try{
-      const r=await fetch(apiUrl('/auth/login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:ps})});
-      const data=await r.json();
-      if(!data.ok){aerr(data.error||'ورود ناموفق بود');return;}
-      S.sessionToken=data.token; S.userRole=data.role;
-      sv('session',{token:data.token,email:em,role:data.role});
-      const users=ld('users',{});
-      users[em]=users[em]||{name:data.name||em.split('@')[0],email:em};
-      sv('users',users);
-      await check2FAAndEnter(data.name||users[em].name,em);
-    }catch(e){aerr('خطا در ارتباط با سرور');}
-    return;
+      const ar=await fetch(apiUrl('/auth/admin-login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:em,password:ps})});
+      const adata=await ar.json();
+      if(adata.ok){
+        sv('adminSession',{token:adata.token,role:adata.role,name:adata.name});
+        enterAdminPanel(adata.role,adata.name,adata.token);
+        return;
+      }
+    }catch(e){}
   }
-
-  // حالت دمو (بدون سرور): فقط برای پیش‌نمایش محلی؛ در تولید واقعی همیشه API_CONFIGURED باید true باشد
+  if(!em.includes('@')){aerr('فرمت ایمیل صحیح نیست');return;}
+  if(API_CONFIGURED){
+    try{
+      const lockRes=await fetch(apiUrl('/admin/platform-status'));
+      const lockData=await lockRes.json();
+      if(lockData.locked){aerr('پلتفرم موقتاً برای نگهداری قفل شده — فقط مدیریت می‌تونه وارد بشه');return;}
+    }catch(e){}
+  }
   const users=ld('users',{});
   const u=users[em];
   if(u){
     if(u.password!==undefined){
+      // حساب قدیمی با رمز متن‌ساده — بررسی و مهاجرت خودکار به هش
       if(u.password!==ps){aerr('رمز عبور اشتباه است');return;}
       const salt=genSalt();
       u.salt=salt; u.passHash=await hashPassword(ps,salt); delete u.password;
@@ -2267,12 +1902,12 @@ async function doLogin(){
       const hash=await hashPassword(ps,u.salt||'');
       if(hash!==u.passHash){aerr('رمز عبور اشتباه است');return;}
     }
-    S.userRole='user';
     await check2FAAndEnter(u.name,em);
   } else {
     aerr('حساب پیدا نشد. ابتدا ثبت‌نام کنید.');
   }
 }
+let pendingRegistration=null;
 async function doReg(){
   aclr();
   if(!capState.reg){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
@@ -2284,30 +1919,51 @@ async function doReg(){
   if(!em||!em.includes('@')){aerr('ایمیل معتبر وارد کنید');return;}
   if(ps.length<8){aerr('رمز باید حداقل ۸ کاراکتر باشد');return;}
   if(ps2&&ps!==ps2){aerr('رمز و تکرار آن یکسان نیستند');return;}
-
-  if(API_CONFIGURED){
-    try{
-      const r=await fetch(apiUrl('/auth/register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:ps,name:nm})});
-      const data=await r.json();
-      if(!data.ok){aerr(data.error||'ثبت‌نام ناموفق بود');return;}
-      S.sessionToken=data.token; S.userRole=data.role;
-      sv('session',{token:data.token,email:em,role:data.role});
-      const users=ld('users',{});
-      users[em]={name:nm,email:em,plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
-      sv('users',users);
-      startWelcomeFlow(nm,em);
-    }catch(e){aerr('خطا در ارتباط با سرور');}
-    return;
-  }
-
   const users=ld('users',{});
   if(users[em]){aerr('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.');return;}
+  pendingRegistration={nm,em,ps};
+  if(!API_CONFIGURED){await finishRegistration();return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/send-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,purpose:'verify'})});
+    const data=await r.json();
+    if(!data.ok){
+      if(r.status===503){await finishRegistration();return;}
+      aerr(data.error||'ارسال کد تأیید ناموفق بود');return;
+    }
+    document.getElementById('verify-email-addr').textContent=em;
+    document.getElementById('verify-email-code').value='';
+    openmod('verify-email-modal');
+  }catch(e){aerr('خطا در ارتباط با سرور');}
+}
+async function confirmRegVerify(){
+  if(!pendingRegistration)return;
+  const code=document.getElementById('verify-email-code').value.trim();
+  if(!code){toast('کد را وارد کنید','w');return;}
+  try{
+    const r=await fetch(apiUrl('/api/auth/verify-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:pendingRegistration.em,code,purpose:'verify'})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'کد اشتباه است','w');return;}
+    closemod('verify-email-modal');
+    await finishRegistration();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function resendRegCode(){
+  if(!pendingRegistration)return;
+  try{
+    await fetch(apiUrl('/api/auth/send-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:pendingRegistration.em,purpose:'verify'})});
+    toast('📧 کد دوباره ارسال شد');
+  }catch(e){toast('خطا در ارسال دوباره','w');}
+}
+async function finishRegistration(){
+  const {nm,em,ps}=pendingRegistration;
+  const users=ld('users',{});
+  if(users[em]){aerr('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.');pendingRegistration=null;return;}
   const salt=genSalt();
   const passHash=await hashPassword(ps,salt);
   users[em]={name:nm,email:em,salt,passHash,plan:'Rax',joined:new Date().toISOString(),uid:genUserId(),discountCode:genDiscountCode()};
   sv('users',users);
-  S.userRole='user';
   saveSession(em);
+  pendingRegistration=null;
   startWelcomeFlow(nm,em);
 }
 function genUserId(){
@@ -2695,6 +2351,165 @@ function hugyLoop(){
 }
 function stopHugyGame(){ if(hugyState){saveHugyProgress(); hugyState.running=false;} }
 
+// ===== پنل ادمین/رئیس =====
+let adminToken=null, adminRole=null;
+async function adminFetch(path,opts={}){
+  const headers=Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+adminToken},opts.headers||{});
+  const res=await fetch(apiUrl(path),Object.assign({},opts,{headers}));
+  return res.json();
+}
+function enterAdminPanel(role,name,token){
+  adminToken=token; adminRole=role;
+  document.getElementById('auth').style.display='none'; document.getElementById('auth').classList.remove('on');
+  document.getElementById('app').style.display='none'; document.getElementById('app').classList.remove('on');
+  document.getElementById('adminApp').style.display='block';
+  document.getElementById('admin-role-badge').textContent=role==='boss'?'رئیس':'ادمین';
+  adminNav('users',document.querySelector('.admin-nav-item'));
+}
+function adminLogout(){
+  adminToken=null; adminRole=null;
+  document.getElementById('adminApp').style.display='none';
+  document.getElementById('auth').style.display='flex'; document.getElementById('auth').classList.add('on');
+}
+function adminNav(section,el){
+  document.querySelectorAll('.admin-nav-item').forEach(x=>x.classList.remove('on'));
+  if(el)el.classList.add('on');
+  ['users','purchases','announce','sections','status','roles','lock'].forEach(s=>{
+    const p=document.getElementById('admin-panel-'+s); if(p)p.style.display=(s===section)?'block':'none';
+  });
+  if(section==='users')adminLoadUsers();
+  if(section==='purchases')adminLoadPurchases();
+  if(section==='announce')adminLoadScheduled();
+  if(section==='sections')adminLoadSectionsPanel();
+  if(section==='status')adminLoadStatus();
+  if(section==='lock')adminLoadLockStatus();
+}
+async function adminLoadUsers(){
+  const el=document.getElementById('admin-users-list');
+  el.innerHTML='در حال بارگذاری...';
+  const data=await adminFetch('/admin/users');
+  if(!data.users){el.innerHTML='خطا در دریافت — دسترسی نامعتبر است';return;}
+  el.innerHTML=data.users.length?data.users.map(u=>`<div class="admin-row"><div>${escHtml(u.email)} — ${escHtml(u.name||'')} — پلن:${escHtml(u.plan||'Rax')} — نقش:${escHtml(u.role||'user')} ${u.blocked?'<span style="color:#E74C3C">(مسدود)</span>':''}</div><button class="btn btnsm" style="background:${u.blocked?'#27AE60':'#E74C3C'};color:#fff;border:none" onclick="adminToggleBlock('${escHtml(u.email)}',${!u.blocked})">${u.blocked?'رفع مسدودیت':'مسدود کردن'}</button></div>`).join(''):'<div style="color:#7C93A8">کاربری همگام‌سازی نشده</div>';
+}
+async function adminToggleBlock(email,blocked){
+  await adminFetch('/admin/users/block',{method:'POST',body:JSON.stringify({email,blocked})});
+  adminLoadUsers();
+}
+async function adminLoadPurchases(){
+  const el=document.getElementById('admin-purchases-list');
+  el.innerHTML='در حال بارگذاری...';
+  const data=await adminFetch('/admin/purchases');
+  if(!data.payments){el.innerHTML='خطا در دریافت';return;}
+  el.innerHTML=data.payments.length?data.payments.map(p=>`<div class="admin-row"><div>${escHtml(p.email)} — ${escHtml(p.item)} — ${escHtml(p.status)}</div><div style="display:flex;gap:6px">${p.status==='pending'?`<button class="btn btnsm" style="background:#27AE60;color:#fff;border:none" onclick="adminReviewPurchase('${p.id}','approved')">تأیید</button><button class="btn btnsm" style="background:#E74C3C;color:#fff;border:none" onclick="adminReviewPurchase('${p.id}','rejected')">رد</button>`:''}</div></div>`).join(''):'<div style="color:#7C93A8">درخواستی نیست</div>';
+}
+async function adminReviewPurchase(id,status){
+  await adminFetch('/admin/purchases/review',{method:'POST',body:JSON.stringify({id,status})});
+  adminLoadPurchases();
+}
+async function adminSendAnnounce(){
+  const text=document.getElementById('admin-announce-text').value.trim();
+  if(!text){toast('متن اعلان رو بنویس','w');return;}
+  const emailsRaw=document.getElementById('admin-announce-emails').value.trim();
+  const emails=emailsRaw?emailsRaw.split(',').map(x=>x.trim()).filter(Boolean):null;
+  const timeVal=document.getElementById('admin-announce-time').value;
+  const body={text}; if(emails)body.emails=emails; if(timeVal)body.scheduledFor=new Date(timeVal).toISOString();
+  const data=await adminFetch('/admin/announce',{method:'POST',body:JSON.stringify(body)});
+  if(data.ok){toast(data.scheduled?'⏰ اعلان زمان‌بندی شد':'✅ اعلان ارسال شد');document.getElementById('admin-announce-text').value='';adminLoadScheduled();}
+  else toast('خطا در ارسال','w');
+}
+async function adminLoadScheduled(){
+  const el=document.getElementById('admin-scheduled-list');
+  const data=await adminFetch('/admin/scheduled-announcements');
+  el.innerHTML=(data.scheduled&&data.scheduled.length)?data.scheduled.map(s=>`<div class="admin-row"><div>${escHtml(s.text)} — ${new Date(s.dueAt).toLocaleString('fa-IR')}</div><button class="btn btnsm" style="background:#E74C3C;color:#fff;border:none" onclick="adminCancelScheduled('${s.id}')">لغو</button></div>`).join(''):'<div style="color:#7C93A8">اعلان زمان‌بندی‌شده‌ای نیست</div>';
+}
+async function adminCancelScheduled(id){
+  await adminFetch('/admin/scheduled-announcements/cancel',{method:'POST',body:JSON.stringify({id})});
+  adminLoadScheduled();
+}
+const ADMIN_SECTION_LABELS={home:'خانه',chat:'چت',office:'Office AI',aisettings:'تنظیمات AI',apikeys:'API',promptbuilder:'پرامپت',about:'درباره ما',rules:'قوانین',dashboard:'پنل کاربری',hugy:'Hugy',uli:'Uli',feed:'فید',explore:'اکسپلور',projects:'پروژه‌ها',plans:'پلن‌ها',profile:'پروفایل'};
+async function adminLoadSectionsPanel(){
+  const el=document.getElementById('admin-sections-list');
+  el.innerHTML='در حال بارگذاری...';
+  const res=await fetch(apiUrl('/blocked-sections'));
+  const data=await res.json();
+  const blocked=data.sections||[];
+  el.innerHTML=Object.entries(ADMIN_SECTION_LABELS).map(([key,label])=>{
+    const isBlocked=blocked.includes(key);
+    return `<div class="admin-row"><div>${label} (${key})</div><button class="btn btnsm" style="background:${isBlocked?'#27AE60':'#E74C3C'};color:#fff;border:none" onclick="adminToggleSection('${key}',${!isBlocked})">${isBlocked?'رفع مسدودیت':'مسدود کردن'}</button></div>`;
+  }).join('');
+}
+async function adminToggleSection(section,blocked){
+  await adminFetch('/admin/blocked-sections',{method:'POST',body:JSON.stringify({section,blocked})});
+  adminLoadSectionsPanel();
+  loadBlockedSections();
+}
+async function adminLoadStatus(){
+  const el=document.getElementById('admin-status-box');
+  const [usersData,paymentsData,lockData]=await Promise.all([
+    adminFetch('/admin/users'), adminFetch('/admin/purchases'),
+    fetch(apiUrl('/admin/platform-status')).then(r=>r.json())
+  ]);
+  const users=usersData.users||[]; const pending=(paymentsData.payments||[]).filter(p=>p.status==='pending').length;
+  const items=[
+    {l:'کل کاربران',v:users.length},{l:'کاربران مسدود',v:users.filter(u=>u.blocked).length},
+    {l:'خرید در انتظار',v:pending},{l:'وضعیت پلتفرم',v:lockData.locked?'🔒 قفل':'🟢 باز'},
+  ];
+  el.innerHTML=items.map(x=>`<div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:6px"><div style="font-size:11px;color:#7C93A8">${x.l}</div><div style="font-size:20px;font-weight:800">${x.v}</div></div>`).join('');
+}
+async function adminSetRole(){
+  const email=document.getElementById('admin-role-email').value.trim();
+  const role=document.getElementById('admin-role-select').value;
+  if(!email){toast('ایمیل رو وارد کن','w');return;}
+  const data=await adminFetch('/admin/roles',{method:'POST',body:JSON.stringify({email,role})});
+  if(data.ok)toast('✅ نقش اعمال شد'); else toast(data.error||'خطا در اعمال نقش','w');
+}
+async function adminLoadLockStatus(){
+  const res=await fetch(apiUrl('/admin/platform-status'));
+  const data=await res.json();
+  const btn=document.getElementById('admin-lock-btn');
+  btn.textContent=data.locked?'🔓 باز کردن پلتفرم':'🔒 قفل کردن پلتفرم';
+  btn.style.background=data.locked?'#27AE60':'#E74C3C'; btn.style.color='#fff'; btn.style.border='none';
+  btn.dataset.locked=data.locked?'1':'0';
+}
+async function adminTogglePlatformLock(){
+  const btn=document.getElementById('admin-lock-btn');
+  const newState=btn.dataset.locked!=='1';
+  await adminFetch('/admin/platform-lock',{method:'POST',body:JSON.stringify({locked:newState})});
+  adminLoadLockStatus();
+  toast(newState?'🔒 پلتفرم قفل شد':'🔓 پلتفرم باز شد');
+}
+
+// ===== بخش‌های مسدودشده توسط ادمین =====
+let blockedSections=[];
+function hasProfessionalAccess(){
+  return S.plan==='VIP'||['pro_user','admin','boss','developer','code_specialist'].includes(S.userRole);
+}
+async function loadBlockedSections(){
+  if(!API_CONFIGURED)return;
+  try{
+    const res=await fetch(apiUrl('/blocked-sections'));
+    const data=await res.json();
+    blockedSections=data.sections||[];
+    applyBlockedBadges();
+  }catch(e){}
+}
+function applyBlockedBadges(){
+  document.querySelectorAll('.sbi[id^="snav-"]').forEach(el=>{
+    const pg=el.id.replace('snav-','');
+    const existing=el.querySelector('.blockedbdg');
+    if(blockedSections.includes(pg)){
+      if(!existing){
+        const b=document.createElement('span');
+        b.className='blockedbdg';
+        b.textContent='مسدود';
+        el.appendChild(b);
+      }
+    } else if(existing){
+      existing.remove();
+    }
+  });
+}
+
 function saveSession(email){
   const fp=getFingerprint();
   const sessions=ld('sessions',{});
@@ -2702,28 +2517,7 @@ function saveSession(email){
   sv('sessions',sessions);
 }
 function getFingerprint(){return btoa([navigator.userAgent,navigator.language,screen.width,screen.height].join('|')).slice(0,24);}
-async function tryAutoLogin(){
-  // اول: تلاش برای بازیابی جلسه واقعی از سرور با توکن ذخیره‌شده
-  if(API_CONFIGURED){
-    const sess=ld('session',null);
-    if(sess&&sess.token){
-      try{
-        const r=await fetch(apiUrl('/auth/me'),{headers:{'Authorization':'Bearer '+sess.token}});
-        const data=await r.json();
-        if(data.ok){
-          S.sessionToken=sess.token; S.userRole=data.role;
-          const users=ld('users',{});
-          users[data.email]=users[data.email]||{name:data.name,email:data.email};
-          sv('users',users);
-          enterApp(data.name||users[data.email].name,data.email);
-          return true;
-        }
-      }catch(e){}
-      sv('session',null); // توکن نامعتبر/منقضی — پاکسازی
-    }
-    return false;
-  }
-  // حالت دمو بدون سرور
+function tryAutoLogin(){
   try{
     const fp=getFingerprint();
     const sessions=ld('sessions',{});
@@ -2735,16 +2529,12 @@ async function tryAutoLogin(){
     const cur=[navigator.userAgent,navigator.language,screen.width+'x'+screen.height];
     const saved=s.fp||[];
     const matches=cur.filter((v,i)=>saved[i]===v).length;
-    if(matches>=2){S.userRole='user';enterApp(u.name,u.email);return true;}
+    if(matches>=2){enterApp(u.name,u.email);return true;}
   }catch(e){}
   return false;
 }
 function doOut(){
-  if(API_CONFIGURED&&S.sessionToken){
-    fetch(apiUrl('/auth/logout'),{method:'POST',headers:{'Authorization':'Bearer '+S.sessionToken}}).catch(()=>{});
-  }
-  S.user=null; S.sessionToken=null; S.userRole='user';
-  sv('session',null);
+  S.user=null;
   document.getElementById('app').classList.remove('on');
   document.getElementById('app').style.display='none';
   document.getElementById('auth').style.display='flex';
@@ -2800,7 +2590,6 @@ function saveAISettings(){
     plgAnalyze:document.getElementById('plg-analyze')?.classList.contains('on')||false,
     plgExec:document.getElementById('plg-exec')?.classList.contains('on')||false,
     plgInlineImg:document.getElementById('plg-inlineimg')?.classList.contains('on')||false,
-    plgZcode:document.getElementById('plg-zcode')?.classList.contains('on')||false,
     plgRemind:document.getElementById('plg-remind')?.classList.contains('on')||false,
     restFrom:document.getElementById('ais-rest-from')?.value||'00:00',
     restTo:document.getElementById('ais-rest-to')?.value||'00:00',
@@ -2827,7 +2616,7 @@ function loadAISettings(){
   if(document.getElementById('ais-level'))document.getElementById('ais-level').value=d.level||'متوسط';
   if(document.getElementById('ais-style'))document.getElementById('ais-style').value=d.style||'دوستانه';
   if(document.getElementById('ais-lang'))document.getElementById('ais-lang').value=d.lang||'فارسی';
-  ['plgSearch:plg-search','plgAnalyze:plg-analyze','plgExec:plg-exec','plgInlineImg:plg-inlineimg','plgRemind:plg-remind','plgZcode:plg-zcode'].forEach(pair=>{
+  ['plgSearch:plg-search','plgAnalyze:plg-analyze','plgExec:plg-exec','plgInlineImg:plg-inlineimg','plgRemind:plg-remind'].forEach(pair=>{
     const [k,id]=pair.split(':'); const el=document.getElementById(id);
     if(el)el.classList.toggle('on',!!d[k]);
   });
@@ -2956,6 +2745,19 @@ function openPaymentHistory(){
 }
 
 // ===== همگام‌سازی با Ranflr (برای دیدن اطلاعات کاربرا) =====
+async function syncUserAndFetchRole(userRec){
+  if(!API_CONFIGURED||!userRec)return;
+  try{
+    const res=await fetch(apiUrl('/admin/sync-user'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:userRec.email,name:userRec.name,plan:S.plan,uid:userRec.uid||'',provider:userRec.provider||'local'})});
+    const data=await res.json();
+    if(data.blocked){
+      toast('⛔ حساب شما توسط مدیریت مسدود شده — با پشتیبانی تماس بگیرید','w');
+      setTimeout(()=>{doOut();},1800);
+      return;
+    }
+    S.userRole=data.role||'user';
+  }catch(e){}
+}
 function syncUserToRanflr(userRec){
   if(!RANFLR_URL||!userRec)return; // اگه تنظیم نشده، بی‌صدا رد می‌شه
   fetch(RANFLR_URL+'/api/sync-user',{
@@ -3140,7 +2942,7 @@ async function sendResetCode(){
   if(!users[em]){toast('حسابی با این ایمیل پیدا نشد','w');return;}
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   try{
-    const r=await fetch(apiUrl('/auth/send-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});
+    const r=await fetch(apiUrl('/api/auth/send-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,purpose:'recovery'})});
     const data=await r.json();
     if(!data.ok){toast(data.error||'ارسال کد ناموفق بود — سرویس ایمیل هنوز تنظیم نشده','w');return;}
     document.getElementById('forgot-step1').style.display='none';
@@ -3154,137 +2956,20 @@ async function confirmResetCode(){
   const newPs=document.getElementById('fg-newpass').value;
   if(!code){toast('کد را وارد کنید','w');return;}
   if(newPs.length<8){toast('رمز جدید باید حداقل ۸ کاراکتر باشد','w');return;}
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده - بدون سرور نمی‌توان رمز را واقعاً تغییر داد','w');return;}
   try{
-    // نکته مهم: newPassword باید همینجا به سرور ارسال شود، وگرنه رمز واقعی
-    // (که سمت سرور با PBKDF2 هش شده) هیچ‌وقت واقعاً تغییر نمی‌کند.
-    const r=await fetch(apiUrl('/auth/verify-reset-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,newPassword:newPs})});
+    const r=await fetch(apiUrl('/api/auth/verify-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,purpose:'recovery'})});
     const data=await r.json();
     if(!data.ok){toast(data.error||'کد اشتباه یا منقضی‌شده است','w');return;}
+    const users=ld('users',{});
+    const u=users[em];
+    if(!u){toast('حساب پیدا نشد','w');return;}
+    const salt=genSalt();
+    u.salt=salt; u.passHash=await hashPassword(newPs,salt);
+    sv('users',users);
     closemod('forgot-modal');
     document.getElementById('forgot-step1').style.display='block';
     document.getElementById('forgot-step2').style.display='none';
     toast('✅ رمز عبور با موفقیت تغییر کرد — حالا وارد شوید');
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-
-// ===== ورود با کد ایمیل (بدون رمز عبور، از طریق /api/auth/send-code و /verify-code) =====
-async function sendLoginCode(){
-  const em=document.getElementById('cl-email').value.trim();
-  if(!em||!em.includes('@')){toast('ایمیل معتبر وارد کنید','w');return;}
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
-  try{
-    const r=await fetch(apiUrl('/api/auth/send-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,purpose:'login'})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'ارسال کد ناموفق بود','w');return;}
-    document.getElementById('cl-step1').style.display='none';
-    document.getElementById('cl-step2').style.display='block';
-    toast('📧 اگر حسابی با این ایمیل وجود داشته باشد، کد ارسال شد');
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function verifyLoginCode(){
-  const em=document.getElementById('cl-email').value.trim();
-  const code=document.getElementById('cl-code').value.trim();
-  if(!code){toast('کد را وارد کنید','w');return;}
-  try{
-    const r=await fetch(apiUrl('/api/auth/verify-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,purpose:'login'})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
-    S.sessionToken=data.token; S.userRole=data.role;
-    sv('session',{token:data.token,email:em,role:data.role});
-    const users=ld('users',{});
-    users[em]=users[em]||{name:data.name||em.split('@')[0],email:em};
-    sv('users',users);
-    closemod('code-login-modal');
-    document.getElementById('cl-step1').style.display='block';
-    document.getElementById('cl-step2').style.display='none';
-    await check2FAAndEnter(data.name||users[em].name,em);
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-
-// ===== ورود ویژه CEO/مدیریت — کاملاً بی‌سروصدا، سمت سرور، بدون لینک قابل‌کشف =====
-// هیچ‌جای رابط کاربری نمی‌گوید "این ورود مدیریت است". فقط وقتی کاربر ایمیلی
-// وارد می‌کند که سرور آن را با GMAIL_ULIKI_CEO یکسان تشخیص می‌دهد، فرم به‌آرامی
-// به مرحله بعد (کد معرف) تغییر می‌کند. برای بقیه کاربران هیچ تفاوتی دیده نمی‌شود.
-const TURNSTILE_SITE_KEY = ''; // Site Key از داشبورد Cloudflare Turnstile — این مقدار عمومی است و افشای آن مشکلی ندارد (بر خلاف Secret Key که فقط سمت Worker می‌ماند)
-let ceoTicket=null, ceoMode='none', turnstileToken=null, turnstileWidgetId=null;
-
-function resetCeoLoginUI(){
-  ceoMode='none'; ceoTicket=null; turnstileToken=null;
-  document.getElementById('login-normal-pass').style.display='block';
-  document.getElementById('login-ceo-referral').style.display='none';
-  document.getElementById('login-ceo-cred').style.display='none';
-  document.getElementById('login-turnstile').style.display='none';
-  document.getElementById('login-submit-btn').textContent='ورود به Uliki';
-}
-function loadTurnstileScript(cb){
-  if(window.turnstile){cb();return;}
-  if(document.getElementById('turnstile-script')){setTimeout(()=>loadTurnstileScript(cb),300);return;}
-  const s=document.createElement('script');
-  s.id='turnstile-script'; s.src='https://challenges.cloudflare.com/turnstile/v0/api.js'; s.async=true; s.defer=true;
-  s.onload=cb;
-  document.head.appendChild(s);
-}
-function renderTurnstile(){
-  const box=document.getElementById('login-turnstile');
-  if(!TURNSTILE_SITE_KEY){box.innerHTML='<p style="font-size:11px;color:var(--gray)">⚠️ Turnstile پیکربندی نشده (TURNSTILE_SITE_KEY خالی است)</p>';box.style.display='block';return;}
-  box.style.display='block';
-  loadTurnstileScript(()=>{
-    if(turnstileWidgetId!==null){try{window.turnstile.remove(turnstileWidgetId);}catch(e){}}
-    box.innerHTML='';
-    turnstileWidgetId=window.turnstile.render(box,{sitekey:TURNSTILE_SITE_KEY,callback:t=>{turnstileToken=t;}});
-  });
-}
-async function silentCeoCheck(){
-  const em=document.getElementById('lemail').value.trim();
-  if(!em||!em.includes('@')||!API_CONFIGURED){ if(ceoMode!=='none')resetCeoLoginUI(); return; }
-  try{
-    const r=await fetch(apiUrl('/api/auth/ceo/check-email'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});
-    const data=await r.json();
-    if(data.ok&&data.is_ceo_email){
-      ceoMode='referral';
-      document.getElementById('login-normal-pass').style.display='none';
-      document.getElementById('login-ceo-referral').style.display='block';
-      document.getElementById('login-ceo-cred').style.display='none';
-      document.getElementById('login-submit-btn').textContent='تأیید کد معرف';
-      renderTurnstile();
-    } else if(ceoMode!=='none'){
-      resetCeoLoginUI();
-    }
-  }catch(e){ /* بی‌صدا شکست می‌خوریم - نباید به کاربر عادی چیزی درباره این مکانیزم نشان داده شود */ }
-}
-async function ceoVerifyReferralInline(){
-  const em=document.getElementById('lemail').value.trim();
-  const code=document.getElementById('lceo-referral').value.trim();
-  if(!code){toast('کد معرف را وارد کنید','w');return;}
-  if(TURNSTILE_SITE_KEY&&!turnstileToken){toast('لطفاً تیک Turnstile را تکمیل کنید','w');return;}
-  try{
-    const r=await fetch(apiUrl('/api/auth/ceo/verify-referral'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,code,turnstileToken})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
-    ceoTicket=data.ceoTicket; ceoMode='credential';
-    document.getElementById('login-ceo-referral').style.display='none';
-    document.getElementById('login-ceo-cred').style.display='block';
-    document.getElementById('login-turnstile').style.display='none';
-    document.getElementById('login-submit-btn').textContent='ورود';
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function ceoLoginInline(){
-  const em=document.getElementById('lemail').value.trim();
-  const credential=document.getElementById('lceo-credential').value;
-  if(!credential){toast('رمز/اعتبارنامه را وارد کنید','w');return;}
-  if(!ceoTicket){toast('ابتدا کد معرف را تأیید کنید','w');return;}
-  try{
-    const r=await fetch(apiUrl('/api/auth/ceo/login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,ceoTicket,credential})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'ورود ناموفق بود','w');return;}
-    S.sessionToken=data.token; S.userRole=data.role;
-    sv('session',{token:data.token,email:em,role:data.role});
-    const users=ld('users',{});
-    users[em]=users[em]||{name:data.name||'CEO',email:em};
-    sv('users',users);
-    resetCeoLoginUI();
-    await check2FAAndEnter(data.name||'CEO',em);
   }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 
@@ -3317,13 +3002,13 @@ function enterApp(name,email){
   loadAISettings(); updateStorageUsage(); refreshBusinessPanel(); loadConnectorSettings(); renderApiKeys(); renderActivityAnalytics();
   renderDashboard();
   syncUserToRanflr(users[email]);
-  syncWalletFromServer(); syncQuotaFromServer(); loadNotificationsMine();
-  applyRoleUI();
+  syncUserAndFetchRole(users[email]);
+  loadBlockedSections();
   nav('home');
   // شروع تبلیغات بعد از ۵ دقیقه
-  if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,90000); // شروع بعد از ۹۰ ثانیه به‌جای ۵ دقیقه
-  // nudge بعد از ۲۰ ثانیه
-  setTimeout(showNudge,20000);
+  if(!PLAN_LIMITS[S.plan].noAd)setTimeout(startAds,300000);
+  // nudge بعد از ۳۰ ثانیه
+  setTimeout(showNudge,30000);
 }
 function applyPlan(p){
   S.plan=p;
@@ -3368,59 +3053,6 @@ function updateUI(){
   }
 }
 
-// ===== SERVER-AUTHORITATIVE WALLET & QUOTA =====
-// When API_CONFIGURED, the numbers shown in the UI are only a MIRROR of the
-// server's answer - every actual deduction/consumption call below hits the
-// Worker, which is the sole source of truth. Without API_CONFIGURED, the
-// old client-only counters remain as a clearly-degraded local demo mode.
-async function syncWalletFromServer(){
-  if(!API_CONFIGURED||!S.sessionToken)return;
-  try{
-    const r=await fetch(apiUrl('/wallet/balance'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(data.ok){S.wallet=data.wallet;updateUI();}
-  }catch(e){}
-}
-async function syncQuotaFromServer(){
-  if(!API_CONFIGURED||!S.sessionToken)return null;
-  try{
-    const r=await fetch(apiUrl('/quota/status'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(data.ok){
-      S.serverQuota=data.quota;
-      if(data.quota.text)S.msgs=data.quota.text.remaining;
-      const imgSum=(data.quota.image?.remaining||0)+(data.quota.video?.remaining||0)+(data.quota.music?.remaining||0);
-      if(data.quota.image)S.creates=data.quota.image.remaining;
-      updateUI();
-      return data.quota;
-    }
-  }catch(e){}
-  return null;
-}
-// resource: 'text'|'image'|'video'|'music'|'voice'|'translation'
-// Returns true if allowed to proceed (and already consumed server-side),
-// false if quota is exhausted or the server rejected the request.
-async function consumeQuota(resource){
-  if(!API_CONFIGURED||!S.sessionToken)return true; // demo mode - no server to enforce against
-  try{
-    const r=await fetch(apiUrl('/quota/consume'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({resource})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'سقف روزانه پر شده است','w');return false;}
-    return true;
-  }catch(e){toast('خطا در ارتباط با سرور سهمیه','w');return false;}
-}
-async function walletDeduct(kind,amount){
-  if(!API_CONFIGURED||!S.sessionToken)return true;
-  try{
-    const requestId=kind+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-    const r=await fetch(apiUrl('/wallet/deduct'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({kind,amount,requestId})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'موجودی کافی نیست','w');return false;}
-    S.wallet=data.wallet; updateUI();
-    return true;
-  }catch(e){toast('خطا در ارتباط با کیف پول سرور','w');return false;}
-}
-
 // ===== NAV =====
 let sbOpen=true;
 function togSB(){
@@ -3453,6 +3085,10 @@ function toggleTheme(){
   applyTheme(saved);
 })();
 function nav(pg){
+  if(blockedSections.includes(pg)&&!hasProfessionalAccess()){
+    toast('⛔ این بخش موقتاً توسط مدیریت مسدود شده است','w');
+    return;
+  }
   document.querySelectorAll('.pg').forEach(p=>{p.style.display='none';p.classList.remove('on');});
   document.querySelectorAll('.sbi').forEach(i=>i.classList.remove('on'));
   const pgEl=document.getElementById('pg-'+pg);
@@ -3465,40 +3101,19 @@ function nav(pg){
   if(pg==='aisettings'){loadAISettings();updateStorageUsage();refreshBusinessPanel();renderActivityAnalytics();}
   if(pg==='apikeys'){renderApiKeys();loadConnectorSettings();}
   if(pg==='dashboard')renderDashboard();
-  if(pg==='uli'){checkUliAccessAndRender();}
-  if(pg==='hugy'){checkHugyAccessAndRender();} else if(hugyState&&hugyState.running){stopHugyGame();}
+  if(pg==='uli'){
+    if(!hasProfessionalAccess()){
+      document.getElementById('pg-uli').innerHTML='<div class="ccard" style="text-align:center;padding:50px 20px"><div style="font-size:52px;margin-bottom:14px">🔒</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Uli — ویژه VIP و کاربران حرفه‌ای</h2><p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">این بخش در حال توسعه‌ست و فعلاً فقط برای دارندگان پلن VIP و کاربران حرفه‌ای باز شده 🩵</p></div>';
+    } else {window._uliAsleep=false;renderUli();}
+  }
+  if(pg==='hugy'){
+    document.getElementById('pg-hugy').innerHTML='<div class="ccard" style="text-align:center;padding:50px 20px"><div style="font-size:52px;margin-bottom:14px">🚧</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Hugy — موقتاً غیرفعال</h2><p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">الان تمرکز تیم روی توسعه‌ی بخش‌های اصلی پلتفرمه؛ Hugy به‌زودی با نسخه‌ی کامل‌تر برمی‌گرده 🚀</p></div>';
+    if(hugyState&&hugyState.running)stopHugyGame();
+  } else if(hugyState&&hugyState.running){stopHugyGame();}
   if(pg==='rules')renderRulesContent();
-  if(pg==='news'&&!newsCache.length)loadNews(true);
-  if(pg==='devenv'){applyRoleUI();renderMySubmissions();}
-  if(pg==='admin')initAdminPage();
-  if(pg==='parental')initParentalPage();
   closeSBMobile();
 }
-function togNotif(){
-  const p=document.getElementById('npanel');
-  const opening=!p.classList.contains('on');
-  p.classList.toggle('on');
-  if(opening)loadNotificationsMine();
-}
-async function loadNotificationsMine(){
-  const el=document.getElementById('npanel-list');
-  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px;padding:10px 0">برای مشاهده اعلان‌ها وارد حساب شوید</div>';return;}
-  try{
-    const r=await fetch(apiUrl('/notifications/mine'),{headers:authHeaders()});
-    const data=await r.json();
-    const list=data.notifications||[];
-    el.innerHTML=list.length?list.map(n=>`<div class="nitem" style="cursor:pointer" onclick="markNotifRead('${n.id}',this)"><div class="nic">${n.priority==='high'?'🔴':n.priority==='low'?'🔵':'🔔'}</div><div class="ntxt"><strong>${escHtml(n.title)}</strong><br><span style="font-weight:400;color:var(--gray)">${escHtml(n.message)}</span>${n.read?'':' <span style="color:var(--accent);font-size:9px">● جدید</span>'}</div></div>`).join(''):'<div style="color:var(--gray);font-size:12px;padding:10px 0">اعلانی ندارید</div>';
-    updateNotifBadge(list);
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px;padding:10px 0">خطا در بارگذاری اعلان‌ها</div>';}
-}
-async function markNotifRead(id,el){
-  if(el)el.querySelector('span[style*=accent]')?.remove();
-  try{ await fetch(apiUrl('/notifications/mark-read'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id})}); }catch(e){}
-}
-function updateNotifBadge(list){
-  const dot=document.querySelector('.nbell .ndot');
-  if(dot)dot.style.display=list.some(n=>!n.read)?'block':'none';
-}
+function togNotif(){document.getElementById('npanel').classList.toggle('on');}
 document.addEventListener('click',e=>{
   if(!e.target.closest('.nbell')&&!e.target.closest('.npanel'))document.getElementById('npanel').classList.remove('on');
 });
@@ -3507,23 +3122,15 @@ document.addEventListener('click',e=>{
 let walletTimer=null, msgResetTimer=null;
 function startWalletTimer(){
   stopWalletTimer();
-  // قبلاً هر ساعت مقدار جعلی به کیف پول محلی اضافه می‌کرد (بدون تأیید سرور) —
-  // این تداخل مستقیم با کیف پول واقعی سمت سرور داشت. حالا فقط یک‌بار در روز
-  // از endpoint واقعی و امن سرور (/wallet/daily-claim) درخواست می‌شود.
-  claimDailyCredits();
-  walletTimer=setInterval(claimDailyCredits,3600000); // هر ساعت چک می‌شود، اما سرور خودش مانع دریافت بیش از یک‌بار در روز می‌شود
-}
-async function claimDailyCredits(){
-  if(!API_CONFIGURED||!S.sessionToken)return;
-  try{
-    const r=await fetch(apiUrl('/wallet/daily-claim'),{method:'POST',headers:authHeaders()});
-    const data=await r.json();
-    if(data.ok&&data.granted>0){
-      S.wallet=data.wallet; updateUI();
-      toast('🎁 '+data.granted+' کردیت روزانه دریافت شد');
-    }
-    // اگر data.ok===false (مثلاً «امروز قبلاً دریافت کرده‌اید») به‌صورت بی‌صدا رد می‌شویم - این حالت عادی است، نه خطا
-  }catch(e){}
+  const pl=PLAN_LIMITS[S.plan];
+  if(pl.wRate>=999)return;
+  walletTimer=setInterval(()=>{
+    const max=pl.wallet;
+    if(S.wallet.tokens<max)S.wallet.tokens=Math.min(max,S.wallet.tokens+pl.wRate);
+    if(S.wallet.credits<max)S.wallet.credits=Math.min(max,S.wallet.credits+pl.wRate);
+    sv('wallet_'+(S.user?.email||''),S.wallet);
+    updateUI();
+  },3600000);
 }
 function stopWalletTimer(){if(walletTimer){clearInterval(walletTimer);walletTimer=null;}}
 function startMsgReset(){
@@ -3533,30 +3140,16 @@ function startMsgReset(){
   msgResetTimer=setInterval(()=>{S.msgs=pl.msgs;updateUI();toast('✅ پیام‌های شما شارژ شد!','i');},3600000);
 }
 function stopMsgReset(){if(msgResetTimer){clearInterval(msgResetTimer);msgResetTimer=null;}}
-async function chargeTokens(){
+function chargeTokens(){
   const amt=parseInt(document.getElementById('charge-amount').value)||0;
   if(amt<=0){toast('مقدار را وارد کنید','w');return;}
-  if(API_CONFIGURED&&S.sessionToken){
-    try{
-      const r=await fetch(apiUrl('/wallet/convert'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({amount:amt})});
-      const data=await r.json();
-      if(!data.ok){toast(data.error||'خطا در تبدیل','w');return;}
-      S.wallet=data.wallet; updateUI();
-      const h=document.getElementById('wallet-history');
-      if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅ (تأیید سرور)</div>'+h.innerHTML;
-      toast('✅ '+amt+' توکن به کیف پول اضافه شد');
-      document.getElementById('charge-amount').value='';
-    }catch(e){toast('خطا در ارتباط با سرور','w');}
-    return;
-  }
-  // حالت دمو بدون سرور
   if(S.wallet.credits<amt){toast('کردیت کافی ندارید','w');return;}
   S.wallet.credits-=amt;
   S.wallet.tokens+=amt;
   sv('wallet_'+(S.user?.email||''),S.wallet);
   updateUI();
   const h=document.getElementById('wallet-history');
-  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅ (دمو محلی)</div>'+h.innerHTML;
+  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — تبدیل '+amt+' کردیت به توکن ✅</div>'+h.innerHTML;
   toast('✅ '+amt+' توکن به کیف پول اضافه شد');
   document.getElementById('charge-amount').value='';
 }
@@ -3642,21 +3235,21 @@ function copyTokenCode(){
   const code=document.getElementById('token-code').textContent;
   navigator.clipboard.writeText(code).then(()=>toast('📋 کد کپی شد!'));
 }
-async function redeemToken(){
+function redeemToken(){
   const code=document.getElementById('redeem-code').value.trim().toUpperCase();
   if(!code.startsWith('ULK-')){toast('کد معتبر نیست','w');return;}
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای فعال‌سازی کد باید وارد حساب شوید','w');return;}
-  try{
-    const r=await fetch(apiUrl('/token/redeem'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({code})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'کد نامعتبر است','w');return;}
-    S.wallet=data.wallet; updateUI();
-    closemod('redeem-modal');
-    toast('✅ '+data.tokens+' توکن به کیف پول اضافه شد 🪙 (تأیید سرور)');
-    document.getElementById('redeem-code').value='';
-    const h=document.getElementById('wallet-history');
-    if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — فعال‌سازی توکن '+code.slice(0,12)+'... ('+data.tokens+' توکن) ✅</div>'+h.innerHTML;
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
+  // تعیین نوع توکن از کد
+  const parts=code.split('-');
+  const typeMap={NRM:5,BAS:10,TEM:20,PRO:35,VIP:50};
+  const tokens=typeMap[parts[1]]||5;
+  S.wallet.tokens+=tokens;
+  sv('wallet_'+(S.user?.email||''),S.wallet);
+  updateUI();
+  closemod('redeem-modal');
+  toast('✅ '+tokens+' توکن به کیف پول اضافه شد 🪙');
+  document.getElementById('redeem-code').value='';
+  const h=document.getElementById('wallet-history');
+  if(h)h.innerHTML='<div style="padding:8px 0;font-size:13px;border-bottom:1px dashed var(--gb)">'+new Date().toLocaleDateString('fa-IR')+' — فعال‌سازی توکن '+code.slice(0,12)+'... ('+tokens+' توکن) ✅</div>'+h.innerHTML;
 }
 function buyTrialToken(){
   const used=ld('trial_'+(S.user?.email||''),0);
@@ -3672,12 +3265,12 @@ function buyTrialToken(){
   toast('✅ ۳ توکن آزمایشی دریافت شد! ('+(3-used-1)+' بار دیگر رایگان)');
 }
 
-// ===== ADS ===== (فراوانی تبلیغات برای حساب‌های رایگان افزایش یافت — پلن‌های پولی همچنان کاملاً بدون تبلیغ هستند)
+// ===== ADS =====
 let adTimer=null, adInterval=null, adCountdown=null;
 function startAds(){
   if(PLAN_LIMITS[S.plan].noAd)return;
   showAd();
-  adInterval=setInterval(()=>{if(!PLAN_LIMITS[S.plan].noAd)showAd();},180000); // هر ۳ دقیقه به‌جای ۵ دقیقه
+  adInterval=setInterval(()=>{if(!PLAN_LIMITS[S.plan].noAd)showAd();},300000);
 }
 function stopAdTimer(){if(adInterval){clearInterval(adInterval);adInterval=null;}if(adCountdown){clearInterval(adCountdown);adCountdown=null;}}
 let adIdx=0;
@@ -3699,7 +3292,7 @@ function showAd(){
 function closeAd(){document.getElementById('ad-overlay').classList.remove('on');if(adCountdown){clearInterval(adCountdown);adCountdown=null;}}
 
 // ===== NUDGE =====
-const NUDGES=['با Pro تبلیغات را برای همیشه ببندید! — ۱۵۰,۰۰۰ تومان','پیام‌های نامحدود با Plus! — ۲۱۰,۰۰۰ تومان','مدل AI اختصاصی با VIP! — ۳۰۰,۰۰۰ تومان','Office AI بدون محدودیت با Pro!','Lip Sync در پلن‌های پولی فعال است!','با ارتقا، دیگر هیچ تبلیغی نمی‌بینید 🚀','کیف پول بزرگ‌تر و سهمیه بیشتر با پلن‌های پولی!'];
+const NUDGES=['با Pro تبلیغات را برای همیشه ببندید! — ۱۵۰,۰۰۰ تومان','پیام‌های نامحدود با Plus! — ۲۱۰,۰۰۰ تومان','مدل AI اختصاصی با VIP! — ۳۰۰,۰۰۰ تومان','Office AI بدون محدودیت با Pro!','Lip Sync در پلن‌های پولی فعال است!'];
 let nudgeIdx=0;
 function showNudge(){
   if(PLAN_LIMITS[S.plan].noAd)return;
@@ -3707,7 +3300,7 @@ function showNudge(){
   nudgeIdx++;
   document.getElementById('nudge').classList.add('on');
   setTimeout(closeNudge,8000);
-  setTimeout(showNudge,75000); // هر ۷۵ ثانیه به‌جای ۱۲۰ ثانیه
+  setTimeout(showNudge,120000);
 }
 function closeNudge(){document.getElementById('nudge').classList.remove('on');}
 
@@ -3839,19 +3432,9 @@ function selAI(ai,btn){
 }
 function selMod(m,btn){
   S.selMod=m;
-  document.querySelectorAll('#persona-sels .modsel').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.modsel').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   document.getElementById('modlbl').textContent=MODELS[m]?.n||m;
-}
-function selProvider(p,btn){
-  if(p==='zcode'&&rankOf(S.userRole)<ROLE_RANK.professional&&!['Pro','Plus','VIP'].includes(S.plan)){
-    // این فقط یک هشدار زودهنگام برای تجربه کاربری بهتر است، نه مرز امنیتی —
-    // مرز واقعی همیشه سمت سرور در handleChat بررسی می‌شود، حتی اگر این پیام رد شود.
-    toast('🔒 مدل ZCODE ویژه حساب‌های حرفه‌ای/VIP است — سرور هم این را بررسی می‌کند','w');
-  }
-  S.selProvider=p;
-  document.querySelectorAll('#provider-sels .modsel').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
 }
 function selMode(btn,m){
   S.aiMode=m;
@@ -3961,7 +3544,6 @@ async function doSend(){
   if(S.cooldown.active){toast('لطفاً صبر کنید...','w');return;}
   if(S.msgs<=0){toast('محدودیت پیام! یک ساعت دیگر شارژ می‌شود','w');return;}
   if(isAIResting()){toast('🌙 طبق تنظیمات، AI در ساعت/روز استراحت است','w');return;}
-  if(isParentalChatBlocked()){toast('🔒 چت توسط کنترل والدین محدود شده است','w');return;}
   inp.value=''; inp.style.height='auto';
   S.msgs=Math.max(0,S.msgs-1); S.totMsgs++; updateUI();
   S.cooldown.count++;
@@ -3978,28 +3560,21 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:S.selProvider||getAIProvider(),model:getModelId(S.selMod),temperature,enhanceWithZcode:!!aiSet?.plgZcode})});
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
     const data=await res.json();
     remTyping(tid);
-    if(!res.ok||data.ok===false||!data.content?.[0]?.text){
-      // قبلاً این حالت به‌جای خطا، متن ثابت "خطا در دریافت پاسخ" را به‌عنوان
-      // پاسخ واقعی AI نمایش می‌داد. حالا دلیل واقعی خطا (از سرور) نشان داده می‌شود.
-      const reason=data.error||('کد وضعیت '+res.status);
-      addMsg('❌ '+reason,'ai');
-      S.msgs=Math.min(S.msgs+1,999); updateUI(); // پیامی که واقعاً پاسخ نگرفت، سهمیه مصرف نکند
-      return;
-    }
-    const reply=data.content[0].text;
+    const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
     saveChatHistory();
-    if(S.voiceReplyOn)playAIVoice(reply);
     sv('stats_'+(S.user?.email||''),{totMsgs:S.totMsgs,totCreates:S.totCreates,totPosts:S.totPosts});
+    if(ld('voiceReplyOn',false))speakText(reply.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
   }catch(e){
     remTyping(tid);
     addMsg('❌ خطا در اتصال. دوباره تلاش کنید.','ai');
   }
 }
+let chatMsgTexts=[];
 function addMsg(txt,role,fmt=false){
   const msgs=document.getElementById('chat-msgs');
   const d=document.createElement('div');
@@ -4008,7 +3583,13 @@ function addMsg(txt,role,fmt=false){
   const t=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
   const disp=fmt?fmtMsg(txt):escHtml(txt).replace(/\n/g,'<br>');
   const ml=role==='ai'?'<span style="font-size:9px;opacity:0.5;display:block;margin-top:2px">'+(MODELS[S.selMod]?.n||'AI')+'</span>':'';
-  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+'</div></div>';
+  let speakBtn='';
+  if(role==='ai'){
+    const idx=chatMsgTexts.length;
+    chatMsgTexts.push(txt.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
+    speakBtn='<button onclick="speakText(chatMsgTexts['+idx+'])" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:12px;margin-top:4px" title="پخش صوتی">🔊</button>';
+  }
+  d.innerHTML='<div class="msgav '+role+'">'+av+'</div><div><div class="msgb '+role+'">'+disp+ml+'</div><div class="msgt">'+t+speakBtn+'</div></div>';
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
 let typc=0;
@@ -4025,16 +3606,12 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 // ===== CALL AI =====
 async function callAI(msgs,sys,modKey){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return null;}
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
+  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
-  if(!res.ok||data.ok===false||!data.content?.[0]?.text){
-    toast('❌ '+(data.error||('کد وضعیت '+res.status)),'w');
-    return null;
-  }
-  return data.content[0].text;
+  return data.content?.[0]?.text||'خطا';
 }
 
 async function callOpenRouter(messages,system,model){
@@ -4115,33 +3692,11 @@ function selCMod(m,btn){
   const labels={luolaf3:'Llama 3.3 — دقیق',uliki2:'Mixtral — سریع',uliki3:'Gemma2 — خلاق'};
   document.getElementById('cmodlbl').textContent=labels[m]||'';
 }
-function selImageTier(tier,btn){
-  S.imageTier=tier;
-  document.querySelectorAll('#image-tier-chips .chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('image-tier-desc').textContent=tier==='alpha'?'تصاویر با کیفیت بالا با FLUX AI':'تصاویر واقعی با Pollinations AI — رایگان';
-  document.getElementById('image-beta-note').style.display=tier==='alpha'?'none':'block';
-}
-function selVideoTier(tier,btn){
-  S.videoTier=tier;
-  document.querySelectorAll('#video-tier-chips .chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('video-tier-desc').textContent=tier==='luma'?'ویدیوی واقعی تولیدشده با Luma AI — ویژه حساب‌های حرفه‌ای/VIP':'AI صحنه‌ها را توصیف و تصویر می‌سازد (سناریو + تصاویر صحنه)';
-  document.getElementById('video-script-banner').style.display=tier==='luma'?'none':'flex';
-}
 async function gen(type){
   if(S.creates<=0){toast('محدودیت تولید!','w');setTimeout(()=>nav('plans'),1500);return;}
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
-  const isAlphaImage=(type==='image'&&S.imageTier==='alpha');
-  const isRealVideo=(type==='video'&&S.videoTier==='luma');
-  const quotaResource={image:'image',video:'video',music:'music',code:'text',text:'text'}[type]||'text';
-  // برای Alpha/FLUX و ویدیوی واقعی Luma سهمیه را از قبل مصرف نمی‌کنیم — خود
-  // هندلر سرور (handleGenerateImageAlpha / handleGenerateVideo) این کار را
-  // فقط بعد از موفقیت واقعی روی همان شمارنده انجام می‌دهد؛ مصرف دوباره اینجا
-  // باعث می‌شد هر تولید موفق، دو واحد سهمیه مصرف کند.
-  if(!isAlphaImage&&!isRealVideo&&!(await consumeQuota(quotaResource)))return;
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
@@ -4149,37 +3704,9 @@ async function gen(type){
   S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
-    if(isRealVideo){
-      if(!API_CONFIGURED||!S.sessionToken){toast('برای ساخت ویدیوی واقعی با Luma باید وارد حساب شوید','w');if(btn){btn.innerHTML='🎬 ساخت ویدیو';btn.disabled=false;}return;}
-      // handleGenerateVideo سمت سرور به‌صورت همزمان تا پایان کار Luma صبر می‌کند
-      // و یک پاسخ نهایی برمی‌گرداند (نه یک job id برای poll جداگانه) — این دقیقاً
-      // همان قرارداد فعلی بک‌اند است، نه یک فرمت جدید ابداعی.
-      const res=await fetch(apiUrl('/generate/video'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt})});
-      const data=await res.json();
-      if(!res.ok||!data.ok||!data.videoUrl){
-        document.getElementById('video-out').innerHTML='<div style="color:#E74C3C;padding:14px;font-size:13px">❌ '+escHtml(data.error||('کد وضعیت '+res.status))+'</div>';
-        rb.classList.add('on');
-      } else {
-        document.getElementById('video-out').innerHTML='<video controls style="width:100%;border-radius:12px;display:block" src="'+escHtml(data.videoUrl)+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+escHtml(data.videoUrl)+'" target="_blank" download>⬇️ دانلود</a><button class="btn btng btnsm" onclick="pubContent(\'video\')">📤 انتشار</button></div>';
-        rb.classList.add('on');
-        toast('✅ ویدیو با Luma ساخته شد!');
-      }
-    } else if(isAlphaImage){
-      if(!API_CONFIGURED||!S.sessionToken){toast('برای استفاده از Alpha/FLUX باید وارد حساب شوید','w');if(btn){btn.innerHTML='🖼️ ساخت تصویر';btn.disabled=false;}return;}
-      const res=await fetch(apiUrl('/generate/image-alpha'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt})});
-      const data=await res.json();
-      if(!data.ok){
-        document.getElementById('image-out').innerHTML='<div style="color:#E74C3C;padding:14px;font-size:13px">❌ '+escHtml(data.error||('کد وضعیت '+res.status))+'</div>';
-        rb.classList.add('on');
-      } else {
-        document.getElementById('image-out').innerHTML='<img src="'+escHtml(data.imageUrl)+'" style="width:100%;border-radius:12px;display:block"><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+escHtml(data.imageUrl)+'" target="_blank" download>⬇️ دانلود</a><button class="btn btng btnsm" onclick="pubContent(\'image\')">📤 انتشار</button></div>';
-        rb.classList.add('on');
-        toast('✅ تصویر با FLUX ساخته شد!');
-      }
-    } else if(type==='image'){
+    if(type==='image'){
       const style=document.querySelector('#cp-image .chip.on')?.textContent?.trim()||'رئالیستی';
       const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 50 words, style:'+style+'): "'+prompt+'"'}],'',mk);
-      if(!ep){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const seed=Math.floor(Math.random()*99999);
       const imgUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(ep)+'?width=512&height=512&seed='+seed+'&nologo=true';
       document.getElementById('image-out').innerHTML='<div style="margin-bottom:10px"><div style="height:4px;background:var(--snow);border-radius:2px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));animation:imgld 15s linear forwards;border-radius:2px"></div></div></div><div id="img-con" style="border-radius:12px;overflow:hidden;background:var(--snow);min-height:260px;display:flex;align-items:center;justify-content:center;font-size:44px">🎨</div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btnp btnsm" id="dl-img-btn" data-url="'+imgUrl+'" onclick=\"window.open(this.dataset.url,\'_blank\')\">🔗 مشاهده</button><button class="btn btng btnsm" onclick=\"pubContent(\'image\')\">📤 انتشار</button></div>';
@@ -4196,14 +3723,12 @@ async function gen(type){
       const lang=document.querySelector('#cp-code .chips:first-of-type .chip.on')?.textContent?.trim()||'Python';
       const req=document.querySelector('#cp-code .chips:last-of-type .chip.on')?.textContent?.trim()||'نوشتن';
       const txt=await callAI([{role:'user',content:'زبان: '+lang+'\nنوع: '+req+'\nدرخواست: '+prompt+'\nکد کامل با کامنت فارسی بنویس.'}],'تو برنامه‌نویس حرفه‌ای هستی.',mk);
-      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       document.getElementById('code-out').innerHTML=fmtMsg(txt);
       rb.classList.add('on');
       genContentPrompt(lang+': '+prompt,'res-code');
     } else if(type==='text'){
       const ct=document.querySelector('#cp-text .chip.on')?.textContent?.trim()||'مقاله';
       const txt=await callAI([{role:'user',content:'نوع: '+ct+'\nموضوع: '+prompt+'\nیک '+ct+' حرفه‌ای به فارسی بنویس.'}],'',mk);
-      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       document.getElementById('text-out').innerHTML=fmtMsg(txt);
       rb.classList.add('on');
       genContentPrompt(ct+': '+prompt,'res-text');
@@ -4214,7 +3739,6 @@ async function gen(type){
       const dmap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120};
       const tsec=dmap[dur]||60;
       const txt=await callAI([{role:'user',content:'آهنگ کامل بساز:\nموضوع: '+prompt+'\nسبک: '+genre+'\nحال: '+mood+'\nمدت: '+dur+'\nفرمت:\nBPM: [عدد]\nعنوان: [عنوان]\nمتن:\n[ورس ۱]\n[کورس]\n[ورس ۲]'}],'تو آهنگساز حرفه‌ای هستی.',mk);
-      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const bpmM=txt.match(/BPM:\s*(\d+)/); const bpm=parseInt(bpmM?.[1])||90;
       const gname=genre.replace(/[^؀-ۿ\s]/g,'').trim();
       document.getElementById('music-out').innerHTML='<div style="background:#fff;border-radius:12px;padding:16px;border:1px solid var(--gb);font-size:13px;line-height:2;margin-bottom:12px">'+txt.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</div><div id="mplayer-box"></div>';
@@ -4223,7 +3747,6 @@ async function gen(type){
       genContentPrompt(genre+' موزیک: '+prompt,'res-music');
     } else if(type==='video'){
       const txt=await callAI([{role:'user',content:'اسکریپت ویدیو:\nموضوع: '+prompt+'\nفرمت:\nTITLE: [عنوان]\nSCENE_1: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_2: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_3: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_4: [توضیف انگلیسی] | [توضیف فارسی]\nMUSIC: [سبک]\nNARRATION: [روایت]'}],'',mk);
-      if(!txt){if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}return;}
       const lines=txt.split('\n');
       let title='ویدیو AI',music='',narr=''; const scenes=[];
       for(const ln of lines){
@@ -4279,14 +3802,13 @@ async function genLipSync(){
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
     // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
-    if(!API_CONFIGURED||!S.sessionToken){toast('برای Lip Sync باید وارد حساب شوید','w');btn.innerHTML='🎭 ساخت ویدیو Lip Sync';btn.disabled=false;return;}
     const res=await fetch(WK+'/lipsync',{
       method:'POST',
-      headers:{'Content-Type':'application/json',...authHeaders()},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
     });
     const data=await res.json();
-    if(res.ok&&data.id){
+    if(data.id){
       // polling برای نتیجه
       document.getElementById('lipsync-out').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray)"><div class="spin" style="border-color:var(--graymd);border-top-color:var(--accent);width:30px;height:30px;margin:0 auto 12px"></div>در حال پردازش ویدیو... (۱-۲ دقیقه)</div>';
       document.getElementById('res-lipsync').classList.add('on');
@@ -4303,7 +3825,7 @@ async function genLipSync(){
 async function pollDID(id,attempt=0){
   if(attempt>30)return;
   try{
-    const res=await fetch(WK+'/lipsync/'+id,{headers:authHeaders()});
+    const res=await fetch(WK+'/lipsync/'+id);
     const data=await res.json();
     if(data.status==='done'&&data.result_url){
       document.getElementById('lipsync-out').innerHTML='<video controls style="width:100%;border-radius:12px" src="'+data.result_url+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+data.result_url+'" download target="_blank">⬇️ دانلود</a><button class="btn btng btnsm" onclick=\"pubContent(\'video\')\">📤 انتشار</button></div>';
@@ -4379,8 +3901,6 @@ function swOffice(t){
   document.getElementById('office-type').value=t;
   const ph={word:'مثال: گزارش فروش ماهانه...',excel:'مثال: جدول درآمد و هزینه...',ppt:'مثال: ارائه برای سرمایه‌گذاران...'};
   document.getElementById('office-prompt').placeholder=ph[t]||'';
-  document.getElementById('office-img-wrap').style.display=(t==='excel')?'none':'flex';
-  if(t==='excel')document.getElementById('office-add-image').checked=false;
 }
 let officeUploadedContent='';
 function handleOfficeUpload(input){
@@ -4396,54 +3916,19 @@ function handleOfficeUpload(input){
   };
   reader.readAsText(file);
 }
-// متن Office همیشه صراحتاً از DeepSeek می‌آید (نه مسیریابی خودکار بر اساس پرسونا/پلن که در بقیه چت استفاده می‌شود)
-async function callDeepSeekDirect(messages,system){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return null;}
-  try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({messages,system,max_tokens:2000,model_key:'deepseek',model:'deepseek-chat',temperature:0.6})});
-    const data=await res.json();
-    if(!res.ok||data.ok===false||!data.content?.[0]?.text){
-      toast('❌ '+(data.error||('کد وضعیت '+res.status)),'w');
-      return null;
-    }
-    return data.content[0].text;
-  }catch(e){toast('خطا در ارتباط با سرور','w');return null;}
-}
-async function genOfficeImage(topic){
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای ساخت تصویر باید وارد حساب شوید','w');return null;}
-  try{
-    const res=await fetch(apiUrl('/generate/image-alpha'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({prompt:topic})});
-    const data=await res.json();
-    if(!data.ok){toast('❌ تصویر: '+(data.error||'خطا'),'w');return null;}
-    return data.imageUrl;
-  }catch(e){toast('خطا در ساخت تصویر','w');return null;}
-}
 async function genOffice(){
   const type=document.getElementById('office-type').value;
   const prompt=document.getElementById('office-prompt').value.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
-  const wantImage=document.getElementById('office-add-image').checked&&type!=='excel';
   const btn=document.getElementById('gbtn-office');
   btn.innerHTML='<div class="spin"></div> در حال ساخت...'; btn.disabled=true;
-  document.getElementById('office-img-preview').style.display='none';
-  window._officeData={type,imageUrl:null};
   try{
     const baseCtx=officeUploadedContent?('\n\n[محتوای پایه برای استفاده/ادامه/ویرایش]:\n'+officeUploadedContent):'';
     const pmap={word:'یک سند Word حرفه‌ای بنویس:\n'+prompt+baseCtx+'\nشامل: عنوان، مقدمه، بدنه اصلی، نتیجه‌گیری.',excel:'یک جدول Excel بساز:\n'+prompt+baseCtx+'\nهر ردیف با | جدا شود. ردیف اول هدر باشد.',ppt:'یک ارائه PowerPoint بساز:\n'+prompt+baseCtx+'\nبرای هر اسلاید: SLIDE: [عنوان] | [محتوا]'};
-
-    const textPromise=callDeepSeekDirect([{role:'user',content:pmap[type]||prompt}],'تو نویسنده حرفه‌ای اسناد هستی.');
-    const imagePromise=wantImage?genOfficeImage(prompt+', professional document illustration, high quality'):Promise.resolve(null);
-    const [txt,imageUrl]=await Promise.all([textPromise,imagePromise]);
-
-    if(!txt){btn.innerHTML='✨ ساخت با AI'; btn.disabled=false;return;} // خطای واقعی قبلاً toast شده - چیزی به‌جای پاسخ ساختگی نشان داده نمی‌شود
+    const txt=await callAI([{role:'user',content:pmap[type]||prompt}],'تو نویسنده حرفه‌ای اسناد هستی.',S.createMod||'luolaf3');
     document.getElementById('office-out').value=txt;
     document.getElementById('res-office').style.display='block';
-    window._officeData={type,imageUrl};
-    if(imageUrl){
-      const pv=document.getElementById('office-img-preview');
-      pv.style.display='block';
-      pv.innerHTML='<img src="'+escHtml(imageUrl)+'" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--gb)">';
-    }
+    window._officeData={type};
     genContentPrompt(prompt,'res-office');
   } catch(e){toast('خطا در اتصال','w');}
   btn.innerHTML='✨ ساخت با AI'; btn.disabled=false;
@@ -4469,7 +3954,7 @@ function parsePptSlides(txt){
 }
 function dlOffice(){
   if(!window._officeData){toast('ابتدا محتوا بسازید','w');return;}
-  const {type,imageUrl}=window._officeData;
+  const {type}=window._officeData;
   const txt=document.getElementById('office-out').value;
   if(!txt.trim()){toast('محتوا خالیه','w');return;}
   if(type==='excel'){
@@ -4481,22 +3966,16 @@ function dlOffice(){
     const pptx=new PptxGenJS();
     pptx.defineLayout({name:'ULIKI',width:10,height:5.63});
     pptx.layout='ULIKI';
-    const slides=parsePptSlides(txt);
-    slides.forEach((s,i)=>{
+    parsePptSlides(txt).forEach(s=>{
       const slide=pptx.addSlide();
       slide.background={color:'FFFFFF'};
-      const hasImgHere=imageUrl&&i===0; // تصویر روی اسلاید اول قرار می‌گیرد
-      slide.addText(s.title,{x:0.5,y:0.35,w:hasImgHere?5.5:9,h:1,fontSize:26,bold:true,color:'1A3A5C',align:'right',rtlMode:true,fontFace:'Arial'});
-      slide.addText(s.body,{x:0.5,y:1.4,w:hasImgHere?5.5:9,h:3.9,fontSize:15,color:'333333',align:'right',rtlMode:true,fontFace:'Arial',valign:'top'});
-      if(hasImgHere){
-        try{slide.addImage({path:imageUrl,x:6.2,y:0.5,w:3.1,h:3.1});}catch(e){/* اگر لود تصویر از URL با خطا مواجه شد، اسلاید بدون تصویر تولید می‌شود نه اینکه کل فایل خراب شود */}
-      }
+      slide.addText(s.title,{x:0.5,y:0.35,w:9,h:1,fontSize:26,bold:true,color:'1A3A5C',align:'right',rtlMode:true,fontFace:'Arial'});
+      slide.addText(s.body,{x:0.5,y:1.4,w:9,h:3.9,fontSize:15,color:'333333',align:'right',rtlMode:true,fontFace:'Arial',valign:'top'});
     });
     pptx.writeFile({fileName:'uliki.pptx'});
     toast('✅ فایل دانلود شد!');
   } else {
-    const imgTag=imageUrl?('<img src="'+imageUrl+'" style="max-width:100%;border-radius:10px;margin-bottom:20px">'):'';
-    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}</style></head><body>'+imgTag+txt.replace(/\n/g,'<br>')+'</body></html>';
+    const html='<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:Tahoma;direction:rtl;padding:40px;line-height:1.8}h1,h2{color:#1A3A5C}</style></head><body>'+txt.replace(/\n/g,'<br>')+'</body></html>';
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'application/msword'}));a.download='uliki.doc';a.click();
     toast('✅ فایل دانلود شد!');
   }
@@ -4504,21 +3983,17 @@ function dlOffice(){
 
 // ===== FEED =====
 let feedCache=[];
-let feedNextCursor=null;
-function authHeaders(){ return S.sessionToken?{'Authorization':'Bearer '+S.sessionToken}:{}; }
-
-async function genFeed(reset=true){
+async function genFeed(){
   const c=document.getElementById('feed-posts');
   if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
-  if(reset){feedCache=[];feedNextCursor=null;c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';}
+  c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
   try{
-    const res=await fetch(apiUrl('/feed'+(feedNextCursor?('?cursor='+feedNextCursor):'')));
+    const res=await fetch(WK+'/feed');
     const data=await res.json();
-    if(!data.ok){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">'+escHtml(data.error||'خطا در بارگذاری فید')+'</div>';return;}
-    feedCache=reset?(data.posts||[]):feedCache.concat(data.posts||[]);
-    feedNextCursor=data.nextCursor;
+    feedCache=data.posts||[];
     if(!feedCache.length){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز پستی منتشر نشده — اولین نفر باشید! 🚀</div>';return;}
-    c.innerHTML=feedCache.map((p,i)=>mkPost(p,i)).join('')+(feedNextCursor?'<div style="text-align:center;margin-top:10px"><button class="btn btno btnsm" onclick="genFeed(false)">بارگذاری بیشتر</button></div>':'');
+    c.innerHTML='';
+    feedCache.forEach((p,i)=>{c.innerHTML+=mkPost(p,i);});
     renderFeedSidebar();
     genExplore();
   }catch(e){
@@ -4537,43 +4012,21 @@ function renderFeedSidebar(){
   if(sugEl)sugEl.innerHTML=recentUsers.length?recentUsers.slice(0,5).map(p=>'<div style="display:flex;align-items:center;gap:8px"><div class="postav" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,'+p.col+','+p.col+'88)">'+escHtml(p.av)+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+escHtml(p.user)+'</div></div><button class="btn btno btnsm" style="padding:3px 9px;font-size:10px" onclick="toggleFollow(this)">دنبال</button></div>').join(''):'<div style="color:var(--gray);font-size:12px">هنوز کسی منتشر نکرده</div>';
 }
 function mkPost(p,i){
-  const ageBadge=p.ageRating==='+18'||p.ageRating==='18'?'<span class="postbdg" style="background:#FFE0E0;color:#C0392B">🔞 ۱۸+</span>':'';
+  const ageBadge=p.ageRating==='+18'?'<span class="postbdg" style="background:#FFE0E0;color:#C0392B">🔞 ۱۸+</span>':'';
   const linkHtml=(p.link&&/^https?:\/\//i.test(p.link))?'<a href="'+escHtml(p.link)+'" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);display:block;margin-top:4px;word-break:break-all">🔗 '+escHtml(p.link)+'</a>':'';
-  const canModerate=rankOf(S.userRole)>=ROLE_RANK.coding_specialist;
-  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span>${ageBadge}</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${escHtml(p.em||'')}</div><div class="postcont">${escHtml(p.cont)}${linkHtml}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button><button class="postact" onclick="reportPost('${escHtml(p.id)}')" title="گزارش">🚩</button>${canModerate?`<button class="postact" onclick="deletePost('${escHtml(p.id)}')" title="حذف (مدیریت)">🗑️</button>`:''}</div></div>`;
+  return`<div class="postcard" style="animation-delay:${i*0.05}s"><div class="posthdr"><div class="postav" style="background:linear-gradient(135deg,${p.col},${p.col}88)">${escHtml(p.av)}</div><div class="postuser"><h4>${escHtml(p.user)}</h4><span><span class="postbdg">${escHtml(p.bdg)}</span>${ageBadge}</span></div><div class="postmenu">⋯</div></div><div class="postmedia">${p.em}</div><div class="postcont">${escHtml(p.cont)}${linkHtml}</div><div class="posttags">${(p.tags||[]).map(t=>'<span class="posttag">'+escHtml(t)+'</span>').join('')}</div><div class="postacts"><button class="postact" data-id="${escHtml(p.id)}" data-liked="0" onclick="likePost(this)">❤️ ${p.lk||0}</button><button class="postact" data-id="${escHtml(p.id)}" onclick="openComments('${escHtml(p.id)}')">💬 ${p.cm||0}</button><button class="postact" onclick="sharePost()">↗️ اشتراک</button><button class="postact" data-pid="${escHtml(p.id)}" data-saved="0" onclick="savePost(this)">🔖 ذخیره</button></div></div>`;
 }
 async function likePost(btn){
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای لایک باید وارد حساب شوید','w');return;}
   const id=btn.getAttribute('data-id');
   const liked=btn.getAttribute('data-liked')==='1';
   const delta=liked?-1:1;
   btn.setAttribute('data-liked',liked?'0':'1');
   btn.classList.toggle('liked',!liked);
   try{
-    const res=await fetch(apiUrl('/feed/like'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id,delta})});
+    const res=await fetch(WK+'/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
     const data=await res.json();
-    if(data.ok)btn.innerHTML='❤️ '+(data.lk??0);
-    else{btn.setAttribute('data-liked',liked?'1':'0');btn.classList.toggle('liked',liked);toast(data.error||'خطا','w');}
+    btn.innerHTML='❤️ '+(data.lk??0);
   }catch(e){}
-}
-async function reportPost(id){
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای گزارش باید وارد حساب شوید','w');return;}
-  const reason=prompt('دلیل گزارش این پست چیست؟ (اختیاری)')||'';
-  try{
-    const res=await fetch(apiUrl('/feed/report'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id,reason})});
-    const data=await res.json();
-    toast(data.ok?'✅ گزارش شما ثبت شد':(data.error||'خطا'),data.ok?'i':'w');
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function deletePost(id){
-  if(!confirm('این پست حذف شود؟'))return;
-  try{
-    const res=await fetch(apiUrl('/feed'),{method:'DELETE',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id})});
-    const data=await res.json();
-    if(!data.ok){toast(data.error||'خطا در حذف','w');return;}
-    toast('🗑️ پست حذف شد');
-    genFeed(true);
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
 }
 function savePost(btn){
   const saved=btn.getAttribute('data-saved')==='1';
@@ -4604,15 +4057,13 @@ function renderComments(){
   list.innerHTML=comments.length?comments.map(c=>'<div style="font-size:13px;background:var(--snow);border-radius:10px;padding:8px 12px;text-align:right"><strong>'+escHtml(c.user)+':</strong> '+escHtml(c.txt)+'</div>').join(''):'<div style="font-size:12px;color:var(--gray);text-align:center;padding:24px 0">هنوز نظری ثبت نشده — اولین نفر باشید!</div>';
 }
 async function addComment(){
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای ارسال نظر باید وارد حساب شوید','w');return;}
   const inp=document.getElementById('comment-inp');
   const txt=inp.value.trim();
   if(!txt||currentCommentPid===null)return;
   inp.value='';
   try{
-    const res=await fetch(apiUrl('/feed/comment'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({id:currentCommentPid,txt})});
+    const res=await fetch(WK+'/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
     const data=await res.json();
-    if(!data.ok){toast(data.error||'خطا در ارسال نظر','w');return;}
     const post=feedCache.find(p=>p.id===currentCommentPid);
     if(post){post.comments=data.comments||[];post.cm=post.comments.length;}
     renderComments();
@@ -4632,21 +4083,20 @@ function toggleFollow(btn){
 function sharePost(){if(navigator.share){navigator.share({title:'Uliki AI',text:'یک محتوای AI ببینید!',url:location.href});}else{navigator.clipboard.writeText(location.href);toast('لینک کپی شد! 📋');}}
 function pubContent(type){S.pubtype=type;document.getElementById('pub-title').value='';document.getElementById('pub-desc').value='';openmod('pub-modal');}
 async function doPub(){
-  if(!API_CONFIGURED||!S.sessionToken){toast('برای انتشار باید وارد حساب شوید','w');return;}
   const desc=document.getElementById('pub-desc').value||'';
   const ageRating=document.getElementById('pub-age').value;
   const link=document.getElementById('pub-link').value.trim();
   if(!ageRating){toast('رده سنی محتوا رو مشخص کنید','w');return;}
   if(link&&!/^https?:\/\//i.test(link)){toast('لینک باید با http:// یا https:// شروع بشه','w');return;}
   const ems={music:'🎵',code:'💻',video:'🎬',image:'🖼️',text:'📝'};
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   try{
-    const res=await fetch(apiUrl('/feed'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({
+    await fetch(apiUrl('/feed'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      user:S.user?.name||'کاربر',av:(S.user?.name||'U').charAt(0).toUpperCase(),col:'#4FA8D5',
       type:S.pubtype,em:ems[S.pubtype]||'✨',cont:desc||'محتوای AI',tags:['#Uliki',ageRating],bdg:'AI Content',
       ageRating,link
     })});
-    const data=await res.json();
-    if(!data.ok){toast(data.error||'خطا در انتشار','w');return;}
-    S.totPosts++;updateUI();genFeed(true);closemod('pub-modal');toast('📤 منتشر شد!');
+    S.totPosts++;updateUI();genFeed();closemod('pub-modal');toast('📤 منتشر شد!');
   }catch(e){toast('خطا در انتشار','w');}
 }
 
@@ -4695,469 +4145,6 @@ async function sendSupport(){
   },700);
 }
 
-// ===== NEWS =====
-let newsCache=[];
-let newsState={cat:'',q:'',page:1,faOnly:false};
-async function loadNews(reset){
-  if(!API_CONFIGURED){document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
-  if(reset){newsState.page=1;newsCache=[];document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">در حال بارگذاری...</div>';}
-  newsState.faOnly=document.getElementById('news-fa-toggle')?.classList.contains('on')||false;
-  try{
-    const params=new URLSearchParams();
-    if(newsState.cat)params.set('category',newsState.cat);
-    if(newsState.q)params.set('q',newsState.q);
-    if(newsState.faOnly)params.set('lang','fa');
-    params.set('page',newsState.page);
-    const res=await fetch(apiUrl('/news?'+params.toString()));
-    const data=await res.json();
-    if(!data.ok){document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">'+escHtml(data.error||'خطا در دریافت اخبار')+'</div>';return;}
-    const items=data.articles||[];
-    newsCache=reset?items:newsCache.concat(items);
-    renderNews();
-    document.getElementById('news-more-btn').style.display=items.length?'inline-flex':'none';
-  }catch(e){
-    document.getElementById('news-list').innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">خطا در ارتباط با سرور اخبار</div>';
-  }
-}
-function renderNews(){
-  const el=document.getElementById('news-list');
-  if(!newsCache.length){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">خبری یافت نشد</div>';return;}
-  el.innerHTML=newsCache.map(a=>{
-    const img=a.image_url?('<div style="width:100%;height:150px;border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--snow)"><img src="'+escHtml(a.image_url)+'" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'):'';
-    const time=a.pubDate?new Date(a.pubDate).toLocaleString('fa-IR'):'';
-    return '<div class="postcard">'+img+'<h4 style="font-size:14px;font-weight:800;margin-bottom:6px;line-height:1.6">'+escHtml(a.title||'')+'</h4><p style="font-size:12px;color:var(--graydark);line-height:1.8;margin-bottom:8px">'+escHtml((a.description||'').slice(0,220))+'</p><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--gray)"><span>📡 '+escHtml(a.source_id||a.source||'')+' · '+escHtml(time)+'</span><a href="'+escHtml(a.link||'#')+'" target="_blank" rel="noopener" class="btn btno btnsm" style="padding:4px 12px">مطالعه کامل ↗</a></div></div>';
-  }).join('');
-}
-function newsCat(btn,cat){
-  document.querySelectorAll('#news-cats .exfilt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  newsState.cat=cat; loadNews(true);
-}
-function newsSearchGo(){
-  newsState.q=document.getElementById('news-search').value.trim();
-  loadNews(true);
-}
-
-// ===== DEVELOPER ENVIRONMENT =====
-function swDevEnv(t){
-  document.querySelectorAll('#pg-devenv .ctab').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('#pg-devenv .cpanel').forEach(x=>x.classList.remove('on'));
-  document.getElementById('dt-'+t).classList.add('on');
-  document.getElementById('dp-'+t).classList.add('on');
-}
-const STATUS_LABELS={pending:'در انتظار بررسی',approved:'✅ تأیید شده',rejected:'❌ رد شده'};
-function statusColor(s){return s==='approved'?'#27AE60':s==='rejected'?'#E74C3C':'#E67E22';}
-
-async function submitDevChange(){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
-  if(!S.sessionToken){toast('برای ارسال باید وارد حساب شوید','w');return;}
-  const req=id=>document.getElementById(id)?.value?.trim()||'';
-  const fname=req('dev-fname'), lname=req('dev-lname');
-  const goal=req('dev-goal'), changedesc=req('dev-changedesc'), techdesc=req('dev-techdesc'), code=req('dev-code');
-  const agree=document.getElementById('dev-agree').checked;
-  if(!fname||!lname||!goal||!changedesc||!techdesc||!code){toast('لطفاً همه فیلدهای ستاره‌دار را پر کنید','w');return;}
-  if(!agree){toast('باید تأیید کنید این کد مخرب نیست','w');return;}
-  const payload={
-    fname,lname,goal,changedesc,techdesc,code:code.slice(0,20000),
-    country:req('dev-country'),province:req('dev-province'),city:req('dev-city'),
-    github:req('dev-github'),apidocs:req('dev-apidocs'),notes:req('dev-notes'),
-  };
-  try{
-    const r=await fetch(apiUrl('/dev/submit'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify(payload)});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'ارسال ناموفق بود','w');return;}
-    ['dev-fname','dev-lname','dev-country','dev-province','dev-city','dev-goal','dev-changedesc','dev-techdesc','dev-code','dev-github','dev-apidocs','dev-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-    document.getElementById('dev-agree').checked=false;
-    toast('✅ ارسال شد! شناسه: '+data.id);
-    swDevEnv('mine');
-    renderMySubmissions();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function renderMySubmissions(){
-  const el=document.getElementById('dev-mine-list');
-  if(!el)return;
-  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">برای مشاهده ارسال‌ها وارد حساب شوید</div>';return;}
-  el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/dev/submissions/mine'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">'+escHtml(data.error||'خطا')+'</div>';return;}
-    const list=data.submissions||[];
-    el.innerHTML=list.length?list.map(s=>'<div class="ccard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="font-size:13px">🆔 '+s.id.slice(0,8)+'</strong><span style="font-size:11px;padding:3px 10px;border-radius:50px;background:var(--snow);color:'+statusColor(s.status)+'">'+(STATUS_LABELS[s.status]||s.status)+'</span></div><div style="font-size:12px;color:var(--graydark);line-height:1.8"><strong>هدف:</strong> '+escHtml(s.goal)+'<br><strong>تاریخ:</strong> '+new Date(s.ts).toLocaleDateString('fa-IR')+(s.reviewComment?('<br><strong>نظر بازبین:</strong> '+escHtml(s.reviewComment)):'')+'</div></div>'):'<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز چیزی ارسال نکرده‌اید</div>';
-  }catch(e){el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px 0">خطا در ارتباط با سرور</div>';}
-}
-
-// ===== DEVELOPER ENVIRONMENT: LIVE GITHUB REPO BROWSER (role-gated server-side) =====
-let repoTreeCache=[];
-async function loadRepoTree(){
-  const el=document.getElementById('repo-tree');
-  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="padding:10px;color:var(--gray)">برای مشاهده کد باید وارد حساب شوید (نقش توسعه‌دهنده به بالا)</div>';return;}
-  el.innerHTML='<div style="padding:10px;color:var(--gray)">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/dev/repo-tree'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="padding:10px;color:var(--gray)">'+escHtml(data.error||'خطا در دسترسی به مخزن')+'</div>';return;}
-    repoTreeCache=data.files||[];
-    renderRepoTree(repoTreeCache);
-  }catch(e){el.innerHTML='<div style="padding:10px;color:var(--gray)">خطا در ارتباط با سرور</div>';}
-}
-function renderRepoTree(files){
-  const el=document.getElementById('repo-tree');
-  el.innerHTML=files.length?files.map(f=>'<div onclick="loadRepoFile(\''+escHtml(f.path).replace(/'/g,"\\'")+'\')" style="padding:4px 6px;cursor:pointer;border-radius:6px;font-size:11px" onmouseover="this.style.background=\'var(--gb)\'" onmouseout="this.style.background=\'\'">📄 '+escHtml(f.path)+'</div>').join(''):'<div style="padding:10px;color:var(--gray)">فایلی یافت نشد</div>';
-}
-function filterRepoTree(q){
-  const query=(q||'').toLowerCase();
-  renderRepoTree(repoTreeCache.filter(f=>f.path.toLowerCase().includes(query)));
-}
-async function loadRepoFile(path){
-  document.getElementById('repo-file-path').textContent=path;
-  const box=document.getElementById('repo-file-content');
-  box.textContent='در حال بارگذاری...';
-  document.getElementById('repo-file-copy').style.display='none';
-  try{
-    const r=await fetch(apiUrl('/dev/repo-file?path='+encodeURIComponent(path)),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){box.textContent='خطا: '+(data.error||'نامشخص');return;}
-    box.textContent=data.content;
-    document.getElementById('repo-file-copy').style.display='inline-flex';
-  }catch(e){box.textContent='خطا در ارتباط با سرور';}
-}
-
-// ===== DEVELOPER ENVIRONMENT: REVIEW QUEUE (Coding Specialist / Admin / Chairman) =====
-async function loadAdminSubmissions(){
-  const el=document.getElementById('dev-review-list');
-  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px">وارد حساب شوید</div>';return;}
-  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/dev/submissions/all'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'دسترسی کافی نیست')+'</div>';return;}
-    const list=data.submissions||[];
-    el.innerHTML=list.length?list.map(s=>`<div class="ccard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <strong style="font-size:13px">🆔 ${s.id.slice(0,8)} — ${escHtml(s.account)}</strong>
-        <span style="font-size:11px;padding:3px 10px;border-radius:50px;background:var(--snow);color:${statusColor(s.status)}">${STATUS_LABELS[s.status]||s.status}</span>
-      </div>
-      <div style="font-size:12px;color:var(--graydark);line-height:1.8;margin-bottom:8px">
-        <strong>هدف:</strong> ${escHtml(s.goal)}<br>
-        <strong>شرح:</strong> ${escHtml(s.changedesc).slice(0,200)}<br>
-        <strong>تاریخ:</strong> ${new Date(s.ts).toLocaleDateString('fa-IR')}
-      </div>
-      <pre style="max-height:140px;overflow:auto;background:#0d1117;color:#e6edf3;border-radius:8px;padding:10px;font-size:10px;direction:ltr;text-align:left;font-family:monospace;margin-bottom:8px">${escHtml(s.code).slice(0,3000)}</pre>
-      ${s.status==='pending'?`<div style="display:flex;gap:6px">
-        <input class="inp" id="rc-${s.id}" placeholder="نظر بازبینی (اختیاری)" style="flex:1;font-size:11px">
-        <button class="btn btnp btnsm" onclick="reviewSubmission('${s.id}','approve')">✅ تأیید</button>
-        <button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="reviewSubmission('${s.id}','reject')">❌ رد</button>
-      </div>`:`<div style="font-size:11px;color:var(--gray)">بازبین: ${escHtml(s.reviewer||'')} — ${s.reviewComment?escHtml(s.reviewComment):'بدون نظر'}</div>`}
-    </div>`).join(''):'<div style="color:var(--gray);font-size:12px">چیزی برای بررسی نیست</div>';
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-async function reviewSubmission(id,action){
-  const comment=document.getElementById('rc-'+id)?.value?.trim()||'';
-  try{
-    const r=await fetch(apiUrl('/dev/submissions/review'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({id,action,comment})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا','w');return;}
-    toast(action==='approve'?'✅ تأیید شد':'❌ رد شد');
-    loadAdminSubmissions();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-
-// ===== ADMIN DASHBOARD =====
-function initAdminPage(){
-  const allowed=rankOf(S.userRole)>=ROLE_RANK.admin;
-  document.getElementById('admin-denied').style.display=allowed?'none':'block';
-  document.getElementById('admin-content').style.display=allowed?'block':'none';
-  if(allowed)loadPlatformStatus();
-}
-function swAdmin(tab){
-  document.querySelectorAll('#pg-admin .ctab').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('#pg-admin .cpanel').forEach(x=>x.classList.remove('on'));
-  document.getElementById('at-'+tab).classList.add('on');
-  document.getElementById('ap-'+tab).classList.add('on');
-}
-async function loadPlatformStatus(){
-  const el=document.getElementById('admin-status-grid');
-  if(!el)return;
-  el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
-  if(!API_CONFIGURED){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">آدرس API تنظیم نشده</div>';return;}
-  try{
-    const r=await fetch(apiUrl('/api/status'));
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">خطا در دریافت وضعیت</div>';return;}
-    const dot=v=>'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(v?'#27AE60':'#E74C3C')+';margin-left:6px"></span>';
-    const rows=[];
-    Object.entries(data.providers||{}).forEach(([k,v])=>rows.push({l:k,v}));
-    Object.entries(data.kv||{}).forEach(([k,v])=>rows.push({l:k,v}));
-    rows.push({l:'chairman bootstrap شده',v:data.bootstrapped});
-    el.innerHTML=rows.map(r=>'<div style="background:var(--snow);border-radius:10px;padding:10px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center"><span>'+r.l+'</span>'+dot(r.v)+'</div>').join('');
-  }catch(e){el.innerHTML='<div style="grid-column:1/-1;color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-async function adminLookupUser(){
-  const email=document.getElementById('admin-search-email').value.trim();
-  const el=document.getElementById('admin-user-result');
-  if(!email){toast('ایمیل را وارد کنید','w');return;}
-  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال جستجو...</div>';
-  try{
-    const r=await fetch(apiUrl('/admin/user-lookup?email='+encodeURIComponent(email)),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'یافت نشد')+'</div>';return;}
-    const u=data.user;
-    el.innerHTML=`<div class="ccard" style="margin-top:10px;padding:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <strong>${escHtml(u.name||'')}</strong>
-        <span style="font-size:11px;padding:3px 10px;border-radius:50px;background:${u.suspended?'#FFE0E0':'var(--snow)'};color:${u.suspended?'#C0392B':'var(--accent2)'}">${u.suspended?'مسدود':'فعال'}</span>
-      </div>
-      <div style="font-size:12px;color:var(--graydark);line-height:2">
-        نقش: ${ROLE_LABELS[u.role]||u.role}<br>
-        عضویت: ${u.joined?new Date(u.joined).toLocaleDateString('fa-IR'):'—'}<br>
-        بسته خوش‌آمدگویی تا: ${u.welcomeUntil?new Date(u.welcomeUntil).toLocaleDateString('fa-IR'):'—'}<br>
-        کیف پول: ${data.wallet?.tokens??0} توکن، ${data.wallet?.credits??0} کردیت
-      </div>
-      <div style="display:flex;gap:6px;margin-top:10px">
-        ${u.suspended
-          ? `<button class="btn btnp btnsm" onclick="adminSetSuspend('${escHtml(email)}',false)">✅ رفع مسدودی</button>`
-          : `<button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="adminSetSuspend('${escHtml(email)}',true)">🚫 مسدود کردن</button>`}
-      </div>
-    </div>`;
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-async function adminSetSuspend(email,suspended){
-  let reason='';
-  if(suspended)reason=prompt('دلیل مسدودسازی (اختیاری):')||'';
-  try{
-    const r=await fetch(apiUrl('/admin/user-suspend'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({email,suspended,reason})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا','w');return;}
-    toast(suspended?'🚫 حساب مسدود شد':'✅ مسدودی برداشته شد');
-    adminLookupUser();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-function onNotifAudienceChange(){
-  const v=document.getElementById('notif-audience').value;
-  document.getElementById('notif-role-wrap').style.display=v==='role'?'block':'none';
-  document.getElementById('notif-email-wrap').style.display=v==='user'?'block':'none';
-}
-async function createNotification(){
-  const title=document.getElementById('notif-title').value.trim();
-  const message=document.getElementById('notif-message').value.trim();
-  const audience=document.getElementById('notif-audience').value;
-  const priority=document.getElementById('notif-priority').value;
-  const scheduledAt=document.getElementById('notif-schedule').value;
-  if(!title||!message){toast('عنوان و متن را وارد کنید','w');return;}
-  const body={title,message,audience,priority};
-  if(audience==='role')body.targetRole=document.getElementById('notif-role').value;
-  if(audience==='user')body.targetEmail=document.getElementById('notif-email').value.trim();
-  if(scheduledAt)body.scheduledAt=new Date(scheduledAt).toISOString();
-  try{
-    const r=await fetch(apiUrl('/admin/notifications/create'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify(body)});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا در ارسال','w');return;}
-    toast(data.status==='sent'?'✅ اعلان ارسال شد':'⏳ اعلان زمان‌بندی شد');
-    document.getElementById('notif-title').value=''; document.getElementById('notif-message').value=''; document.getElementById('notif-schedule').value='';
-    loadScheduledNotifications();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function loadScheduledNotifications(){
-  const el=document.getElementById('admin-scheduled-list');
-  if(!el)return;
-  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/admin/notifications/list'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'خطا')+'</div>';return;}
-    const list=data.scheduled||[];
-    el.innerHTML=list.length?list.map(n=>`<div style="background:var(--snow);border-radius:10px;padding:10px 12px;font-size:12px"><div style="display:flex;justify-content:space-between"><strong>${escHtml(n.title)}</strong><button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C;padding:2px 8px" onclick="cancelNotification('${n.id}')">لغو</button></div><div style="color:var(--gray);margin-top:4px">${n.audience==='all'?'همه کاربران':n.audience==='role'?('نقش: '+(ROLE_LABELS[n.targetRole]||n.targetRole)):('کاربر: '+escHtml(n.targetEmail))} · موعد: ${n.dueAt?new Date(n.dueAt).toLocaleString('fa-IR'):'—'}</div></div>`).join(''):'<div style="color:var(--gray);font-size:12px">اعلان زمان‌بندی‌شده‌ای وجود ندارد</div>';
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-async function cancelNotification(id){
-  try{
-    const r=await fetch(apiUrl('/admin/notifications/cancel'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({id})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا','w');return;}
-    toast('لغو شد'); loadScheduledNotifications();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-
-// ===== ADMIN: TOKEN CODE ISSUANCE (server-generated, never client-fabricated) =====
-async function issueTokenCode(){
-  const amount=parseInt(document.getElementById('tc-amount').value,10);
-  const note=document.getElementById('tc-note').value.trim();
-  if(!(amount>0)||amount>10000){toast('مقدار توکن باید بین ۱ تا ۱۰۰۰۰ باشد','w');return;}
-  try{
-    const r=await fetch(apiUrl('/admin/token-codes/issue'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({amount,note})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا در صدور کد','w');return;}
-    document.getElementById('tc-new-code-box').style.display='block';
-    document.getElementById('tc-new-code').textContent=data.code;
-    document.getElementById('tc-amount').value=''; document.getElementById('tc-note').value='';
-    toast('✅ کد '+data.amount+' توکنی صادر شد');
-    loadTokenCodes();
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function loadTokenCodes(){
-  const el=document.getElementById('tc-list');
-  if(!el)return;
-  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/admin/token-codes/list'),{headers:authHeaders()});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'خطا')+'</div>';return;}
-    const list=data.codes||[];
-    el.innerHTML=list.length?list.map(c=>`<div style="background:var(--snow);border-radius:8px;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <span style="font-family:monospace">${escHtml(c.code)}</span>
-      <span>${c.amount} توکن</span>
-      <span style="padding:2px 8px;border-radius:50px;background:${c.status==='redeemed'?'#E8F8F0':'#FFF3CD'};color:${c.status==='redeemed'?'#27AE60':'#856404'}">${c.status==='redeemed'?'✅ استفاده‌شده':'⏳ استفاده‌نشده'}</span>
-      <span style="color:var(--gray)">${new Date(c.issuedAt).toLocaleDateString('fa-IR')}</span>
-    </div>`).join(''):'<div style="color:var(--gray);font-size:12px">هنوز کدی صادر نشده</div>';
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-
-// ===== ADMIN: MANUAL WALLET CREDIT / PURCHASE APPROVAL =====
-async function approveWalletCredit(){
-  const targetEmail=document.getElementById('wc-email').value.trim();
-  const kind=document.getElementById('wc-kind').value;
-  const amount=parseInt(document.getElementById('wc-amount').value,10);
-  const reason=document.getElementById('wc-reason').value.trim();
-  const resultEl=document.getElementById('wc-result');
-  if(!targetEmail||!targetEmail.includes('@')){toast('ایمیل معتبر کاربر را وارد کنید','w');return;}
-  if(!(amount>0)){toast('مقدار را وارد کنید','w');return;}
-  // requestId بر اساس ایمیل+نوع+مقدار+دلیل ساخته می‌شود تا ارسال دوباره همان
-  // عملیات (مثلاً کلیک تصادفی دوبار) باعث افزودن دوباره نشود، نه یک مقدار تصادفی هر بار
-  const requestId=btoa(unescape(encodeURIComponent(targetEmail+':'+kind+':'+amount+':'+reason))).slice(0,80);
-  try{
-    const r=await fetch(apiUrl('/wallet/credit'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({targetEmail,kind,amount,reason,requestId})});
-    const data=await r.json();
-    if(!data.ok){resultEl.innerHTML='<span style="color:#E74C3C">❌ '+escHtml(data.error||'خطا')+'</span>';return;}
-    resultEl.innerHTML='<span style="color:#27AE60">✅ موجودی جدید '+targetEmail+': '+data.wallet.tokens+' توکن، '+data.wallet.credits+' کردیت</span>';
-    toast('✅ کیف پول بروزرسانی شد');
-    document.getElementById('wc-amount').value=''; document.getElementById('wc-reason').value='';
-  }catch(e){resultEl.innerHTML='<span style="color:#E74C3C">❌ خطا در ارتباط با سرور</span>';}
-}
-async function setUserRole(){
-  if(!API_CONFIGURED||!S.sessionToken){toast('باید وارد حساب شوید','w');return;}
-  const targetEmail=document.getElementById('admin-target-email').value.trim();
-  const role=document.getElementById('admin-target-role').value;
-  if(!targetEmail){toast('ایمیل کاربر را وارد کنید','w');return;}
-  try{
-    const r=await fetch(apiUrl('/admin/set-role'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({targetEmail,role})});
-    const data=await r.json();
-    if(!data.ok){toast(data.error||'خطا در تغییر نقش','w');return;}
-    toast('✅ نقش «'+(ROLE_LABELS[role]||role)+'» برای '+targetEmail+' اعمال شد');
-    document.getElementById('admin-target-email').value='';
-  }catch(e){toast('خطا در ارتباط با سرور','w');}
-}
-async function loadAuditLog(){
-  const el=document.getElementById('admin-audit-list');
-  if(!el)return;
-  if(!API_CONFIGURED||!S.sessionToken){el.innerHTML='<div style="color:var(--gray);font-size:12px">وارد حساب شوید</div>';return;}
-  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
-  try{
-    const r=await fetch(apiUrl('/admin/audit-log'),{headers:{'Authorization':'Bearer '+S.sessionToken}});
-    const data=await r.json();
-    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'دسترسی کافی نیست')+'</div>';return;}
-    const list=data.entries||[];
-    el.innerHTML=list.length?list.map(e=>'<div style="background:var(--snow);border-radius:8px;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;gap:10px"><span><strong>'+escHtml(e.actor)+'</strong> — '+escHtml(e.action)+'</span><span style="color:var(--gray)">'+new Date(e.ts).toLocaleString('fa-IR')+'</span></div>').join(''):'<div style="color:var(--gray);font-size:12px">رخدادی ثبت نشده</div>';
-  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
-}
-
-// ===== PARENTAL CONTROLS =====
-function parentalKey(){return 'parental_'+(S.user?.email||'guest');}
-function initParentalPage(){
-  const rec=ld(parentalKey(),null);
-  const hint=document.getElementById('parental-setup-hint');
-  const msg=document.getElementById('parental-lock-msg');
-  document.getElementById('parental-panel').style.display='none';
-  document.getElementById('parental-locked-view').style.display='block';
-  document.getElementById('parental-pin-inp').value='';
-  if(!rec||!rec.pinHash){
-    msg.textContent='هنوز رمز والدین تنظیم نشده — یک رمز جدید انتخاب کنید';
-    hint.textContent='بعد از تنظیم رمز، این تنظیمات با آن رمز محافظت می‌شود';
-  } else {
-    msg.textContent='برای مشاهده و تغییر تنظیمات، رمز والدین را وارد کنید';
-    hint.textContent='';
-  }
-}
-async function unlockParental(){
-  const pin=document.getElementById('parental-pin-inp').value;
-  if(!pin||pin.length<4){toast('رمز حداقل ۴ رقم باشد','w');return;}
-  let rec=ld(parentalKey(),null);
-  if(!rec||!rec.pinHash){
-    const salt=genSalt();
-    rec={pinHash:await hashPassword(pin,salt),salt,settings:defaultParentalSettings()};
-    sv(parentalKey(),rec);
-    toast('✅ رمز والدین تنظیم شد');
-  } else {
-    const hash=await hashPassword(pin,rec.salt);
-    if(hash!==rec.pinHash){toast('رمز اشتباه است','w');return;}
-  }
-  document.getElementById('parental-locked-view').style.display='none';
-  document.getElementById('parental-panel').style.display='block';
-  loadParentalSettings();
-}
-function lockParental(){
-  document.getElementById('parental-panel').style.display='none';
-  document.getElementById('parental-locked-view').style.display='block';
-  document.getElementById('parental-pin-inp').value='';
-}
-function defaultParentalSettings(){
-  return {dailyMin:120,from:'',to:'',chat:true,voice:false,friend:true,upload:false,purchase:false,hugy:true,uli:true,agerating:'9'};
-}
-function loadParentalSettings(){
-  const rec=ld(parentalKey(),null); if(!rec)return;
-  const s=rec.settings||defaultParentalSettings();
-  document.getElementById('par-daily-min').value=s.dailyMin;
-  document.getElementById('par-from').value=s.from||'';
-  document.getElementById('par-to').value=s.to||'';
-  document.getElementById('par-agerating').value=s.agerating||'9';
-  [['par-chat','chat'],['par-voice','voice'],['par-friend','friend'],['par-upload','upload'],['par-purchase','purchase'],['par-hugy','hugy'],['par-uli','uli']].forEach(([id,key])=>{
-    const el=document.getElementById(id); if(el)el.classList.toggle('on',!!s[key]);
-  });
-  const act=document.getElementById('par-activity');
-  if(act){
-    act.innerHTML='پیام‌های امروز: '+(S.totMsgs||0)+'<br>محتوای تولیدشده: '+(S.totCreates||0)+'<br>پلن فعلی: '+S.plan;
-  }
-  document.querySelectorAll('#pg-parental .tog').forEach(t=>{
-    t.onclick=()=>t.classList.toggle('on');
-  });
-}
-function saveParentalSettings(){
-  const rec=ld(parentalKey(),null); if(!rec){toast('ابتدا رمز والدین را تنظیم کنید','w');return;}
-  const g=id=>document.getElementById(id)?.classList.contains('on')||false;
-  rec.settings={
-    dailyMin:parseInt(document.getElementById('par-daily-min').value)||0,
-    from:document.getElementById('par-from').value,
-    to:document.getElementById('par-to').value,
-    agerating:document.getElementById('par-agerating').value,
-    chat:g('par-chat'),voice:g('par-voice'),friend:g('par-friend'),
-    upload:g('par-upload'),purchase:g('par-purchase'),hugy:g('par-hugy'),uli:g('par-uli'),
-  };
-  sv(parentalKey(),rec);
-  toast('✅ تنظیمات والدین ذخیره شد');
-}
-async function changeParentalPin(){
-  const oldPin=prompt('رمز فعلی والدین را وارد کنید:'); if(!oldPin)return;
-  const rec=ld(parentalKey(),null); if(!rec)return;
-  const oldHash=await hashPassword(oldPin,rec.salt);
-  if(oldHash!==rec.pinHash){toast('رمز فعلی اشتباه است','w');return;}
-  const newPin=prompt('رمز جدید (حداقل ۴ رقم):'); if(!newPin||newPin.length<4){toast('رمز نامعتبر','w');return;}
-  const salt=genSalt();
-  rec.pinHash=await hashPassword(newPin,salt); rec.salt=salt;
-  sv(parentalKey(),rec);
-  toast('✅ رمز والدین تغییر کرد');
-}
-// اعمال محدودیت چت/صدا بر اساس تنظیمات والدین (در صورت فعال بودن)
-function isParentalChatBlocked(){
-  const rec=ld(parentalKey(),null);
-  if(!rec||!rec.settings)return false;
-  return rec.settings.chat===false;
-}
-function isParentalVoiceBlocked(){
-  const rec=ld(parentalKey(),null);
-  if(!rec||!rec.settings)return false;
-  return rec.settings.voice===false;
-}
-
 // ===== HELPERS =====
 function copyTxt(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.innerText||el.textContent).then(()=>toast('کپی شد! 📋'));}
 
@@ -5170,92 +4157,31 @@ let voiceWaveInt = null;
 let v1v1Rec = null;
 let v1v1Active = false;
 let v1v1Lang = 'fa-IR';
-let elevenMediaRecorder = null;
-let elevenChunks = [];
-let usingElevenSTT = false;
 
 function togVoicePanel() {
   const p = document.getElementById('voice-panel');
   if(p) p.classList.toggle('on');
+  const t=document.getElementById('voice-reply-toggle');
+  if(t) t.classList.toggle('on',ld('voiceReplyOn',false));
 }
 
 function setVoiceLang(lang) { voiceLang = lang; }
 
-// نقطه ورود دکمه میکروفون: اگر جلسه واقعی سرور موجود باشد از ElevenLabs
-// (تبدیل واقعی گفتار به متن سمت سرور) استفاده می‌شود؛ در غیر این صورت،
-// به‌صورت شفاف به تشخیص گفتار مرورگر برمی‌گردیم (بدون ادعای دروغ).
 function startVoiceRec() {
-  if(isParentalVoiceBlocked()){toast('🔒 چت صوتی توسط کنترل والدین محدود شده است','w');return;}
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    toast('مرورگر از صدا پشتیبانی نمی‌کند','w'); return;
+  }
   if(isVoiceRec) { stopVoiceRec(); return; }
-  if(API_CONFIGURED && S.sessionToken && navigator.mediaDevices && window.MediaRecorder) {
-    startElevenSTT();
-  } else if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    startBrowserVoiceRec();
-  } else {
-    toast('مرورگر یا سرور از تشخیص گفتار پشتیبانی نمی‌کند','w');
-  }
-}
-
-async function startElevenSTT() {
-  const btn = document.getElementById('voice-rec-btn');
-  const status = document.getElementById('voice-status');
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    elevenChunks = [];
-    const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
-    elevenMediaRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-    elevenMediaRecorder.ondataavailable = e => { if(e.data.size > 0) elevenChunks.push(e.data); };
-    elevenMediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(t => t.stop());
-      const blob = new Blob(elevenChunks, { type: elevenMediaRecorder.mimeType || 'audio/webm' });
-      await sendToElevenSTT(blob);
-    };
-    elevenMediaRecorder.start();
-    isVoiceRec = true; usingElevenSTT = true;
-    if(btn) { btn.innerHTML = '⏹️ توقف'; btn.style.background = '#E74C3C'; }
-    if(status) status.textContent = '🔴 در حال ضبط (ElevenLabs)...';
-    startVoiceWave('voice-wave');
-    // حداکثر ۳۰ ثانیه ضبط پیوسته - مطابق محدودیت "بدون آپلود صوت نامحدود"
-    clearTimeout(window._elevenMaxTimer);
-    window._elevenMaxTimer = setTimeout(() => { if(isVoiceRec) stopVoiceRec(); }, 30000);
-  } catch(e) {
-    toast('دسترسی به میکروفون رد شد یا در دسترس نیست','w');
-  }
-}
-
-async function sendToElevenSTT(blob) {
-  const status = document.getElementById('voice-status');
-  if(blob.size < 200) { toast('صدایی دریافت نشد','w'); if(status) status.textContent = 'آماده گوش دادن'; return; }
-  if(status) status.textContent = '⏳ در حال تبدیل گفتار به متن...';
-  if(!(await consumeQuota('voice'))) { if(status) status.textContent = 'آماده گوش دادن'; return; }
-  try {
-    const r = await fetch(apiUrl('/voice/stt'), { method:'POST', headers:{ 'Content-Type': blob.type || 'audio/webm', 'Authorization':'Bearer '+S.sessionToken }, body: blob });
-    const data = await r.json();
-    if(!data.ok) { toast(data.error || 'خطا در تبدیل گفتار به متن','w'); if(status) status.textContent = 'آماده گوش دادن'; return; }
-    const inp = document.getElementById('chat-inp');
-    const text = (data.text || '').trim();
-    if(inp) inp.value = text;
-    if(status) status.textContent = text ? ('📝 ' + text.slice(0,50)) : 'چیزی تشخیص داده نشد';
-    if(text) { togVoicePanel(); doSend(); } // ادامه طبیعی مکالمه صوتی: تشخیص -> ارسال خودکار
-  } catch(e) {
-    toast('خطا در ارتباط با سرور صدا','w');
-    if(status) status.textContent = 'آماده گوش دادن';
-  }
-}
-
-// نسخه قدیمی مرورگر - فقط زمانی استفاده می‌شود که سرور/جلسه واقعی در دسترس نباشد
-function startBrowserVoiceRec() {
   voiceRec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   voiceRec.lang = voiceLang;
   voiceRec.continuous = false;
   voiceRec.interimResults = true;
   const btn = document.getElementById('voice-rec-btn');
   const status = document.getElementById('voice-status');
-  usingElevenSTT = false;
   voiceRec.onstart = () => {
     isVoiceRec = true;
     if(btn) { btn.innerHTML = '⏹️ توقف'; btn.style.background = '#E74C3C'; }
-    if(status) status.textContent = '🔴 در حال ضبط (مرورگر)...';
+    if(status) status.textContent = '🔴 در حال ضبط...';
     startVoiceWave('voice-wave');
   };
   voiceRec.onresult = (e) => {
@@ -5274,14 +4200,11 @@ function startBrowserVoiceRec() {
 
 function stopVoiceRec() {
   isVoiceRec = false;
-  clearTimeout(window._elevenMaxTimer);
-  if(usingElevenSTT && elevenMediaRecorder && elevenMediaRecorder.state !== 'inactive') {
-    elevenMediaRecorder.stop();
-  } else if(voiceRec) { try{voiceRec.stop();}catch{} }
+  if(voiceRec) { try{voiceRec.stop();}catch{} }
   const btn = document.getElementById('voice-rec-btn');
   const status = document.getElementById('voice-status');
   if(btn) { btn.innerHTML = '🎤 شروع ضبط'; btn.style.background = ''; }
-  if(status && !usingElevenSTT) status.textContent = 'آماده گوش دادن';
+  if(status) status.textContent = 'آماده گوش دادن';
   stopVoiceWave('voice-wave');
 }
 
@@ -5341,7 +4264,6 @@ function startV1v1Rec() {
       const reply = await callAI([{role:'user', content:txt}],
         'تو یک دستیار صوتی هوشمند هستی. پاسخ کوتاه، واضح و دوستانه بده. زبان پاسخ مطابق زبان کاربر باشد.',
         S.selMod || 'luolaf3');
-      if(!reply){ if(resp) resp.textContent = '❌ خطا در دریافت پاسخ'; return; }
       if(resp) resp.textContent = reply;
       speakText(reply);
     } catch(e) {
@@ -5368,53 +4290,40 @@ function stopVoice1v1() {
 }
 
 // ===== TEXT TO SPEECH =====
-// ===== ELEVENLABS VOICE REPLY (server-proxied, quota-gated) =====
-function toggleVoiceReply(){
-  S.voiceReplyOn=!S.voiceReplyOn;
-  const btn=document.getElementById('voice-reply-btn');
-  if(btn){btn.textContent=S.voiceReplyOn?'🔊':'🔇';btn.style.background=S.voiceReplyOn?'var(--sky)':'';}
-  toast(S.voiceReplyOn?'🔊 پاسخ‌های AI با صدا پخش می‌شوند':'🔇 پخش صوتی پاسخ‌ها خاموش شد');
-}
-async function playAIVoice(text){
-  const clean=text.replace(/```[\s\S]*?```/g,' کد ').replace(/[#*_`]/g,'').slice(0,800);
-  if(!clean.trim())return;
-  if(!API_CONFIGURED||!S.sessionToken){
-    // بدون سرور/جلسه واقعی، ElevenLabs در دسترس نیست؛ به‌جای تظاهر، صادقانه به TTS مرورگر برمی‌گردیم
-    speakText(clean);
-    return;
-  }
-  if(!(await consumeQuota('voice')))return; // سهمیه صدا هم سمت سرور چک می‌شود
-  try{
-    const r=await fetch(apiUrl('/voice/tts'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.sessionToken},body:JSON.stringify({text:clean})});
-    if(!r.ok){
-      const data=await r.json().catch(()=>({}));
-      toast(data.error||'سرویس صدای هوش‌مصنوعی در دسترس نیست — صدای مرورگر پخش می‌شود','w');
-      speakText(clean);
-      return;
-    }
-    const blob=await r.blob();
-    const url=URL.createObjectURL(blob);
-    const audio=new Audio(url);
-    audio.play().catch(()=>{});
-    audio.onended=()=>URL.revokeObjectURL(url);
-  }catch(e){
-    toast('خطا در پخش صدا — صدای مرورگر جایگزین شد','w');
-    speakText(clean);
-  }
-}
-
-function speakText(text) {
+function speakTextBrowserFallback(text) {
   if(!window.speechSynthesis) { toast('مرورگر از TTS پشتیبانی نمی‌کند','w'); return; }
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = v1v1Lang || voiceLang || 'fa-IR';
   utt.rate = 0.95;
   utt.pitch = 1;
-  // انتخاب صدای مناسب
   const voices = window.speechSynthesis.getVoices();
   const match = voices.find(v => v.lang.startsWith(utt.lang.slice(0,2)));
   if(match) utt.voice = match;
   window.speechSynthesis.speak(utt);
+}
+let _currentTTSAudio=null;
+async function speakText(text) {
+  if(!text||!text.trim())return;
+  if(!API_CONFIGURED){ speakTextBrowserFallback(text); return; }
+  try{
+    if(_currentTTSAudio){_currentTTSAudio.pause();_currentTTSAudio=null;}
+    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000)})});
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      if(res.status===503){speakTextBrowserFallback(text);return;} // سرویس صدا هنوز تنظیم نشده — بازگشت به صدای مرورگر
+      toast(err.error||'خطا در پخش صدا','w');
+      return;
+    }
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    _currentTTSAudio=audio;
+    audio.onended=()=>{URL.revokeObjectURL(url);if(_currentTTSAudio===audio)_currentTTSAudio=null;};
+    audio.play();
+  }catch(e){
+    speakTextBrowserFallback(text);
+  }
 }
 
 // ===== FILE UPLOAD =====
