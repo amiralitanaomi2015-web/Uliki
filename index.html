@@ -1375,6 +1375,7 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
             <button class="ctab on" id="at-overview" onclick="swAdmin('overview')">📊 نمای کلی</button>
             <button class="ctab" id="at-users" onclick="swAdmin('users')">👥 کاربران</button>
             <button class="ctab" id="at-notif" onclick="swAdmin('notif');loadScheduledNotifications()">🔔 اعلان‌ها</button>
+            <button class="ctab" id="at-wallet" onclick="swAdmin('wallet');loadTokenCodes()">💰 کیف‌پول و توکن</button>
             <button class="ctab" id="at-audit" onclick="swAdmin('audit');loadAuditLog()">📜 گزارش رخدادها</button>
           </div>
 
@@ -1445,6 +1446,41 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
                 <button class="btn btng btnsm" onclick="loadScheduledNotifications()">🔄 بروزرسانی</button>
               </div>
               <div id="admin-scheduled-list" style="display:flex;flex-direction:column;gap:8px"></div>
+            </div>
+          </div>
+
+          <!-- WALLET / TOKEN -->
+          <div class="cpanel" id="ap-wallet">
+            <div class="ccard">
+              <h3>🎟️ صدور کد توکن قابل استفاده</h3>
+              <p class="csub">کد به‌صورت تصادفی و امن سمت سرور ساخته می‌شود — مقدار توکن را شما مشخص می‌کنید، نه کاربر</p>
+              <div class="ig"><label class="lbl">مقدار توکن</label><input class="inp" type="number" id="tc-amount" placeholder="مثلاً 50" min="1" max="10000"></div>
+              <div class="ig"><label class="lbl">یادداشت (اختیاری)</label><input class="inp" id="tc-note" placeholder="مثلاً: جبران خرید سفارش #123"></div>
+              <button class="genbtn" onclick="issueTokenCode()">🎟️ صدور کد جدید</button>
+              <div id="tc-new-code-box" style="display:none;margin-top:12px;background:var(--snow);border-radius:10px;padding:14px;text-align:center">
+                <div style="font-size:11px;color:var(--gray);margin-bottom:6px">این کد فقط همین یک‌بار نمایش داده می‌شود — الان کپی کنید</div>
+                <div id="tc-new-code" style="font-family:monospace;font-size:16px;font-weight:800;letter-spacing:2px"></div>
+                <button class="btn btng btnsm" style="margin-top:8px" onclick="copyTxt('tc-new-code')">📋 کپی</button>
+              </div>
+            </div>
+            <div class="ccard">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h3 style="margin:0">📋 کدهای صادرشده</h3>
+                <button class="btn btng btnsm" onclick="loadTokenCodes()">🔄 بروزرسانی</button>
+              </div>
+              <div id="tc-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto"></div>
+            </div>
+            <div class="ccard">
+              <h3>💳 تأیید خرید / افزودن دستی به کیف‌پول</h3>
+              <p class="csub">برای خریدهای تأییدشده دستی (مثلاً بعد از بررسی رسید پرداخت)</p>
+              <div class="ig"><label class="lbl">ایمیل کاربر</label><input class="inp" id="wc-email" placeholder="user@example.com"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="ig"><label class="lbl">نوع</label><select class="inp" id="wc-kind"><option value="credits">کردیت</option><option value="tokens">توکن</option></select></div>
+                <div class="ig"><label class="lbl">مقدار</label><input class="inp" type="number" id="wc-amount" min="1"></div>
+              </div>
+              <div class="ig"><label class="lbl">دلیل / شماره سفارش (برای جلوگیری از افزودن تکراری)</label><input class="inp" id="wc-reason" placeholder="مثلاً: سفارش #123"></div>
+              <button class="genbtn" onclick="approveWalletCredit()">💳 تأیید و افزودن به کیف‌پول</button>
+              <div id="wc-result" style="margin-top:10px;font-size:12px"></div>
             </div>
           </div>
 
@@ -4941,6 +4977,62 @@ async function cancelNotification(id){
     if(!data.ok){toast(data.error||'خطا','w');return;}
     toast('لغو شد'); loadScheduledNotifications();
   }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+
+// ===== ADMIN: TOKEN CODE ISSUANCE (server-generated, never client-fabricated) =====
+async function issueTokenCode(){
+  const amount=parseInt(document.getElementById('tc-amount').value,10);
+  const note=document.getElementById('tc-note').value.trim();
+  if(!(amount>0)||amount>10000){toast('مقدار توکن باید بین ۱ تا ۱۰۰۰۰ باشد','w');return;}
+  try{
+    const r=await fetch(apiUrl('/admin/token-codes/issue'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({amount,note})});
+    const data=await r.json();
+    if(!data.ok){toast(data.error||'خطا در صدور کد','w');return;}
+    document.getElementById('tc-new-code-box').style.display='block';
+    document.getElementById('tc-new-code').textContent=data.code;
+    document.getElementById('tc-amount').value=''; document.getElementById('tc-note').value='';
+    toast('✅ کد '+data.amount+' توکنی صادر شد');
+    loadTokenCodes();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+async function loadTokenCodes(){
+  const el=document.getElementById('tc-list');
+  if(!el)return;
+  el.innerHTML='<div style="color:var(--gray);font-size:12px">در حال بارگذاری...</div>';
+  try{
+    const r=await fetch(apiUrl('/admin/token-codes/list'),{headers:authHeaders()});
+    const data=await r.json();
+    if(!data.ok){el.innerHTML='<div style="color:var(--gray);font-size:12px">'+escHtml(data.error||'خطا')+'</div>';return;}
+    const list=data.codes||[];
+    el.innerHTML=list.length?list.map(c=>`<div style="background:var(--snow);border-radius:8px;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <span style="font-family:monospace">${escHtml(c.code)}</span>
+      <span>${c.amount} توکن</span>
+      <span style="padding:2px 8px;border-radius:50px;background:${c.status==='redeemed'?'#E8F8F0':'#FFF3CD'};color:${c.status==='redeemed'?'#27AE60':'#856404'}">${c.status==='redeemed'?'✅ استفاده‌شده':'⏳ استفاده‌نشده'}</span>
+      <span style="color:var(--gray)">${new Date(c.issuedAt).toLocaleDateString('fa-IR')}</span>
+    </div>`).join(''):'<div style="color:var(--gray);font-size:12px">هنوز کدی صادر نشده</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در ارتباط با سرور</div>';}
+}
+
+// ===== ADMIN: MANUAL WALLET CREDIT / PURCHASE APPROVAL =====
+async function approveWalletCredit(){
+  const targetEmail=document.getElementById('wc-email').value.trim();
+  const kind=document.getElementById('wc-kind').value;
+  const amount=parseInt(document.getElementById('wc-amount').value,10);
+  const reason=document.getElementById('wc-reason').value.trim();
+  const resultEl=document.getElementById('wc-result');
+  if(!targetEmail||!targetEmail.includes('@')){toast('ایمیل معتبر کاربر را وارد کنید','w');return;}
+  if(!(amount>0)){toast('مقدار را وارد کنید','w');return;}
+  // requestId بر اساس ایمیل+نوع+مقدار+دلیل ساخته می‌شود تا ارسال دوباره همان
+  // عملیات (مثلاً کلیک تصادفی دوبار) باعث افزودن دوباره نشود، نه یک مقدار تصادفی هر بار
+  const requestId=btoa(unescape(encodeURIComponent(targetEmail+':'+kind+':'+amount+':'+reason))).slice(0,80);
+  try{
+    const r=await fetch(apiUrl('/wallet/credit'),{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({targetEmail,kind,amount,reason,requestId})});
+    const data=await r.json();
+    if(!data.ok){resultEl.innerHTML='<span style="color:#E74C3C">❌ '+escHtml(data.error||'خطا')+'</span>';return;}
+    resultEl.innerHTML='<span style="color:#27AE60">✅ موجودی جدید '+targetEmail+': '+data.wallet.tokens+' توکن، '+data.wallet.credits+' کردیت</span>';
+    toast('✅ کیف پول بروزرسانی شد');
+    document.getElementById('wc-amount').value=''; document.getElementById('wc-reason').value='';
+  }catch(e){resultEl.innerHTML='<span style="color:#E74C3C">❌ خطا در ارتباط با سرور</span>';}
 }
 async function setUserRole(){
   if(!API_CONFIGURED||!S.sessionToken){toast('باید وارد حساب شوید','w');return;}
