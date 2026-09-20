@@ -1129,10 +1129,10 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
           <div class="profsec">
             <h4>🧠 مدل‌های AI فعال</h4>
-            <div class="setitem"><span class="setlbl">Luolaf.3</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Llama 3.3 · Pro+: DeepSeek V4 Pro</span></div>
-            <div class="setitem"><span class="setlbl">Uliki.2</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Llama 3.1 8B · Pro+: DeepSeek V4 Flash</span></div>
-            <div class="setitem"><span class="setlbl">Uliki.3</span><span style="font-size:11px;color:var(--gray)">رایگان: Groq Gemma2 · Pro+: DeepSeek V4 Flash</span></div>
-            <p style="font-size:10px;color:var(--gray);margin-top:8px">مدل DeepSeek فقط برای پلن‌های Pro، Plus و VIP فعاله؛ پلن رایگان از Groq استفاده می‌کنه.</p>
+            <div class="setitem"><span class="setlbl">Luolaf.3</span><span style="font-size:11px;color:var(--gray)">Groq — GPT-OSS 120B</span></div>
+            <div class="setitem"><span class="setlbl">Uliki.2</span><span style="font-size:11px;color:var(--gray)">Groq — GPT-OSS 20B (سریع‌تر)</span></div>
+            <div class="setitem"><span class="setlbl">Uliki.3</span><span style="font-size:11px;color:var(--gray)">Groq — Qwen 3.6 27B</span></div>
+            <p style="font-size:10px;color:var(--gray);margin-top:8px">موتور متنی: Groq · تولید کد: ZCODE · تصویر: FLUX · ویدیو: Luma · موزیک: AI Music</p>
             <div class="setitem"><span class="setlbl">پرامپت‌ساز</span><span style="font-size:11px;color:var(--gray)">OpenRouter</span></div>
           </div>
         </div>
@@ -1704,7 +1704,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 
 ### زیرساخت فنی
 - میزبانی: GitHub Pages (وب)
-- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال می‌شوند. کاربران پلن رایگان از Groq (مدل‌های Llama 3.3, Llama 3.1, Gemma2) استفاده می‌کنند؛ کاربران پلن Pro، Plus و VIP از DeepSeek (مدل‌های V4 Pro و V4 Flash) بهره‌مند می‌شوند.
+- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال می‌شوند. موتور متنی Groq است (مدل‌های GPT-OSS 120B، GPT-OSS 20B و Qwen 3.6 27B). تولید کد با ZCODE، تصویر با FLUX، ویدیو با Luma و موزیک با AI Music انجام می‌شود.
 - ذخیره‌سازی داده کاربر: در حافظه محلی مرورگر (localStorage) — نه دیتابیس سمت سرور. یعنی فعلاً همگام‌سازی بین دستگاه‌ها/مرورگرهای مختلف وجود ندارد.
 
 ### وضعیت قابلیت‌ها
@@ -1729,7 +1729,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 - چطور مشترک شوم؟ از صفحه پلن‌ها (بخش قیمت‌گذاری) پلن مدنظر را انتخاب و فرم پرداخت را پر کنید؛ پس از تأیید تیم خرید فعال می‌شود.
 
 ### مشکلات رایج فنی (راهنمای پاسخ به کاربر)
-- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس‌های Groq/DeepSeek است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
+- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس Groq است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
 - گم‌شدن اطلاعات کاربر: ماهیت localStorage را طبق بخش سوالات متداول توضیح بده.
 - مشکل نمایش در برخی گوشی/مرورگرها: مدل دستگاه، مرورگر و نسخه آن را از کاربر بپرس.
 
@@ -1744,15 +1744,14 @@ const MODELS = {
   uliki3:  {n:'Uliki.3',  e:'🌐'}
 };
 const MODEL_MAP = {
-  groq: {luolaf3:'llama-3.3-70b-versatile', uliki2:'llama-3.1-8b-instant', uliki3:'gemma2-9b-it'},
-  deepseek: {luolaf3:'deepseek-v4-pro', uliki2:'deepseek-v4-flash', uliki3:'deepseek-v4-flash'}
+  // مدل‌های قدیمی Groq (llama-3.3-70b-versatile / llama-3.1-8b-instant / gemma2-9b-it) در ۱۶ اوت ۲۰۲۶ بازنشسته شدند
+  groq: {luolaf3:'openai/gpt-oss-120b', uliki2:'openai/gpt-oss-20b', uliki3:'qwen/qwen3.6-27b'}
 };
 function getAIProvider(){
-  return (S.plan==='Pro'||S.plan==='Plus'||S.plan==='VIP')?'deepseek':'groq';
+  return 'groq'; // فعلاً مدل متنی ما فقط Groq است
 }
 function getModelId(modKey){
-  const provider=getAIProvider();
-  return (MODEL_MAP[provider]&&MODEL_MAP[provider][modKey])||MODEL_MAP.groq.luolaf3;
+  return MODEL_MAP.groq[modKey]||MODEL_MAP.groq.luolaf3;
 }
 const PLAN_LIMITS = {
   Rax:  {msgs:20, creates:2, chats:1,  wallet:3,  wRate:2,  noAd:false, uploadMB:10, maxFiles:3,  promptImprove:false, officeUpload:false, label:'رایگان'},
@@ -3605,6 +3604,14 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 
 // ===== CALL AI =====
+async function callZCode(msgs,sys){
+  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return 'خطا: API تنظیم نشده است.';}
+  try{
+    const res=await fetch(apiUrl('/generate-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000})});
+    const data=await res.json();
+    return data.content?.[0]?.text||'خطا در دریافت پاسخ';
+  }catch(e){return '❌ خطا در اتصال به سرویس تولید کد';}
+}
 async function callAI(msgs,sys,modKey){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
@@ -3722,7 +3729,7 @@ async function gen(type){
     } else if(type==='code'){
       const lang=document.querySelector('#cp-code .chips:first-of-type .chip.on')?.textContent?.trim()||'Python';
       const req=document.querySelector('#cp-code .chips:last-of-type .chip.on')?.textContent?.trim()||'نوشتن';
-      const txt=await callAI([{role:'user',content:'زبان: '+lang+'\nنوع: '+req+'\nدرخواست: '+prompt+'\nکد کامل با کامنت فارسی بنویس.'}],'تو برنامه‌نویس حرفه‌ای هستی.',mk);
+      const txt=await callZCode([{role:'user',content:'زبان: '+lang+'\nنوع: '+req+'\nدرخواست: '+prompt+'\nکد کامل با کامنت فارسی بنویس.'}],'تو برنامه‌نویس حرفه‌ای هستی.');
       document.getElementById('code-out').innerHTML=fmtMsg(txt);
       rb.classList.add('on');
       genContentPrompt(lang+': '+prompt,'res-code');
@@ -4426,7 +4433,7 @@ function togVoice() { togVoicePanel(); }
 
 <!-- ATTRIBUTION -->
 <div style="position:fixed;bottom:5px;right:10px;font-size:10px;color:var(--gray);z-index:10;opacity:0.6">
-  Powered by Groq &amp; <a href="https://deepseek.com" target="_blank" style="color:var(--accent);text-decoration:none">DeepSeek</a> · 
+  Powered by <a href="https://groq.com" target="_blank" style="color:var(--accent);text-decoration:none">Groq</a> · 
   Images by <a href="https://pollinations.ai" target="_blank" style="color:var(--accent);text-decoration:none">Pollinations AI</a>
 </div>
 
