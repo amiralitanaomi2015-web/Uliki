@@ -1663,6 +1663,27 @@ const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کن�
 const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
 const API_CONFIGURED = !!WK || USE_RELATIVE_API;
 function apiUrl(path){ return WK ? WK+path : path; }
+// ===== Quota/Wallet: شناسه‌ی دستگاه برای سهمیه‌ی سمت سرور =====
+// این فقط یک توکن غیرمحرمانه برای جلوگیری از «پاک کردن localStorage = سهمیه‌ی تازه» است،
+// جای سیستم ورود واقعی را نمی‌گیرد. مقدار واقعی سهمیه همیشه از سرور می‌آید.
+function getDeviceToken(){ return localStorage.getItem('ulk_devtoken')||''; }
+function setDeviceToken(t){ if(t)localStorage.setItem('ulk_devtoken',t); }
+function quotaCtx(){ return {email:S.user?.email||'', deviceToken:getDeviceToken(), plan:S.plan||'Rax'}; }
+// بعد از هر پاسخ موفق Worker، اگه quota برگشته بود، S.msgs/S.creates رو با عدد واقعیِ سرور یکی کن
+function applyServerQuota(q){
+  if(!q)return;
+  if(q.deviceToken)setDeviceToken(q.deviceToken);
+  if(q.remaining){ if(typeof q.remaining.msgs==='number')S.msgs=q.remaining.msgs; if(typeof q.remaining.creates==='number')S.creates=q.remaining.creates; updateUI(); }
+}
+// وضعیت واقعی سهمیه رو از سرور بخون (موقع ورود/تغییر پلن) — فقط خوندن، چیزی مصرف نمی‌کنه
+async function syncUsageFromServer(){
+  if(!API_CONFIGURED)return;
+  try{
+    const res=await fetch(apiUrl('/usage/status'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(quotaCtx())});
+    const data=await res.json();
+    if(data?.ok){ if(data.deviceToken)setDeviceToken(data.deviceToken); S.msgs=data.msgs; S.creates=data.creates; updateUI(); }
+  }catch(e){ /* اگه سرور در دسترس نبود، عدد محلی (فقط نمایشی) باقی می‌مونه */ }
+}
 const GOOGLE_CLIENT_ID = '867167820423-72bb4nlj7ndfpt9sujv49p515h2cnqhv.apps.googleusercontent.com';
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
 const RULES_TEXT = `۱. تیم لیولاف همراه با مدیر اصلی‌اش جناب امیرعلی تنعمی، هیچ‌گونه مسئولیتی در شرایط خاص مربوط به این پلتفرم نمی‌پذیرند؛ تمام مسئولیت با خود کاربر است.
@@ -3012,9 +3033,10 @@ function enterApp(name,email){
 function applyPlan(p){
   S.plan=p;
   const l=PLAN_LIMITS[p]||PLAN_LIMITS.Rax;
-  S.msgs=l.msgs; S.creates=l.creates; S.chats=l.chats;
+  S.msgs=l.msgs; S.creates=l.creates; S.chats=l.chats; // نمایش فوری، سرور لحظه‌ای بعد اصلاحش می‌کنه
   updateUI();
   refreshBusinessPanel(); renderApiKeys();
+  syncUsageFromServer(); // عدد واقعی رو از سرور (طبق پلن تازه) بگیر
 }
 function setPlan(p){
   applyPlan(p);
@@ -3559,9 +3581,17 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
+    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature,...quotaCtx()})});
     const data=await res.json();
     remTyping(tid);
+    if(res.status===429&&data?.quota&&data.quota.ok===false){
+      S.msgs=Math.min(S.msgs+1,PLAN_LIMITS[S.plan]?.msgs??S.msgs); // برگردوندن کاهش خوش‌بینانه‌ی محلی
+      if(data.quota.remaining)applyServerQuota(data.quota);
+      addMsg(data.content?.[0]?.text||'محدودیت پیام!','ai');
+      updateUI();
+      return;
+    }
+    applyServerQuota(data?.quota);
     const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
@@ -3704,11 +3734,19 @@ async function gen(type){
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
+  if(API_CONFIGURED){
+    try{
+      const qres=await fetch(apiUrl('/usage/consume'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'creates',...quotaCtx()})});
+      const qdata=await qres.json();
+      if(!qdata.ok){toast('محدودیت تولید! پلن را ارتقا دهید یا صبر کنید','w');applyServerQuota(qdata);setTimeout(()=>nav('plans'),1500);return;}
+      applyServerQuota(qdata);
+    }catch(e){ /* سرور در دسترس نبود — طبق همون فلسفه‌ی سایر فراخوان‌ها، اجازه بده و با عدد محلی ادامه بده */ }
+  }
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
   if(rb)rb.classList.remove('on');
-  S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
+  S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
     if(type==='image'){
@@ -3785,6 +3823,7 @@ async function gen(type){
     const out=document.getElementById(type+'-out');
     if(out)out.innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال.</span>';
     if(rb)rb.classList.add('on');
+    if(API_CONFIGURED){try{const rf=await fetch(apiUrl('/usage/refund'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'creates',...quotaCtx()})});applyServerQuota(await rf.json());}catch(e2){}}
   }
   if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}
 }
@@ -3812,9 +3851,11 @@ async function genLipSync(){
     const res=await fetch(WK+'/lipsync',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
+      body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64},...quotaCtx()})
     });
     const data=await res.json();
+    const remC=res.headers.get('X-Quota-Remaining-Creates'); if(remC!==null)applyServerQuota({remaining:{creates:parseInt(remC)},deviceToken:res.headers.get('X-Device-Token')});
+    if(res.status===429){throw new Error(data.error||'محدودیت تولید! پلن را ارتقا دهید یا صبر کنید');}
     if(data.id){
       // polling برای نتیجه
       document.getElementById('lipsync-out').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray)"><div class="spin" style="border-color:var(--graymd);border-top-color:var(--accent);width:30px;height:30px;margin:0 auto 12px"></div>در حال پردازش ویدیو... (۱-۲ دقیقه)</div>';
@@ -4315,13 +4356,14 @@ async function speakText(text) {
   if(!API_CONFIGURED){ speakTextBrowserFallback(text); return; }
   try{
     if(_currentTTSAudio){_currentTTSAudio.pause();_currentTTSAudio=null;}
-    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000)})});
+    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000),...quotaCtx()})});
     if(!res.ok){
       const err=await res.json().catch(()=>({}));
       if(res.status===503){speakTextBrowserFallback(text);return;} // سرویس صدا هنوز تنظیم نشده — بازگشت به صدای مرورگر
       toast(err.error||'خطا در پخش صدا','w');
       return;
     }
+    const remC=res.headers.get('X-Quota-Remaining-Creates'); if(remC!==null)applyServerQuota({remaining:{creates:parseInt(remC)},deviceToken:res.headers.get('X-Device-Token')});
     const blob=await res.blob();
     const url=URL.createObjectURL(blob);
     const audio=new Audio(url);
