@@ -373,6 +373,7 @@ function switchAuthTab(tab,el){
 }
 function openmod(id){var el=document.getElementById(id);if(el)el.classList.add('on');}
 function closemod(id){var el=document.getElementById(id);if(el)el.classList.remove('on');}
+// این تیک فقط رابط کاربری است و CAPTCHA امنیتی محسوب نمی‌شود؛ اعتبارسنجی واقعی باید سمت سرور انجام شود.
 var capState={login:false,reg:false};
 function togCap(t){
   capState[t]=!capState[t];
@@ -458,6 +459,11 @@ function togCap(t){
         <div class="sbi" id="snav-wallet" onclick="nav('wallet')"><div class="sbic">💰</div>ولت</div>
         <div class="sbi" id="snav-projects" onclick="nav('projects');renderProjects()"><div class="sbic">📁</div>پروژه‌ها</div>
         <div class="sbi" id="snav-support" onclick="nav('support')"><div class="sbic">🎧</div>پشتیبانی</div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">توسعه‌دهنده</div>
+        <div class="sbi" id="snav-codearchive" onclick="nav('codearchive')"><div class="sbic">📦</div>بایگانی کد</div>
+        <div class="sbi" id="snav-mydata" onclick="nav('mydata')"><div class="sbic">🗂️</div>دیتای من</div>
       </div>
       <div class="sb-sec">
         <div class="sb-lbl">بازی‌های آنلاین</div>
@@ -1139,6 +1145,38 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
       </div>
 
       <!-- PROMPT BUILDER -->
+      <!-- CODE ARCHIVE -->
+      <div id="pg-codearchive" class="pg" style="display:none">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">📦 بایگانی کد</h2>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:18px">کدهای HTML، CSS، JavaScript و Python خودت رو ذخیره و مشاهده کن (فقط ذخیره و نمایش — کد اجرا نمی‌شه)</p>
+        <div class="ccard">
+          <div class="ig"><label class="lbl">عنوان</label><input class="inp" id="ca-title" placeholder="مثلاً: دکمه‌ی آبی"></div>
+          <div class="ig"><label class="lbl">زبان</label>
+            <select class="inp" id="ca-lang"><option value="html">HTML</option><option value="css">CSS</option><option value="javascript">JavaScript</option><option value="python">Python</option><option value="other">سایر</option></select>
+          </div>
+          <div class="ig"><label class="lbl">کد</label><textarea class="ptarea" id="ca-code" placeholder="کدت رو اینجا بچسبون..." style="min-height:140px;font-family:monospace;direction:ltr;text-align:left"></textarea></div>
+          <button class="genbtn" onclick="saveCodeArchive()">💾 ذخیره در بایگانی</button>
+        </div>
+        <h3 style="font-size:14px;margin:20px 0 10px">کدهای ذخیره‌شده</h3>
+        <div id="ca-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- MY DATA -->
+      <div id="pg-mydata" class="pg" style="display:none">
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">🗂️ دیتای من</h2>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:18px">متن، لینک عکس/ویدیو یا توضیح فایل‌هات رو ذخیره کن؛ بعداً می‌تونی هرکدوم رو به چت اضافه کنی تا هوش مصنوعی ازش کمک بگیره</p>
+        <div class="ccard">
+          <div class="ig"><label class="lbl">نوع محتوا</label>
+            <select class="inp" id="md-type"><option value="text">متن</option><option value="image_link">لینک عکس</option><option value="video_link">لینک ویدیو</option><option value="file_note">توضیح فایل</option></select>
+          </div>
+          <div class="ig"><label class="lbl">عنوان</label><input class="inp" id="md-title" placeholder="عنوان"></div>
+          <div class="ig"><label class="lbl">محتوا</label><textarea class="ptarea" id="md-content" placeholder="محتوا، لینک، یا توضیحات..." style="min-height:100px"></textarea></div>
+          <button class="genbtn" onclick="saveMyData()">💾 ذخیره</button>
+        </div>
+        <h3 style="font-size:14px;margin:20px 0 10px">دیتای ذخیره‌شده</h3>
+        <div id="md-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
       <div id="pg-promptbuilder" class="pg" style="display:none">
         <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">🧩 پرامپت‌ساز</h2>
         <p style="font-size:12px;color:var(--gray);margin-bottom:18px">توضیح بده چه پرامپتی می‌خوای (زبان، قابلیت‌ها، هدف) تا برات بسازیم</p>
@@ -1661,28 +1699,12 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 const WK = 'https://uliki.amiralitanaomi2015.workers.dev'; // آدرس Worker شما
 const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
 const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
-const API_CONFIGURED = !!WK || USE_RELATIVE_API;
-function apiUrl(path){ return WK ? WK+path : path; }
-// ===== Quota/Wallet: شناسه‌ی دستگاه برای سهمیه‌ی سمت سرور =====
-// این فقط یک توکن غیرمحرمانه برای جلوگیری از «پاک کردن localStorage = سهمیه‌ی تازه» است،
-// جای سیستم ورود واقعی را نمی‌گیرد. مقدار واقعی سهمیه همیشه از سرور می‌آید.
-function getDeviceToken(){ return localStorage.getItem('ulk_devtoken')||''; }
-function setDeviceToken(t){ if(t)localStorage.setItem('ulk_devtoken',t); }
-function quotaCtx(){ return {email:S.user?.email||'', deviceToken:getDeviceToken(), plan:S.plan||'Rax'}; }
-// بعد از هر پاسخ موفق Worker، اگه quota برگشته بود، S.msgs/S.creates رو با عدد واقعیِ سرور یکی کن
-function applyServerQuota(q){
-  if(!q)return;
-  if(q.deviceToken)setDeviceToken(q.deviceToken);
-  if(q.remaining){ if(typeof q.remaining.msgs==='number')S.msgs=q.remaining.msgs; if(typeof q.remaining.creates==='number')S.creates=q.remaining.creates; updateUI(); }
-}
-// وضعیت واقعی سهمیه رو از سرور بخون (موقع ورود/تغییر پلن) — فقط خوندن، چیزی مصرف نمی‌کنه
-async function syncUsageFromServer(){
-  if(!API_CONFIGURED)return;
-  try{
-    const res=await fetch(apiUrl('/usage/status'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(quotaCtx())});
-    const data=await res.json();
-    if(data?.ok){ if(data.deviceToken)setDeviceToken(data.deviceToken); S.msgs=data.msgs; S.creates=data.creates; updateUI(); }
-  }catch(e){ /* اگه سرور در دسترس نبود، عدد محلی (فقط نمایشی) باقی می‌مونه */ }
+const API_BASE = USE_RELATIVE_API ? '' : String(WK || '').replace(/\/+$/, '');
+const API_CONFIGURED = USE_RELATIVE_API || !!API_BASE;
+function apiUrl(path){
+  const p = String(path || '/');
+  const normalized = p.startsWith('/') ? p : '/' + p;
+  return API_BASE ? API_BASE + normalized : normalized;
 }
 const GOOGLE_CLIENT_ID = '867167820423-72bb4nlj7ndfpt9sujv49p515h2cnqhv.apps.googleusercontent.com';
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
@@ -1886,7 +1908,7 @@ window.addEventListener('load',()=>{setTimeout(initGoogleAuth,300);});
 async function doLogin(){
   aclr();
   if(!capState.login){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
-  const em=document.getElementById('lemail').value.trim();
+  const em=document.getElementById('lemail').value.trim().toLowerCase();
   const ps=document.getElementById('lpass').value;
   if(!em){aerr('ایمیل را وارد کنید');return;}
   if(!ps){aerr('رمز عبور را وارد کنید');return;}
@@ -1901,7 +1923,7 @@ async function doLogin(){
       }
     }catch(e){}
   }
-  if(!em.includes('@')){aerr('فرمت ایمیل صحیح نیست');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){aerr('فرمت ایمیل صحیح نیست');return;}
   if(API_CONFIGURED){
     try{
       const lockRes=await fetch(apiUrl('/admin/platform-status'));
@@ -1932,13 +1954,14 @@ async function doReg(){
   aclr();
   if(!capState.reg){aerr('لطفاً تیک "من روبات نیستم" را بزنید');return;}
   const nm=document.getElementById('rname').value.trim();
-  const em=document.getElementById('remail').value.trim();
+  const em=document.getElementById('remail').value.trim().toLowerCase();
   const ps=document.getElementById('rpass').value;
   const ps2=document.getElementById('rpass2').value;
   if(!nm){aerr('نام را وارد کنید');return;}
-  if(!em||!em.includes('@')){aerr('ایمیل معتبر وارد کنید');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){aerr('ایمیل معتبر وارد کنید');return;}
   if(ps.length<8){aerr('رمز باید حداقل ۸ کاراکتر باشد');return;}
-  if(ps2&&ps!==ps2){aerr('رمز و تکرار آن یکسان نیستند');return;}
+  if(!ps2){aerr('رمز عبور را در بخش تکرار وارد کنید');return;}
+  if(ps!==ps2){aerr('رمز و تکرار آن یکسان نیستند');return;}
   const users=ld('users',{});
   if(users[em]){aerr('این ایمیل قبلاً ثبت‌نام کرده. وارد شوید.');return;}
   pendingRegistration={nm,em,ps};
@@ -2446,7 +2469,7 @@ async function adminCancelScheduled(id){
   await adminFetch('/admin/scheduled-announcements/cancel',{method:'POST',body:JSON.stringify({id})});
   adminLoadScheduled();
 }
-const ADMIN_SECTION_LABELS={home:'خانه',chat:'چت',office:'Office AI',aisettings:'تنظیمات AI',apikeys:'API',promptbuilder:'پرامپت',about:'درباره ما',rules:'قوانین',dashboard:'پنل کاربری',hugy:'Hugy',uli:'Uli',feed:'فید',explore:'اکسپلور',projects:'پروژه‌ها',plans:'پلن‌ها',profile:'پروفایل'};
+const ADMIN_SECTION_LABELS={home:'خانه',chat:'چت',office:'Office AI',aisettings:'تنظیمات AI',apikeys:'API',promptbuilder:'پرامپت',codearchive:'بایگانی کد',mydata:'دیتای من',about:'درباره ما',rules:'قوانین',dashboard:'پنل کاربری',hugy:'Hugy',uli:'Uli',feed:'فید',explore:'اکسپلور',projects:'پروژه‌ها',plans:'پلن‌ها',profile:'پروفایل'};
 async function adminLoadSectionsPanel(){
   const el=document.getElementById('admin-sections-list');
   el.innerHTML='در حال بارگذاری...';
@@ -2919,7 +2942,7 @@ async function createApiKey(){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   const key=genApiKeyStr();
   try{
-    const r=await fetch(WK+'/apikey/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
+    const r=await fetch(apiUrl('/apikey/register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
     const data=await r.json();
     if(!data.ok){toast('خطا در ثبت کلید روی سرور','w');return;}
   }catch(e){toast('خطا در ارتباط با سرور','w');return;}
@@ -2933,7 +2956,7 @@ async function deleteApiKey(key){
   list=list.filter(k=>k.key!==key);
   sv(apiKeysKey(),list);
   renderApiKeys();
-  if(WK){try{await fetch(WK+'/apikey/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){}}
+  if(WK){try{await fetch(apiUrl('/apikey/revoke'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){}}
   toast('🗑️ کلید حذف و غیرفعال شد');
 }
 function copyApiKey(key){
@@ -3033,10 +3056,9 @@ function enterApp(name,email){
 function applyPlan(p){
   S.plan=p;
   const l=PLAN_LIMITS[p]||PLAN_LIMITS.Rax;
-  S.msgs=l.msgs; S.creates=l.creates; S.chats=l.chats; // نمایش فوری، سرور لحظه‌ای بعد اصلاحش می‌کنه
+  S.msgs=l.msgs; S.creates=l.creates; S.chats=l.chats;
   updateUI();
   refreshBusinessPanel(); renderApiKeys();
-  syncUsageFromServer(); // عدد واقعی رو از سرور (طبق پلن تازه) بگیر
 }
 function setPlan(p){
   applyPlan(p);
@@ -3122,6 +3144,8 @@ function nav(pg){
   if(pg==='aisettings'){loadAISettings();updateStorageUsage();refreshBusinessPanel();renderActivityAnalytics();}
   if(pg==='apikeys'){renderApiKeys();loadConnectorSettings();}
   if(pg==='dashboard')renderDashboard();
+  if(pg==='codearchive')loadCodeArchive();
+  if(pg==='mydata')loadMyData();
   if(pg==='uli'){
     if(!hasProfessionalAccess()){
       document.getElementById('pg-uli').innerHTML='<div class="ccard" style="text-align:center;padding:50px 20px"><div style="font-size:52px;margin-bottom:14px">🔒</div><h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Uli — ویژه VIP و کاربران حرفه‌ای</h2><p style="font-size:13px;color:var(--gray);max-width:420px;margin:0 auto;line-height:2">این بخش در حال توسعه‌ست و فعلاً فقط برای دارندگان پلن VIP و کاربران حرفه‌ای باز شده 🩵</p></div>';
@@ -3581,17 +3605,11 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature,...quotaCtx()})});
+    const res=await fetch(apiUrl('/'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
+    if(data.error && !data.content) throw new Error(String(data.error));
     remTyping(tid);
-    if(res.status===429&&data?.quota&&data.quota.ok===false){
-      S.msgs=Math.min(S.msgs+1,PLAN_LIMITS[S.plan]?.msgs??S.msgs); // برگردوندن کاهش خوش‌بینانه‌ی محلی
-      if(data.quota.remaining)applyServerQuota(data.quota);
-      addMsg(data.content?.[0]?.text||'محدودیت پیام!','ai');
-      updateUI();
-      return;
-    }
-    applyServerQuota(data?.quota);
     const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
@@ -3600,7 +3618,15 @@ async function doSend(){
     if(ld('voiceReplyOn',false))speakText(reply.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
   }catch(e){
     remTyping(tid);
-    addMsg('❌ خطا در اتصال. دوباره تلاش کنید.','ai');
+    // درخواست ناموفق نباید سهمیه پیام را مصرف کند یا پیام ناقص را در تاریخچه نگه دارد.
+    S.msgs=Math.min((PLAN_LIMITS[S.plan]||PLAN_LIMITS.Rax).msgs, S.msgs+1);
+    S.totMsgs=Math.max(0,S.totMsgs-1);
+    S.cooldown.count=Math.max(0,S.cooldown.count-1);
+    const last=S.hist[S.hist.length-1];
+    if(last && last.role==='user' && String(last.content).startsWith(txt)) S.hist.pop();
+    updateUI();
+    if(inp && !inp.value) inp.value=txt;
+    addMsg('❌ درخواست ناموفق بود؛ سهمیه برگردانده شد. اتصال یا پاسخ سرور را بررسی و دوباره تلاش کنید.','ai');
   }
 }
 let chatMsgTexts=[];
@@ -3646,7 +3672,7 @@ async function callAI(msgs,sys,modKey){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
+  const res=await fetch(apiUrl('/'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
   const data=await res.json();
   return data.content?.[0]?.text||'خطا';
 }
@@ -3654,7 +3680,7 @@ async function callAI(msgs,sys,modKey){
 async function callOpenRouter(messages,system,model){
   if(!API_CONFIGURED)return null;
   try{
-    const res=await fetch(WK+'/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
+    const res=await fetch(apiUrl('/openrouter'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
     const data=await res.json();
     return data.content?.[0]?.text||null;
   }catch(e){return null;}
@@ -3734,19 +3760,11 @@ async function gen(type){
   const pin=document.getElementById(type+'-p');
   const prompt=pin?.value?.trim();
   if(!prompt){toast('موضوع را وارد کنید','w');return;}
-  if(API_CONFIGURED){
-    try{
-      const qres=await fetch(apiUrl('/usage/consume'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'creates',...quotaCtx()})});
-      const qdata=await qres.json();
-      if(!qdata.ok){toast('محدودیت تولید! پلن را ارتقا دهید یا صبر کنید','w');applyServerQuota(qdata);setTimeout(()=>nav('plans'),1500);return;}
-      applyServerQuota(qdata);
-    }catch(e){ /* سرور در دسترس نبود — طبق همون فلسفه‌ی سایر فراخوان‌ها، اجازه بده و با عدد محلی ادامه بده */ }
-  }
   const btn=document.getElementById('gbtn-'+type);
   const rb=document.getElementById('res-'+type);
   if(btn){btn.innerHTML='<div class="spin"></div> در حال ساخت...';btn.disabled=true;}
   if(rb)rb.classList.remove('on');
-  S.totCreates++; updateUI();
+  S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
     if(type==='image'){
@@ -3823,7 +3841,6 @@ async function gen(type){
     const out=document.getElementById(type+'-out');
     if(out)out.innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال.</span>';
     if(rb)rb.classList.add('on');
-    if(API_CONFIGURED){try{const rf=await fetch(apiUrl('/usage/refund'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'creates',...quotaCtx()})});applyServerQuota(await rf.json());}catch(e2){}}
   }
   if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}
 }
@@ -3848,14 +3865,12 @@ async function genLipSync(){
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
     // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
-    const res=await fetch(WK+'/lipsync',{
+    const res=await fetch(apiUrl('/lipsync'),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64},...quotaCtx()})
+      body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
     });
     const data=await res.json();
-    const remC=res.headers.get('X-Quota-Remaining-Creates'); if(remC!==null)applyServerQuota({remaining:{creates:parseInt(remC)},deviceToken:res.headers.get('X-Device-Token')});
-    if(res.status===429){throw new Error(data.error||'محدودیت تولید! پلن را ارتقا دهید یا صبر کنید');}
     if(data.id){
       // polling برای نتیجه
       document.getElementById('lipsync-out').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray)"><div class="spin" style="border-color:var(--graymd);border-top-color:var(--accent);width:30px;height:30px;margin:0 auto 12px"></div>در حال پردازش ویدیو... (۱-۲ دقیقه)</div>';
@@ -3873,7 +3888,7 @@ async function genLipSync(){
 async function pollDID(id,attempt=0){
   if(attempt>30)return;
   try{
-    const res=await fetch(WK+'/lipsync/'+id);
+    const res=await fetch(apiUrl('/lipsync/'+id));
     const data=await res.json();
     if(data.status==='done'&&data.result_url){
       document.getElementById('lipsync-out').innerHTML='<video controls style="width:100%;border-radius:12px" src="'+data.result_url+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+data.result_url+'" download target="_blank">⬇️ دانلود</a><button class="btn btng btnsm" onclick=\"pubContent(\'video\')\">📤 انتشار</button></div>';
@@ -4036,7 +4051,7 @@ async function genFeed(){
   if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
   c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
   try{
-    const res=await fetch(WK+'/feed');
+    const res=await fetch(apiUrl('/feed'));
     const data=await res.json();
     feedCache=data.posts||[];
     if(!feedCache.length){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز پستی منتشر نشده — اولین نفر باشید! 🚀</div>';return;}
@@ -4071,7 +4086,7 @@ async function likePost(btn){
   btn.setAttribute('data-liked',liked?'0':'1');
   btn.classList.toggle('liked',!liked);
   try{
-    const res=await fetch(WK+'/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
+    const res=await fetch(apiUrl('/feed/like'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
     const data=await res.json();
     btn.innerHTML='❤️ '+(data.lk??0);
   }catch(e){}
@@ -4110,7 +4125,7 @@ async function addComment(){
   if(!txt||currentCommentPid===null)return;
   inp.value='';
   try{
-    const res=await fetch(WK+'/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
+    const res=await fetch(apiUrl('/feed/comment'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
     const data=await res.json();
     const post=feedCache.find(p=>p.id===currentCommentPid);
     if(post){post.comments=data.comments||[];post.cm=post.comments.length;}
@@ -4356,14 +4371,13 @@ async function speakText(text) {
   if(!API_CONFIGURED){ speakTextBrowserFallback(text); return; }
   try{
     if(_currentTTSAudio){_currentTTSAudio.pause();_currentTTSAudio=null;}
-    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000),...quotaCtx()})});
+    const res=await fetch(apiUrl('/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000)})});
     if(!res.ok){
       const err=await res.json().catch(()=>({}));
       if(res.status===503){speakTextBrowserFallback(text);return;} // سرویس صدا هنوز تنظیم نشده — بازگشت به صدای مرورگر
       toast(err.error||'خطا در پخش صدا','w');
       return;
     }
-    const remC=res.headers.get('X-Quota-Remaining-Creates'); if(remC!==null)applyServerQuota({remaining:{creates:parseInt(remC)},deviceToken:res.headers.get('X-Device-Token')});
     const blob=await res.blob();
     const url=URL.createObjectURL(blob);
     const audio=new Audio(url);
@@ -4442,21 +4456,118 @@ function removeUpload(btn, name) {
 }
 function clearUploads(){
   uploadedFiles=[]; uploadedFileTexts={};
+  pendingDataContext=[];
   const preview=document.getElementById('upload-preview');
   if(preview)preview.innerHTML='';
 }
+let pendingDataContext=[];
 function buildAttachmentContext(){
-  if(!uploadedFiles.length)return '';
-  let ctx='\n\n[پیوست‌های کاربر]\n';
-  uploadedFiles.forEach(f=>{
-    const sizeKB=(f.size/1024).toFixed(0);
-    if(uploadedFileTexts[f.name]){
-      ctx+='--- فایل: '+f.name+' ('+sizeKB+'KB) ---\n'+uploadedFileTexts[f.name]+'\n';
-    } else {
-      ctx+='--- فایل: '+f.name+' ('+sizeKB+'KB, نوع: '+(f.type||'نامشخص')+') — محتوای این فایل قابل استخراج به متن نیست (تصویری/صوتی/باینری)؛ فقط بر اساس نام و نوع آن راهنمایی بده. ---\n';
-    }
-  });
+  let ctx='';
+  if(uploadedFiles.length){
+    ctx+='\n\n[پیوست‌های کاربر]\n';
+    uploadedFiles.forEach(f=>{
+      const sizeKB=(f.size/1024).toFixed(0);
+      if(uploadedFileTexts[f.name]){
+        ctx+='--- فایل: '+f.name+' ('+sizeKB+'KB) ---\n'+uploadedFileTexts[f.name]+'\n';
+      } else {
+        ctx+='--- فایل: '+f.name+' ('+sizeKB+'KB, نوع: '+(f.type||'نامشخص')+') — محتوای این فایل قابل استخراج به متن نیست (تصویری/صوتی/باینری)؛ فقط بر اساس نام و نوع آن راهنمایی بده. ---\n';
+      }
+    });
+  }
+  if(pendingDataContext.length){
+    const typeLabels={text:'متن',image_link:'لینک عکس',video_link:'لینک ویدیو',file_note:'توضیح فایل'};
+    ctx+='\n\n[دیتای ذخیره‌شده‌ی کاربر — از «دیتای من»]\n';
+    pendingDataContext.forEach(d=>{ ctx+='--- '+d.title+' ('+(typeLabels[d.type]||d.type)+') ---\n'+d.content+'\n'; });
+  }
   return ctx;
+}
+
+// uid اختصاصی کاربر برای اثبات مالکیت داده‌هاش روی سرور؛ برای حساب‌های قدیمی بدون uid، می‌سازه و همگام می‌کنه
+async function ensureUid(){
+  const users=ld('users',{}); const u=users[S.user?.email];
+  if(!u)return '';
+  if(!u.uid){u.uid=genUserId(); sv('users',users); await syncUserAndFetchRole(u);}
+  return u.uid;
+}
+
+// ===== بایگانی کد (فقط ذخیره و نمایش — هرگز اجرا نمی‌شه) =====
+async function loadCodeArchive(){
+  const el=document.getElementById('ca-list'); if(!el)return;
+  if(!API_CONFIGURED||!S.user){el.innerHTML='<div style="color:var(--gray);font-size:12px">ابتدا وارد شوید</div>';return;}
+  try{
+    const res=await fetch(apiUrl('/codearchive/list?email='+encodeURIComponent(S.user.email)+'&uid='+encodeURIComponent(await ensureUid())));
+    if(res.status===401){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطای احراز هویت — یک‌بار خارج و دوباره وارد شوید</div>';return;}
+    const data=await res.json();
+    const items=data.items||[];
+    window._caItems=items;
+    el.innerHTML=items.length?items.map((it,i)=>'<div class="ccard" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong style="font-size:13px">'+escHtml(it.title)+' <span class="postbdg">'+escHtml(it.lang)+'</span></strong><div style="display:flex;gap:6px"><button class="btn btng btnsm" onclick="copyCodeArchive('+i+')">📋 کپی</button><button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="deleteCodeArchive(\''+escHtml(it.id)+'\')">حذف</button></div></div><pre style="background:#0F1720;color:#E6EDF3;border-radius:10px;padding:12px;font-size:11px;overflow-x:auto;direction:ltr;text-align:left;max-height:240px;white-space:pre-wrap;word-break:break-word"><code>'+escHtml(it.code)+'</code></pre></div>').join(''):'<div style="color:var(--gray);font-size:12px;text-align:center;padding:20px 0">هنوز کدی ذخیره نشده</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در بارگذاری</div>';}
+}
+async function saveCodeArchive(){
+  const title=document.getElementById('ca-title').value.trim()||'بدون عنوان';
+  const lang=document.getElementById('ca-lang').value;
+  const code=document.getElementById('ca-code').value;
+  if(!code.trim()){toast('کد رو وارد کن','w');return;}
+  if(!API_CONFIGURED||!S.user){toast('ابتدا وارد شوید','w');return;}
+  try{
+    const res=await fetch(apiUrl('/codearchive/save'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:S.user.email,uid:await ensureUid(),title,lang,code})});
+    const data=await res.json();
+    if(!data.ok){toast(data.error||'خطا در ذخیره','w');return;}
+    document.getElementById('ca-title').value=''; document.getElementById('ca-code').value='';
+    toast('✅ کد ذخیره شد');
+    loadCodeArchive();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+function copyCodeArchive(i){
+  const it=(window._caItems||[])[i]; if(!it)return;
+  navigator.clipboard.writeText(it.code).then(()=>toast('📋 کد کپی شد'));
+}
+async function deleteCodeArchive(id){
+  if(!S.user)return;
+  await fetch(apiUrl('/codearchive/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:S.user.email,uid:await ensureUid(),id})});
+  loadCodeArchive();
+}
+
+// ===== دیتای من (قابل اضافه‌شدن به چت به‌عنوان زمینه) =====
+async function loadMyData(){
+  const el=document.getElementById('md-list'); if(!el)return;
+  if(!API_CONFIGURED||!S.user){el.innerHTML='<div style="color:var(--gray);font-size:12px">ابتدا وارد شوید</div>';return;}
+  const typeLabels={text:'📝 متن',image_link:'🖼️ لینک عکس',video_link:'🎬 لینک ویدیو',file_note:'📎 توضیح فایل'};
+  try{
+    const res=await fetch(apiUrl('/mydata/list?email='+encodeURIComponent(S.user.email)+'&uid='+encodeURIComponent(await ensureUid())));
+    if(res.status===401){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطای احراز هویت — یک‌بار خارج و دوباره وارد شوید</div>';return;}
+    const data=await res.json();
+    const items=data.items||[];
+    window._mdItems=items;
+    el.innerHTML=items.length?items.map((it,i)=>'<div class="ccard" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px"><strong style="font-size:13px">'+escHtml(it.title)+' <span class="postbdg">'+(typeLabels[it.type]||'')+'</span></strong><div style="display:flex;gap:6px"><button class="btn btnp btnsm" onclick="addDataToChat('+i+')">💬 افزودن به چت</button><button class="btn btnsm" style="background:#FFF0F0;color:#E74C3C" onclick="deleteMyData(\''+escHtml(it.id)+'\')">حذف</button></div></div><div style="font-size:12px;color:var(--graydark);white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:hidden">'+escHtml(it.content)+'</div></div>').join(''):'<div style="color:var(--gray);font-size:12px;text-align:center;padding:20px 0">هنوز دیتایی ذخیره نشده</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--gray);font-size:12px">خطا در بارگذاری</div>';}
+}
+async function saveMyData(){
+  const type=document.getElementById('md-type').value;
+  const title=document.getElementById('md-title').value.trim()||'بدون عنوان';
+  const content=document.getElementById('md-content').value;
+  if(!content.trim()){toast('محتوا رو وارد کن','w');return;}
+  if(!API_CONFIGURED||!S.user){toast('ابتدا وارد شوید','w');return;}
+  try{
+    const res=await fetch(apiUrl('/mydata/save'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:S.user.email,uid:await ensureUid(),type,title,content})});
+    const data=await res.json();
+    if(!data.ok){toast(data.error||'خطا در ذخیره','w');return;}
+    document.getElementById('md-title').value=''; document.getElementById('md-content').value='';
+    toast('✅ ذخیره شد');
+    loadMyData();
+  }catch(e){toast('خطا در ارتباط با سرور','w');}
+}
+function addDataToChat(i){
+  const it=(window._mdItems||[])[i]; if(!it)return;
+  if(pendingDataContext.some(d=>d.id===it.id)){toast('این مورد قبلاً به چت اضافه شده','w');return;}
+  pendingDataContext.push(it);
+  toast('💬 «'+it.title+'» به پیام بعدی چت اضافه شد — برید به بخش چت و پیام بفرستید');
+}
+async function deleteMyData(id){
+  if(!S.user)return;
+  await fetch(apiUrl('/mydata/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:S.user.email,uid:await ensureUid(),id})});
+  pendingDataContext=pendingDataContext.filter(d=>d.id!==id);
+  loadMyData();
 }
 
 // ===== VOICE IN CHAT (quick) =====
