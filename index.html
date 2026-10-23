@@ -1772,7 +1772,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 - چطور مشترک شوم؟ از صفحه پلن‌ها (بخش قیمت‌گذاری) پلن مدنظر را انتخاب و فرم پرداخت را پر کنید؛ پس از تأیید تیم خرید فعال می‌شود.
 
 ### مشکلات رایج فنی (راهنمای پاسخ به کاربر)
-- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس DeepSeek است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
+- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس Metis است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
 - گم‌شدن اطلاعات کاربر: ماهیت localStorage را طبق بخش سوالات متداول توضیح بده.
 - مشکل نمایش در برخی گوشی/مرورگرها: مدل دستگاه، مرورگر و نسخه آن را از کاربر بپرس.
 
@@ -1787,14 +1787,14 @@ const MODELS = {
   uliki3:  {n:'Uliki.3',  e:'🌐'}
 };
 const MODEL_MAP = {
-  // مدل‌های متنی از طریق Cloudflare Worker و Secret سمت سرور به DeepSeek متصل می‌شوند.
-  deepseek: {luolaf3:'deepseek-chat', uliki2:'deepseek-chat', uliki3:'deepseek-reasoner'}
+  // درخواست‌های متنی از طریق Cloudflare Worker و Secret سمت سرور به Metis Wrapper متصل می‌شوند.
+  metis: {luolaf3:'metis-gpt', uliki2:'metis-gpt', uliki3:'metis-gpt'}
 };
 function getAIProvider(){
-  return 'deepseek';
+  return 'metis';
 }
 function getModelId(modKey){
-  return MODEL_MAP.deepseek[modKey] || MODEL_MAP.deepseek.luolaf3;
+  return MODEL_MAP.metis[modKey] || MODEL_MAP.metis.luolaf3;
 }
 const PLAN_LIMITS = {
   Rax:  {msgs:20, creates:2, chats:1,  wallet:3,  wRate:2,  noAd:false, uploadMB:10, maxFiles:3,  promptImprove:false, officeUpload:false, label:'رایگان'},
@@ -3752,7 +3752,7 @@ function selCMod(m,btn){
   S.createMod=m;
   document.querySelectorAll('#pg-create .modsel').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  const labels={luolaf3:'DeepSeek Chat — متعادل',uliki2:'DeepSeek Chat — سریع',uliki3:'DeepSeek Reasoner — تحلیل'};
+  const labels={luolaf3:'Metis GPT — متعادل',uliki2:'Metis GPT — سریع',uliki3:'Metis GPT — پیشرفته'};
   document.getElementById('cmodlbl').textContent=labels[m]||'';
 }
 async function gen(type){
@@ -4586,7 +4586,7 @@ function togVoice() { togVoicePanel(); }
 
 <!-- ATTRIBUTION -->
 <div style="position:fixed;bottom:5px;right:10px;font-size:10px;color:var(--gray);z-index:10;opacity:0.6">
-  Powered by <a href="https://www.deepseek.com" target="_blank" style="color:var(--accent);text-decoration:none">DeepSeek</a> · 
+  Powered by <a href="https://www.metisai.ir" target="_blank" style="color:var(--accent);text-decoration:none">Metis</a> · 
   Images by <a href="https://pollinations.ai" target="_blank" style="color:var(--accent);text-decoration:none">Pollinations AI</a>
 </div>
 
