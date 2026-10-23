@@ -1772,7 +1772,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 - چطور مشترک شوم؟ از صفحه پلن‌ها (بخش قیمت‌گذاری) پلن مدنظر را انتخاب و فرم پرداخت را پر کنید؛ پس از تأیید تیم خرید فعال می‌شود.
 
 ### مشکلات رایج فنی (راهنمای پاسخ به کاربر)
-- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس Groq است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
+- پاسخ‌ندادن یا کندی هوش مصنوعی: معمولاً به‌خاطر مشکل موقت در Cloudflare Worker یا سرویس DeepSeek است؛ به کاربر بگو چند دقیقه دیگر دوباره امتحان کند.
 - گم‌شدن اطلاعات کاربر: ماهیت localStorage را طبق بخش سوالات متداول توضیح بده.
 - مشکل نمایش در برخی گوشی/مرورگرها: مدل دستگاه، مرورگر و نسخه آن را از کاربر بپرس.
 
@@ -1787,14 +1787,14 @@ const MODELS = {
   uliki3:  {n:'Uliki.3',  e:'🌐'}
 };
 const MODEL_MAP = {
-  // مدل‌های قدیمی Groq (llama-3.3-70b-versatile / llama-3.1-8b-instant / gemma2-9b-it) در ۱۶ اوت ۲۰۲۶ بازنشسته شدند
-  groq: {luolaf3:'openai/gpt-oss-120b', uliki2:'openai/gpt-oss-20b', uliki3:'qwen/qwen3.6-27b'}
+  // مدل‌های متنی از طریق Cloudflare Worker و Secret سمت سرور به DeepSeek متصل می‌شوند.
+  deepseek: {luolaf3:'deepseek-chat', uliki2:'deepseek-chat', uliki3:'deepseek-reasoner'}
 };
 function getAIProvider(){
-  return 'groq'; // فعلاً مدل متنی ما فقط Groq است
+  return 'deepseek';
 }
 function getModelId(modKey){
-  return MODEL_MAP.groq[modKey]||MODEL_MAP.groq.luolaf3;
+  return MODEL_MAP.deepseek[modKey] || MODEL_MAP.deepseek.luolaf3;
 }
 const PLAN_LIMITS = {
   Rax:  {msgs:20, creates:2, chats:1,  wallet:3,  wRate:2,  noAd:false, uploadMB:10, maxFiles:3,  promptImprove:false, officeUpload:false, label:'رایگان'},
@@ -3752,7 +3752,7 @@ function selCMod(m,btn){
   S.createMod=m;
   document.querySelectorAll('#pg-create .modsel').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  const labels={luolaf3:'Llama 3.3 — دقیق',uliki2:'Mixtral — سریع',uliki3:'Gemma2 — خلاق'};
+  const labels={luolaf3:'DeepSeek Chat — متعادل',uliki2:'DeepSeek Chat — سریع',uliki3:'DeepSeek Reasoner — تحلیل'};
   document.getElementById('cmodlbl').textContent=labels[m]||'';
 }
 async function gen(type){
@@ -4586,7 +4586,7 @@ function togVoice() { togVoicePanel(); }
 
 <!-- ATTRIBUTION -->
 <div style="position:fixed;bottom:5px;right:10px;font-size:10px;color:var(--gray);z-index:10;opacity:0.6">
-  Powered by <a href="https://groq.com" target="_blank" style="color:var(--accent);text-decoration:none">Groq</a> · 
+  Powered by <a href="https://www.deepseek.com" target="_blank" style="color:var(--accent);text-decoration:none">DeepSeek</a> · 
   Images by <a href="https://pollinations.ai" target="_blank" style="color:var(--accent);text-decoration:none">Pollinations AI</a>
 </div>
 
