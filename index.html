@@ -1701,9 +1701,9 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 <script>
 // ===== CONFIG =====
 const WK = 'https://uliki.amiralitanaomi2015.workers.dev';
-const API_BASE = WK.replace(/\\/+$/, '');
+const API_BASE = String(WK || '').replace(/\/+$/, '');
 const RANFLR_URL = ''; // همگام‌سازی Ranflr اختیاری و جدا از Worker است.
-const API_CONFIGURED = /^https:\\/\\//i.test(API_BASE);
+const API_CONFIGURED = /^https:\/\//i.test(API_BASE);
 function apiUrl(path=''){
   const suffix=String(path||'');
   return API_BASE+(suffix.startsWith('/')?suffix:(suffix?'/'+suffix:'/'));
@@ -1717,9 +1717,11 @@ async function apiJson(path,options={}){
   return data;
 }
 async function requestWorkerImage(prompt,options={}){
+  const cleanPrompt=String(prompt||'').trim();
+  if(!cleanPrompt)throw new Error('پرامپت تصویر خالی است.');
   const response=await fetch(apiUrl('/generate-image'),{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:String(prompt||'').trim(),width:options.width||1024,height:options.height||1024,enhance:!!options.enhance,safe:options.safe!==false})
+    body:JSON.stringify({prompt:cleanPrompt,width:options.width||1024,height:options.height||1024,enhance:!!options.enhance,safe:options.safe!==false})
   });
   if(!response.ok){
     const raw=await response.text();let message=raw;
@@ -1729,6 +1731,23 @@ async function requestWorkerImage(prompt,options={}){
   const type=response.headers.get('Content-Type')||'';
   if(!type.toLowerCase().startsWith('image/'))throw new Error('Worker پاسخ تصویری معتبر برنگرداند.');
   return URL.createObjectURL(await response.blob());
+}
+async function generateInlineImage(button){
+  const prompt=decodeURIComponent(button?.dataset?.prompt||'');
+  if(!prompt)return;
+  button.disabled=true;
+  button.textContent='🎨 در حال تولید تصویر از طریق Worker...';
+  try{
+    const url=await requestWorkerImage(prompt,{width:768,height:768,enhance:false,safe:true});
+    const img=document.createElement('img');
+    img.src=url;img.alt='تصویر تولیدشده با Uliki';
+    img.style.cssText='max-width:100%;border-radius:10px;margin:8px 0;display:block';
+    button.replaceWith(img);
+  }catch(e){
+    button.disabled=false;
+    button.textContent='🔁 تلاش دوباره برای تولید تصویر';
+    toast(e.message||'خطا در تولید تصویر','w');
+  }
 }
 const GOOGLE_CLIENT_ID = '867167820423-72bb4nlj7ndfpt9sujv49p515h2cnqhv.apps.googleusercontent.com';
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
@@ -1902,12 +1921,22 @@ async function hashPassword(pw,salt){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 // ===== ورود با گوگل =====
-function initGoogleAuth(){
-  if(!GOOGLE_CLIENT_ID||typeof google==='undefined'||!google.accounts)return;
-  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
-  const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
-  const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
-  const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
+let googleAuthInitialized=false;
+function initGoogleAuth(attempt=0){
+  if(googleAuthInitialized)return true;
+  if(!GOOGLE_CLIENT_ID)return false;
+  if(typeof google==='undefined'||!google.accounts||!google.accounts.id){
+    if(attempt<20)setTimeout(()=>initGoogleAuth(attempt+1),250);
+    return false;
+  }
+  try{
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
+    const opts={theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280};
+    const b1=document.getElementById('gbtn-login'); if(b1)google.accounts.id.renderButton(b1,opts);
+    const b2=document.getElementById('gbtn-reg'); if(b2)google.accounts.id.renderButton(b2,opts);
+    googleAuthInitialized=true;
+    return true;
+  }catch(e){console.error('Google Identity initialization failed:',e);return false;}
 }
 async function handleGoogleCredential(resp){
   if(!API_CONFIGURED){aerr('آدرس API تنظیم نشده');return;}
@@ -2965,7 +2994,7 @@ async function createApiKey(){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   const key=genApiKeyStr();
   try{
-    const r=await fetch(apiUrl('/apikey/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
+    const r=await fetch(apiUrl('/apikey/register'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
     const data=await r.json();
     if(!data.ok){toast('خطا در ثبت کلید روی سرور','w');return;}
   }catch(e){toast('خطا در ارتباط با سرور','w');return;}
@@ -2979,7 +3008,7 @@ async function deleteApiKey(key){
   list=list.filter(k=>k.key!==key);
   sv(apiKeysKey(),list);
   renderApiKeys();
-  if(WK){try{await fetch(apiUrl('/apikey/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){}}
+  if(WK){try{await fetch(apiUrl('/apikey/revoke'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){console.error('API key revoke failed',e);}}
   toast('🗑️ کلید حذف و غیرفعال شد');
 }
 function copyApiKey(key){
@@ -3542,8 +3571,8 @@ function fmtMsg(text){
   // تولید تصویر حین چت
   if(/^IMAGE:/im.test(text)){
     text=text.replace(/IMAGE:\s*([^\n]+)/gi,(m,p)=>{
-      const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(p.trim())+'?width=400&height=400&nologo=true';
-      return '<img src="'+url+'" style="max-width:100%;border-radius:10px;margin:8px 0;display:block" alt="AI image" loading="lazy">';
+      const encoded=encodeURIComponent(p.trim());
+      return '<button class="btn btno btnsm" data-prompt="'+encoded+'" onclick="generateInlineImage(this)">🎨 تولید تصویر با Uliki</button>';
     });
   }
   // بررسی جدول
@@ -3628,10 +3657,10 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(apiUrl('/'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,temperature})});
-    const data=await res.json();
+    const data=await apiJson('/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,temperature})});
     remTyping(tid);
-    const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
+    const reply=data.content?.[0]?.text||data.error||data.message||'پاسخ معتبر از ZCODE دریافت نشد.';
+    if(!data.content?.[0]?.text)throw new Error(reply);
     addMsg(reply,'ai',true);
     S.hist.push({role:'assistant',content:reply});
     saveChatHistory();
@@ -3639,7 +3668,10 @@ async function doSend(){
     if(ld('voiceReplyOn',false))speakText(reply.replace(/```[\s\S]*?```/g,' کد نمایش داده شده در پیام. ').replace(/[#*_`>]/g,''));
   }catch(e){
     remTyping(tid);
-    addMsg('❌ خطا در اتصال. دوباره تلاش کنید.','ai');
+    addMsg('❌ خطای ZCODE/Worker: '+(e.message||'اتصال ناموفق بود'),'ai');
+    S.msgs=Math.min(S.msgs+1,999);
+    S.totMsgs=Math.max(0,S.totMsgs-1);
+    updateUI();
   }
 }
 let chatMsgTexts=[];
@@ -3674,29 +3706,28 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 // ===== CALL AI =====
 async function callZCode(msgs,sys){
-  if(!API_CONFIGURED){toast('آدرس Worker تنظیم نشده است','w');return 'خطا: API تنظیم نشده است.';}
-  try{
-    const data=await apiJson('/generate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:3000})});
-    return data.content?.[0]?.text||'خطا در دریافت پاسخ';
-  }catch(e){return '❌ '+(e.message||'خطا در اتصال به ZCODE');}
+  if(!API_CONFIGURED)throw new Error('آدرس Worker تنظیم نشده است.');
+  const data=await apiJson('/generate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:3000})});
+  const answer=data.content?.[0]?.text;
+  if(!answer)throw new Error(data.error||data.message||'پاسخ معتبر از ZCODE دریافت نشد.');
+  return answer;
 }
 async function callAI(msgs,sys,modKey,contentMode=false){
-  if(!API_CONFIGURED){toast('آدرس Worker تنظیم نشده است','w');return 'خطا: API تنظیم نشده است.';}
+  if(!API_CONFIGURED)throw new Error('آدرس Worker تنظیم نشده است.');
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  try{
-    const path=contentMode?'/generate-content':'/';
-    const data=await apiJson(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,temperature})});
-    return data.content?.[0]?.text||'خطا در دریافت پاسخ';
-  }catch(e){return '❌ '+(e.message||'خطا در اتصال به ZCODE');}
+  const path=contentMode?'/generate-content':'/';
+  const data=await apiJson(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,temperature})});
+  const answer=data.content?.[0]?.text;
+  if(!answer)throw new Error(data.error||data.message||'پاسخ معتبر از ZCODE دریافت نشد.');
+  return answer;
 }
 async function callOpenRouter(messages,system,model){
   if(!API_CONFIGURED)return null;
   try{
-    const res=await fetch(apiUrl('/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
-    const data=await res.json();
+    const data=await apiJson('/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
     return data.content?.[0]?.text||null;
-  }catch(e){return null;}
+  }catch(e){console.error('OpenRouter request failed:',e);return null;}
 }
 // پرامپت انگلیسی مخصوص محتوای تولیدشده — به‌صورت داینامیک به resbox اضافه می‌شه
 async function genContentPrompt(topic,containerId){
@@ -3793,7 +3824,10 @@ async function gen(type){
       const ib=document.getElementById('res-image');
       if(ib){
         let box=ib.querySelector('.content-eprompt-box');
-        if(!box){box=document.createElement('div');box.className='content-eprompt-box';box.style.cssText='margin-top:12px;background:var(--snow);border-radius:10px;padding:12px';box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="font-size:12px">🧩 پرامپت انگلیسی این تصویر</strong><button class="btn btng btnsm" onclick="copyTxt(\\'ep-res-image\\')">📋 کپی</button></div><div style="font-size:12px;color:var(--graydark);line-height:1.8" id="ep-res-image"></div>';ib.appendChild(box);}
+        if(!box){box=document.createElement('div');box.className='content-eprompt-box';box.style.cssText='margin-top:12px;background:var(--snow);border-radius:10px;padding:12px';box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+          '<strong style="font-size:12px">🧩 پرامپت انگلیسی این تصویر</strong>' +
+          '<button class="btn btng btnsm" onclick="copyTxt(\'ep-res-image\')">📋 کپی</button>' +
+          '</div><div style="font-size:12px;color:var(--graydark);line-height:1.8" id="ep-res-image"></div>';ib.appendChild(box);}
         document.getElementById('ep-res-image').textContent=ep;
       }
       toast('✅ تصویر از طریق Worker ساخته شد!');
@@ -3860,9 +3894,13 @@ async function gen(type){
       addRealVideoButton(prompt);
     }
   } catch(e){
+    S.creates=Math.min((PLAN_LIMITS[S.plan]||PLAN_LIMITS.Rax).creates,S.creates+1);
+    S.totCreates=Math.max(0,S.totCreates-1);
+    updateUI();
     const out=document.getElementById(type+'-out');
-    if(out)out.innerHTML='<span style="color:#E74C3C">❌ خطا در اتصال.</span>';
+    if(out)out.textContent='❌ '+(e.message||'خطا در ارتباط با Worker یا سرویس تولید');
     if(rb)rb.classList.add('on');
+    toast('تولید ناموفق بود؛ اعتبار این تلاش برگردانده شد.','w');
   }
   if(btn){btn.innerHTML='✨ ساخت';btn.disabled=false;}
 }
@@ -3887,7 +3925,7 @@ async function genLipSync(){
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
     // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
-    const res=await fetch(apiUrl('/lipsync',{
+    const res=await fetch(apiUrl('/lipsync'),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
@@ -4073,7 +4111,7 @@ async function genFeed(){
   if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
   c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
   try{
-    const res=await fetch(apiUrl('/feed');
+    const res=await fetch(apiUrl('/feed'));
     const data=await res.json();
     feedCache=data.posts||[];
     if(!feedCache.length){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز پستی منتشر نشده — اولین نفر باشید! 🚀</div>';return;}
@@ -4108,7 +4146,7 @@ async function likePost(btn){
   btn.setAttribute('data-liked',liked?'0':'1');
   btn.classList.toggle('liked',!liked);
   try{
-    const res=await fetch(apiUrl('/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
+    const res=await fetch(apiUrl('/feed/like'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
     const data=await res.json();
     btn.innerHTML='❤️ '+(data.lk??0);
   }catch(e){}
@@ -4147,7 +4185,7 @@ async function addComment(){
   if(!txt||currentCommentPid===null)return;
   inp.value='';
   try{
-    const res=await fetch(apiUrl('/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
+    const res=await fetch(apiUrl('/feed/comment'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
     const data=await res.json();
     const post=feedCache.find(p=>p.id===currentCommentPid);
     if(post){post.comments=data.comments||[];post.cm=post.comments.length;}
