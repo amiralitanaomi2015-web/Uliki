@@ -762,7 +762,7 @@ function togCap(t){
               <button class="chip on" data-ver="beta" onclick="selImgVersion(this)">بتا (Pollinations)</button>
               <button class="chip" data-ver="alpha" onclick="selImgVersion(this)">آلفا (FLUX)</button>
             </div>
-            <div style="font-size:10px;color:#999;margin-top:4px">توجه داشته باشید نسخه بتا کیفیت کمتری را برای تولید عکس به کار می‌گیرد؛ پیشنهاد می‌شود از نسخه پیشرفته یعنی آلفا استفاده کنید.</div></div>
+            <div style="font-size:10px;color:#999;margin-top:4px">توجه داشته باشید هر دو حالت از Pollinations از طریق Worker استفاده می‌کنند؛ حالت آلفا گزینه enhance را فعال می‌کند.</div></div>
             <button class="genbtn" id="gbtn-image" onclick="gen('image')">🖼️ ساخت تصویر</button>
           </div>
           <div class="resbox" id="res-image"><div id="image-out"></div></div>
@@ -1700,11 +1700,36 @@ Body: {"messages":[{"role":"user","content":"سلام"}]}</code>
 
 <script>
 // ===== CONFIG =====
-const WK = 'https://uliki.amiralitanaomi2015.workers.dev'; // آدرس Worker شما
-const USE_RELATIVE_API = false; // نسخه Hugging Face: این را true کنید (به‌جای WK) تا از همان دامنه (app.py) به‌عنوان بک‌اند استفاده شود
-const RANFLR_URL = ''; // آدرس بک‌اند Ranflr برای همگام‌سازی اطلاعات کاربر (مثلاً: 'https://your-app.ranflr.app') — اختیاری، اگر خالی باشد این قابلیت غیرفعال می‌ماند
-const API_CONFIGURED = !!WK || USE_RELATIVE_API;
-function apiUrl(path){ return WK ? WK+path : path; }
+const WK = 'https://uliki.amiralitanaomi2015.workers.dev';
+const API_BASE = WK.replace(/\\/+$/, '');
+const RANFLR_URL = ''; // همگام‌سازی Ranflr اختیاری و جدا از Worker است.
+const API_CONFIGURED = /^https:\\/\\//i.test(API_BASE);
+function apiUrl(path=''){
+  const suffix=String(path||'');
+  return API_BASE+(suffix.startsWith('/')?suffix:(suffix?'/'+suffix:'/'));
+}
+async function apiJson(path,options={}){
+  const response=await fetch(apiUrl(path),options);
+  const raw=await response.text();
+  let data={};
+  try{data=raw?JSON.parse(raw):{};}catch{data={error:raw.slice(0,500)||'پاسخ نامعتبر از سرور'};}
+  if(!response.ok)throw new Error(data.error||data.message||('خطای سرور: '+response.status));
+  return data;
+}
+async function requestWorkerImage(prompt,options={}){
+  const response=await fetch(apiUrl('/generate-image'),{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt:String(prompt||'').trim(),width:options.width||1024,height:options.height||1024,enhance:!!options.enhance,safe:options.safe!==false})
+  });
+  if(!response.ok){
+    const raw=await response.text();let message=raw;
+    try{message=JSON.parse(raw).error||raw;}catch{}
+    throw new Error(message||('خطای تولید تصویر: '+response.status));
+  }
+  const type=response.headers.get('Content-Type')||'';
+  if(!type.toLowerCase().startsWith('image/'))throw new Error('Worker پاسخ تصویری معتبر برنگرداند.');
+  return URL.createObjectURL(await response.blob());
+}
 const GOOGLE_CLIENT_ID = '867167820423-72bb4nlj7ndfpt9sujv49p515h2cnqhv.apps.googleusercontent.com';
 const TEAM_EMAIL = 'luolaf.stoudio@gmail.com';
 const RULES_TEXT = `۱. تیم لیولاف همراه با مدیر اصلی‌اش جناب امیرعلی تنعمی، هیچ‌گونه مسئولیتی در شرایط خاص مربوط به این پلتفرم نمی‌پذیرند؛ تمام مسئولیت با خود کاربر است.
@@ -1746,7 +1771,7 @@ Uliki یک پلتفرم هوش مصنوعی چندمنظوره است، منتش
 
 ### زیرساخت فنی
 - میزبانی: GitHub Pages (وب)
-- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال می‌شوند. موتور متنی Groq است (مدل‌های GPT-OSS 120B، GPT-OSS 20B و Qwen 3.6 27B). تولید کد با ZCODE، تصویر با FLUX، ویدیو با Luma و موزیک با AI Music انجام می‌شود.
+- موتور هوش مصنوعی: درخواست‌ها از طریق یک Cloudflare Worker به‌عنوان پراکسی امن ارسال می‌شوند. موتور متنی و تولید کد ZCODE است. تولید تصویر با Pollinations از طریق Cloudflare Worker، ویدیو با Luma و موزیک با AI Music انجام می‌شود.
 - ذخیره‌سازی داده کاربر: در حافظه محلی مرورگر (localStorage) — نه دیتابیس سمت سرور. یعنی فعلاً همگام‌سازی بین دستگاه‌ها/مرورگرهای مختلف وجود ندارد.
 
 ### وضعیت قابلیت‌ها
@@ -2940,7 +2965,7 @@ async function createApiKey(){
   if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return;}
   const key=genApiKeyStr();
   try{
-    const r=await fetch(WK+'/apikey/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
+    const r=await fetch(apiUrl('/apikey/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,email:S.user?.email||''})});
     const data=await r.json();
     if(!data.ok){toast('خطا در ثبت کلید روی سرور','w');return;}
   }catch(e){toast('خطا در ارتباط با سرور','w');return;}
@@ -2954,7 +2979,7 @@ async function deleteApiKey(key){
   list=list.filter(k=>k.key!==key);
   sv(apiKeysKey(),list);
   renderApiKeys();
-  if(WK){try{await fetch(WK+'/apikey/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){}}
+  if(WK){try{await fetch(apiUrl('/apikey/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});}catch(e){}}
   toast('🗑️ کلید حذف و غیرفعال شد');
 }
 function copyApiKey(key){
@@ -3603,7 +3628,7 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(S.selMod),temperature})});
+    const res=await fetch(apiUrl('/'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,temperature})});
     const data=await res.json();
     remTyping(tid);
     const reply=data.content?.[0]?.text||'خطا در دریافت پاسخ';
@@ -3649,26 +3674,26 @@ function remTyping(id){const e=document.getElementById(id);if(e)e.remove();}
 
 // ===== CALL AI =====
 async function callZCode(msgs,sys){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده','w');return 'خطا: API تنظیم نشده است.';}
+  if(!API_CONFIGURED){toast('آدرس Worker تنظیم نشده است','w');return 'خطا: API تنظیم نشده است.';}
   try{
-    const res=await fetch(apiUrl('/generate-code'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000})});
-    const data=await res.json();
+    const data=await apiJson('/generate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:3000})});
     return data.content?.[0]?.text||'خطا در دریافت پاسخ';
-  }catch(e){return '❌ خطا در اتصال به سرویس تولید کد';}
+  }catch(e){return '❌ '+(e.message||'خطا در اتصال به ZCODE');}
 }
-async function callAI(msgs,sys,modKey){
-  if(!API_CONFIGURED){toast('آدرس API تنظیم نشده — WK را در کد تنظیم کنید','w');return 'خطا: API تنظیم نشده است.';}
+async function callAI(msgs,sys,modKey,contentMode=false){
+  if(!API_CONFIGURED){toast('آدرس Worker تنظیم نشده است','w');return 'خطا: API تنظیم نشده است.';}
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
-  const res=await fetch(WK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,model_key:getAIProvider(),model:getModelId(modKey),temperature})});
-  const data=await res.json();
-  return data.content?.[0]?.text||'خطا';
+  try{
+    const path=contentMode?'/generate-content':'/';
+    const data=await apiJson(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,system:sys,max_tokens:2000,temperature})});
+    return data.content?.[0]?.text||'خطا در دریافت پاسخ';
+  }catch(e){return '❌ '+(e.message||'خطا در اتصال به ZCODE');}
 }
-
 async function callOpenRouter(messages,system,model){
   if(!API_CONFIGURED)return null;
   try{
-    const res=await fetch(WK+'/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
+    const res=await fetch(apiUrl('/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,system,model:model||'openai/gpt-4o-mini',max_tokens:800})});
     const data=await res.json();
     return data.content?.[0]?.text||null;
   }catch(e){return null;}
@@ -3755,23 +3780,23 @@ async function gen(type){
   S.creates=Math.max(0,S.creates-1); S.totCreates++; updateUI();
   const mk=S.createMod||'luolaf3';
   try{
-    if(type==='image'&&window._imgVersion==='alpha'){
-      await genFluxImage(prompt,rb,mk);
-    } else if(type==='image'){
+    if(type==='image'){
       const style=document.querySelector('#cp-image .chip.on')?.textContent?.trim()||'رئالیستی';
-      const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 50 words, style:'+style+'): "'+prompt+'"'}],'',mk);
-      const seed=Math.floor(Math.random()*99999);
-      const imgUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(ep)+'?width=512&height=512&seed='+seed+'&nologo=true';
-      document.getElementById('image-out').innerHTML='<div style="margin-bottom:10px"><div style="height:4px;background:var(--snow);border-radius:2px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));animation:imgld 15s linear forwards;border-radius:2px"></div></div></div><div id="img-con" style="border-radius:12px;overflow:hidden;background:var(--snow);min-height:260px;display:flex;align-items:center;justify-content:center;font-size:44px">🎨</div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btnp btnsm" id="dl-img-btn" data-url="'+imgUrl+'" onclick=\"window.open(this.dataset.url,\'_blank\')\">🔗 مشاهده</button><button class="btn btng btnsm" onclick=\"pubContent(\'image\')\">📤 انتشار</button></div>';
-      rb.classList.add('on');
-      fetch(imgUrl).then(r=>{if(r.ok)return r.blob();throw new Error();}).then(b=>{const u=URL.createObjectURL(b);document.getElementById('img-con').innerHTML='<img src="'+u+'" style="width:100%;display:block;border-radius:12px">';document.getElementById('dl-img-btn').onclick=()=>{const a=document.createElement('a');a.href=u;a.download='uliki-image.png';a.click();};toast('✅ تصویر ساخته شد!');}).catch(()=>{document.getElementById('img-con').innerHTML='<a href="'+imgUrl+'" target="_blank" style="display:flex;align-items:center;justify-content:center;height:200px;text-decoration:none;color:var(--accent);font-weight:600">🔗 مشاهده تصویر</a>';});
-      // پرامپت انگلیسی تصویر همون prompt تولیدشده برای Pollinations است — نیازی به فراخوانی جدا نیست
+      const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 70 words, style:'+style+'): "'+prompt+'"'}],'',mk);
+      const imageUrl=await requestWorkerImage(ep,{width:1024,height:1024,enhance:window._imgVersion==='alpha',safe:true});
+      const out=document.getElementById('image-out');out.innerHTML='';
+      const img=document.createElement('img');img.src=imageUrl;img.alt='تصویر تولیدشده توسط Uliki';img.style.cssText='width:100%;display:block;border-radius:12px';
+      const row=document.createElement('div');row.style.cssText='margin-top:10px;display:flex;gap:8px';
+      const download=document.createElement('a');download.href=imageUrl;download.download='uliki-image.png';download.className='btn btnp btnsm';download.textContent='⬇️ دانلود تصویر';
+      const publish=document.createElement('button');publish.className='btn btng btnsm';publish.textContent='📤 انتشار';publish.onclick=()=>pubContent('image');
+      row.appendChild(download);row.appendChild(publish);out.appendChild(img);out.appendChild(row);rb.classList.add('on');
       const ib=document.getElementById('res-image');
       if(ib){
         let box=ib.querySelector('.content-eprompt-box');
-        if(!box){box=document.createElement('div');box.className='content-eprompt-box';box.style.cssText='margin-top:12px;background:var(--snow);border-radius:10px;padding:12px';box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="font-size:12px">🧩 پرامپت انگلیسی این تصویر</strong><button class="btn btng btnsm" onclick="copyTxt(\'ep-res-image\')">📋 کپی</button></div><div style="font-size:12px;color:var(--graydark);line-height:1.8" id="ep-res-image"></div>';ib.appendChild(box);}
+        if(!box){box=document.createElement('div');box.className='content-eprompt-box';box.style.cssText='margin-top:12px;background:var(--snow);border-radius:10px;padding:12px';box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="font-size:12px">🧩 پرامپت انگلیسی این تصویر</strong><button class="btn btng btnsm" onclick="copyTxt(\\'ep-res-image\\')">📋 کپی</button></div><div style="font-size:12px;color:var(--graydark);line-height:1.8" id="ep-res-image"></div>';ib.appendChild(box);}
         document.getElementById('ep-res-image').textContent=ep;
       }
+      toast('✅ تصویر از طریق Worker ساخته شد!');
     } else if(type==='code'){
       const lang=document.querySelector('#cp-code .chips:first-of-type .chip.on')?.textContent?.trim()||'Python';
       const req=document.querySelector('#cp-code .chips:last-of-type .chip.on')?.textContent?.trim()||'نوشتن';
@@ -3791,7 +3816,7 @@ async function gen(type){
       const dur=document.getElementById('music-dur')?.value||'۱ دقیقه';
       const dmap={'۳۰ ثانیه':30,'۱ دقیقه':60,'۲ دقیقه':120};
       const tsec=dmap[dur]||60;
-      const txt=await callAI([{role:'user',content:'آهنگ کامل بساز:\nموضوع: '+prompt+'\nسبک: '+genre+'\nحال: '+mood+'\nمدت: '+dur+'\nفرمت:\nBPM: [عدد]\nعنوان: [عنوان]\nمتن:\n[ورس ۱]\n[کورس]\n[ورس ۲]'}],'تو آهنگساز حرفه‌ای هستی.',mk);
+      const txt=await callAI([{role:'user',content:'آهنگ کامل بساز:\nموضوع: '+prompt+'\nسبک: '+genre+'\nحال: '+mood+'\nمدت: '+dur+'\nفرمت:\nBPM: [عدد]\nعنوان: [عنوان]\nمتن:\n[ورس ۱]\n[کورس]\n[ورس ۲]'}],'تو آهنگساز حرفه‌ای هستی.',mk,true);
       const bpmM=txt.match(/BPM:\s*(\d+)/); const bpm=parseInt(bpmM?.[1])||90;
       const gname=genre.replace(/[^؀-ۿ\s]/g,'').trim();
       document.getElementById('music-out').innerHTML='<div style="background:#fff;border-radius:12px;padding:16px;border:1px solid var(--gb);font-size:13px;line-height:2;margin-bottom:12px">'+txt.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</div><div id="mplayer-box"></div>';
@@ -3800,7 +3825,7 @@ async function gen(type){
       genContentPrompt(genre+' موزیک: '+prompt,'res-music');
       genRealMusic(prompt+' — '+genre+', '+mood);
     } else if(type==='video'){
-      const txt=await callAI([{role:'user',content:'اسکریپت ویدیو:\nموضوع: '+prompt+'\nفرمت:\nTITLE: [عنوان]\nSCENE_1: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_2: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_3: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_4: [توضیف انگلیسی] | [توضیف فارسی]\nMUSIC: [سبک]\nNARRATION: [روایت]'}],'',mk);
+      const txt=await callAI([{role:'user',content:'اسکریپت ویدیو:\nموضوع: '+prompt+'\nفرمت:\nTITLE: [عنوان]\nSCENE_1: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_2: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_3: [توضیف انگلیسی] | [توضیف فارسی]\nSCENE_4: [توضیف انگلیسی] | [توضیف فارسی]\nMUSIC: [سبک]\nNARRATION: [روایت]'}],'',mk,true);
       const lines=txt.split('\n');
       let title='ویدیو AI',music='',narr=''; const scenes=[];
       for(const ln of lines){
@@ -3821,9 +3846,14 @@ async function gen(type){
         sd.innerHTML='<div class="vscenehdr">صحنه '+(i+1)+'</div><div class="vsceneph" id="vs'+i+'"><div style="text-align:center"><div style="font-size:32px">🎨</div><div style="font-size:11px;color:var(--gray);margin-top:5px">در حال ساخت...</div></div></div><div class="vscenedesc">'+sc.fa+'</div>';
         vsc.appendChild(sd);
         (async(idx,scene)=>{
-          const iu='https://image.pollinations.ai/prompt/'+encodeURIComponent(scene.en+', cinematic')+'?width=480&height=270&seed='+Math.floor(Math.random()*99999)+'&nologo=true';
-          try{const r=await fetch(iu);if(r.ok){const b=await r.blob();document.getElementById('vs'+idx).innerHTML='<img src="'+URL.createObjectURL(b)+'" class="vsceneimg">';}else throw new Error();}
-          catch{document.getElementById('vs'+idx).innerHTML='<a href="'+iu+'" target="_blank" style="display:flex;align-items:center;justify-content:center;height:160px;text-decoration:none;color:var(--accent);font-size:12px">🔗 صحنه '+(idx+1)+'</a>';}
+          try{
+            const sceneUrl=await requestWorkerImage(scene.en+', cinematic storyboard frame',{width:768,height:432,enhance:false,safe:true});
+            const sceneHost=document.getElementById('vs'+idx);
+            if(sceneHost)sceneHost.innerHTML='<img src="'+sceneUrl+'" class="vsceneimg" alt="صحنه '+(idx+1)+'">';
+          }catch(e){
+            const sceneHost=document.getElementById('vs'+idx);
+            if(sceneHost)sceneHost.textContent='⚠️ تولید تصویر صحنه ناموفق بود: '+(e.message||'خطای Worker');
+          }
         })(i,sc);
       }
       genContentPrompt('ویدیو: '+prompt,'res-video');
@@ -3857,7 +3887,7 @@ async function genLipSync(){
     const imgB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(imgFile);});
     const audioB64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(audioFile);});
     // ارسال به Worker خودمان (کلید D-ID سمت سرور نگه‌داری می‌شود)
-    const res=await fetch(WK+'/lipsync',{
+    const res=await fetch(apiUrl('/lipsync',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({source_url:'data:image/jpeg;base64,'+imgB64,script:{type:'audio',audio_url:'data:audio/mpeg;base64,'+audioB64}})
@@ -3880,7 +3910,7 @@ async function genLipSync(){
 async function pollDID(id,attempt=0){
   if(attempt>30)return;
   try{
-    const res=await fetch(WK+'/lipsync/'+id);
+    const res=await fetch(apiUrl('/lipsync/'+encodeURIComponent(id)));
     const data=await res.json();
     if(data.status==='done'&&data.result_url){
       document.getElementById('lipsync-out').innerHTML='<video controls style="width:100%;border-radius:12px" src="'+data.result_url+'"></video><div style="margin-top:10px;display:flex;gap:8px"><a class="btn btnp btnsm" href="'+data.result_url+'" download target="_blank">⬇️ دانلود</a><button class="btn btng btnsm" onclick=\"pubContent(\'video\')\">📤 انتشار</button></div>';
@@ -4043,7 +4073,7 @@ async function genFeed(){
   if(!API_CONFIGURED){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">آدرس API تنظیم نشده</div>';return;}
   c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">در حال بارگذاری فید...</div>';
   try{
-    const res=await fetch(WK+'/feed');
+    const res=await fetch(apiUrl('/feed');
     const data=await res.json();
     feedCache=data.posts||[];
     if(!feedCache.length){c.innerHTML='<div style="text-align:center;color:var(--gray);font-size:12px;padding:30px 0">هنوز پستی منتشر نشده — اولین نفر باشید! 🚀</div>';return;}
@@ -4078,7 +4108,7 @@ async function likePost(btn){
   btn.setAttribute('data-liked',liked?'0':'1');
   btn.classList.toggle('liked',!liked);
   try{
-    const res=await fetch(WK+'/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
+    const res=await fetch(apiUrl('/feed/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,delta})});
     const data=await res.json();
     btn.innerHTML='❤️ '+(data.lk??0);
   }catch(e){}
@@ -4117,7 +4147,7 @@ async function addComment(){
   if(!txt||currentCommentPid===null)return;
   inp.value='';
   try{
-    const res=await fetch(WK+'/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
+    const res=await fetch(apiUrl('/feed/comment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCommentPid,user:S.user?.name||'کاربر',txt})});
     const data=await res.json();
     const post=feedCache.find(p=>p.id===currentCommentPid);
     if(post){post.comments=data.comments||[];post.cm=post.comments.length;}
@@ -4562,36 +4592,21 @@ async function deleteMyData(id){
   loadMyData();
 }
 
-// ===== تولید واقعی تصویر (FLUX)، موزیک (AI Music) و ویدیو (Luma) از طریق Worker =====
+// ===== تولید واقعی تصویر (Pollinations)، موزیک (AI Music) و ویدیو (Luma) از طریق Worker =====
 const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
 function selImgVersion(el){ selChip(el); window._imgVersion=el.dataset.ver; }
 async function genFluxImage(prompt,rb,mk){
-  const style=document.querySelector('#cp-image .chip.on')?.textContent?.trim()||'رئالیستی';
-  const out=document.getElementById('image-out');
-  rb.classList.add('on');
-  out.innerHTML='<div style="background:var(--snow);border-radius:12px;min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:13px">🎨 در حال ساخت با FLUX (نسخه آلفا)...</div>';
+  const out=document.getElementById('image-out');if(!out||!rb)return;
+  rb.classList.add('on');out.textContent='🎨 در حال تولید تصویر از طریق Cloudflare Worker و Pollinations...';
   try{
-    const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 50 words, style:'+style+'): "'+prompt+'"'}],'',mk);
-    const res=await fetch(apiUrl('/generate-image'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:ep})});
-    const data=await res.json();
-    if(!res.ok||!data.pollingUrl){out.textContent=res.status===503?'سرویس FLUX هنوز روی سرور تنظیم نشده — نسخه بتا رو امتحان کن':'⚠️ ساخت تصویر ناموفق بود: '+(data.error||'');return;}
-    for(let i=0;i<40;i++){
-      await sleepMs(3000);
-      const sr=await fetch(apiUrl('/generate-image/status?url='+encodeURIComponent(data.pollingUrl)));
-      const sd=await sr.json();
-      if(sd.status==='Ready'&&sd.imageUrl){
-        out.innerHTML='';
-        const img=document.createElement('img'); img.src=sd.imageUrl; img.style.cssText='width:100%;border-radius:12px;display:block';
-        const row=document.createElement('div'); row.style.cssText='margin-top:10px;display:flex;gap:8px';
-        const a=document.createElement('a'); a.href=sd.imageUrl; a.target='_blank'; a.rel='noopener noreferrer'; a.className='btn btnp btnsm'; a.textContent='🔗 مشاهده / دانلود';
-        const pub=document.createElement('button'); pub.className='btn btng btnsm'; pub.textContent='📤 انتشار'; pub.onclick=()=>pubContent('image');
-        row.appendChild(a); row.appendChild(pub); out.appendChild(img); out.appendChild(row);
-        toast('✅ تصویر آلفا ساخته شد!'); return;
-      }
-      if(sd.status&&/error|moderated|failed/i.test(sd.status)){out.textContent='⚠️ تصویر ساخته نشد ('+sd.status+') — پرامپت رو تغییر بده';return;}
-    }
-    out.textContent='⏱️ ساخت تصویر طول کشید — دوباره امتحان کن';
-  }catch(e){out.textContent='⚠️ خطا در اتصال به سرویس تصویر';}
+    const style=document.querySelector('#cp-image .chip.on')?.textContent?.trim()||'رئالیستی';
+    const ep=await callAI([{role:'user',content:'Convert to English image prompt (max 70 words, style:'+style+'): "'+prompt+'"'}],'',mk);
+    const imageUrl=await requestWorkerImage(ep,{width:1024,height:1024,enhance:true,safe:true});
+    out.innerHTML='';
+    const img=document.createElement('img');img.src=imageUrl;img.alt='تصویر تولیدشده';img.style.cssText='width:100%;border-radius:12px;display:block';
+    const a=document.createElement('a');a.href=imageUrl;a.download='uliki-image.png';a.className='btn btnp btnsm';a.textContent='⬇️ دانلود تصویر';
+    const row=document.createElement('div');row.style.cssText='margin-top:10px';row.appendChild(a);out.appendChild(img);out.appendChild(row);toast('✅ تصویر ساخته شد!');
+  }catch(e){out.textContent='⚠️ '+(e.message||'خطا در تولید تصویر');}
 }
 async function genRealMusic(desc){
   const host=document.getElementById('res-music'); if(!host||!API_CONFIGURED)return;
