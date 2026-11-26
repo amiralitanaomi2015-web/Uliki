@@ -1709,11 +1709,19 @@ function apiUrl(path=''){
   return API_BASE+(suffix.startsWith('/')?suffix:(suffix?'/'+suffix:'/'));
 }
 async function apiJson(path,options={}){
-  const response=await fetch(apiUrl(path),options);
+  let response;
+  try{
+    response=await fetch(apiUrl(path),options);
+  }catch(error){
+    throw new Error('ارتباط با Worker برقرار نشد. اتصال اینترنت، آدرس Worker و تنظیمات CORS را بررسی کنید. ('+(error?.message||'NetworkError')+')');
+  }
   const raw=await response.text();
   let data={};
   try{data=raw?JSON.parse(raw):{};}catch{data={error:raw.slice(0,500)||'پاسخ نامعتبر از سرور'};}
-  if(!response.ok)throw new Error(data.error||data.message||('خطای سرور: '+response.status));
+  if(!response.ok){
+    const nested=Array.isArray(data.content)?data.content.map(x=>x?.text||'').filter(Boolean).join(' '):'';
+    throw new Error(data.error||data.message||nested||('خطای سرور: '+response.status));
+  }
   return data;
 }
 async function requestWorkerImage(prompt,options={}){
@@ -3671,7 +3679,7 @@ async function doSend(){
   const aiSet=ld(aisKey(),null);
   const temperature=aiSet?((parseInt(aiSet.temp)||60)/100):0.7;
   try{
-    const data=await apiJson('/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist,system:sys,max_tokens:2000,temperature})});
+    const data=await apiJson('/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.hist.slice(-60),system:sys,max_tokens:2000,temperature})});
     remTyping(tid);
     const reply=extractAIText(data)||data.error||data.message||'پاسخ معتبر از Groq دریافت نشد.';
     if(!extractAIText(data))throw new Error(reply);
